@@ -52,25 +52,20 @@ public class SIRmODE implements FirstOrderDifferentialEquations {
         final int I = 1;
         final int R = 2;
 
-        // Final destination
-        final double END = 3;
-
         // Set parameters
         double beta = 0.2;
         double alpha = 0.8;
 
-        // Initial value {S, I, R}
-        //Double[] y0 = {99.0, 1.0, 0.0};
-        // This is for the solver as it can't work with objects
         double[] y0 = {99.0, 1.0, 0.0};
+
+        double[] y = new double[3];
 
         // It'll store the values
         ArrayList<Double[]> results = new ArrayList<>();
         // It'll store the time
         ArrayList<Double> time = new ArrayList<>();
-        // This is for the solver as it can't work with objects
-        // It stores the last values of S,I,R variables
-        double[] y = new double[3];
+
+
         // Append time 0.0 and initial values
         time.add(0.0);
         results.add(new Double[] {y0[S], y0[I], y0[R]});
@@ -83,13 +78,32 @@ public class SIRmODE implements FirstOrderDifferentialEquations {
         // Time index
         Double t = 0.0;
 
+        StepHandler stepHandler = new StepHandler() {
+            @Override
+            public boolean requiresDenseOutput() {
+                return false;
+            }
+
+            @Override
+            public void reset() {
+
+            }
+
+            @Override
+            public void handleStep(StepInterpolator interpolator, boolean b) throws DerivativeException {
+                double t = interpolator.getCurrentTime();
+                double[] y = interpolator.getInterpolatedState();
+                double susceptible = y[0];
+                double infectious = y[1];
+                double recovered = y[2];
+                results.add(new Double[] {susceptible, infectious, recovered});
+                time.add(t);
+            }
+        };
+        solver.addStepHandler(stepHandler);
+
         // Solving equations
-        while(t<END){
-            solver.integrate(equations, 0, y0, t + 0.01, y);
-            results.add(new Double[] {y[S], y[I], y[R]});
-            time.add(t+0.01);
-            t += 0.01;
-        }
+        solver.integrate(equations, t, y0, t + 5.0, y);
 
         PlotWindow win=new PlotWindow("SIR model",500,500,1,0,0,1,1);
         PlotLine susceptibleLine=new PlotLine(win,BLUE);
