@@ -35,14 +35,14 @@ public class MedicineDose implements FirstOrderDifferentialEquations {
 
         double gamma = 0.1;
         double dose = 0.5;
-        double doseTime = 10;
+        double doseTime = 30.0;
 
         double[] y = {1.2};
 
         double t = 0.0;
 
-        ArrayList<Double> results = new ArrayList<Double>();
-        ArrayList<Double> time = new ArrayList<Double>();
+        ArrayList<Double> results = new ArrayList<>();
+        ArrayList<Double> time = new ArrayList<>();
 
         results.add(y[0]);
         time.add(t);
@@ -68,7 +68,7 @@ public class MedicineDose implements FirstOrderDifferentialEquations {
 
             @Override
             public double g(double t, double[] y) {
-                return t % 60.0 - 30;
+                return t % (doseTime * 2) - doseTime;
             }
 
             @Override
