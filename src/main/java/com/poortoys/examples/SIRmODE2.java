@@ -18,8 +18,8 @@ public class SIRmODE2 implements FirstOrderDifferentialEquations {
     private static final int I = 1;
     private static final int R = 2;
 
-    private double gamma;
-    private double aplha;
+    private final double gamma;
+    private final double aplha;
 
     public SIRmODE2(double gamma, double aplha){
         this.gamma = gamma;
