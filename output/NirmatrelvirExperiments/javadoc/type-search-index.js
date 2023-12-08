@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"org.example","l":"Cells"},{"p":"org.example","l":"NewExperiment"},{"p":"org.example","l":"NirmatrelvirDrug"},{"p":"org.example","l":"NirmatrelvirExperiments"}];updateSearchResults();
