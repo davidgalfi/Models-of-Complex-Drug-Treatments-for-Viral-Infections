@@ -4,8 +4,13 @@ import HAL.GridsAndAgents.AgentGrid2D;
 import HAL.GridsAndAgents.PDEGrid2D;
 
 import java.io.File;
+import java.util.Objects;
 
 import static HAL.Util.*;
+
+import org.apache.commons.math3.ode.FirstOrderIntegrator;
+import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
+import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 
 /**
  * The NewExperiment class represents a simulation experiment with individual cells in a 2D square grid.
@@ -28,6 +33,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     /**
      * The visualization scale used in the simulation.
      */
+    // TODO: This is currently do nothing, need to figure out what the author wanted to do with it.
     public int visScale = 2;
 
     /**
@@ -74,16 +80,19 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     /**
      * An array storing cellular virus concentrations for each grid location in the simulation.
      */
+    // TODO: It seems to be a useless thing, need to delete
     public double[] cellularVirusCon = new double[length];
 
     /**
      * An array storing cellular immune response levels for each grid location in the simulation.
      */
+    // TODO: It seems to be a useless thing, need to delete
     public double[] cellularImmuneResponseLevel = new double[length];
 
     /**
      * The fixed damage rate in the simulation.
      */
+    // TODO: Seems it does not do anything, need find out what is this
     public double fixedDamageRate;
 
     /**
@@ -99,6 +108,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     /**
      * The ratio of capillary cells in the initial configuration of the simulation.
      */
+    // TODO: Implement this line somewhere
     public double ratioCapillaries = 0;
 
     /**
@@ -124,7 +134,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     /**
      * The virus diffusion coefficient parameter in the simulation.
      */
-    public double virusDiffCoeff = 0.2; // D_V [sigma^2 / min]
+    public double virusDiffCoeff; // D_V [sigma^2 / min]
 
     /**
      * The drug object used in the simulation.
@@ -134,16 +144,18 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     /**
      * The type of experiment, either "inVivo" or "inVitro".
      */
-    String inVivoOrInVitro = "inVivo";
+    String inVivoOrInVitro;
 
     /**
      * The decay rate of immune response in the simulation.
      */
+    // TODO: Seems do nothing
     public double immuneResponseDecay = 0.0005;
 
     /**
      * The diffusion coefficient of immune response in the simulation.
      */
+    // TODO: Seems do nothing
     public double immuneResponseDiffCoeff = 0.1;
 
     /**
@@ -159,12 +171,14 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     /**
      * A boolean indicating whether Nirmatrelvir is used in the simulation.
      */
+    // TODO: Seems do nothing
     public boolean isNirmatrelvir = true;
 
     /**
      * A boolean indicating whether Ritonavir boosting is used in the simulation.
      * Note: This switch only makes sense if isNirmatrelvir is true.
      */
+    // TODO: Seems do nothing
     public boolean isRitonavirBoosted = true;
 
     /**
@@ -186,6 +200,10 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      * The output directory path for storing simulation results.
      */
     public String outputDir;
+
+    public FirstOrderIntegrator integrator;
+
+    // public FirstOrderDifferentialEquations ode;
 
     /**
      * Constants representing different cell types or states in the simulation.
@@ -262,6 +280,9 @@ public class NewExperiment extends AgentGrid2D<Cells> {
 
         }
 
+        // this.ode = new VirusDiffEquation(virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff);
+        this.integrator = new DormandPrince54Integrator(1e-8, 100, 1e-10, 1e-10);
+
         virusCon = new HAL.GridsAndAgents.PDEGrid2D(xDim, yDim);
         immuneResponseLevel = new HAL.GridsAndAgents.PDEGrid2D(xDim, yDim);
         virusCon.Update();
@@ -313,6 +334,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
 
         for (int tick = 0; tick < this.numberOfTicks; tick++) {
             // Check for a specific event and adjust simulation parameters if necessary
+            // TODO: Permanently not working, need to find a way to use it.
             if ((numberOfTicksDelay == NirmatrelvirExperiments.BIG_VALUE) && (fixedDamageRate <= 100) &&
                     (((cellCounts[1] + cellCounts[2]) / 40000) * 100 >= fixedDamageRate)) {
                 this.numberOfTicksDelay = tick - 1;
@@ -326,6 +348,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
             DrawModel(win);
 
             // Capture and save snapshots at regular intervals
+            // TODO: Permanently does not work, need to find a way to use it.
             if (tick > 0 && ((tick % (24 * 60)) == 0)) {
                 win.ToPNG(outputDir + "day" + Integer.toString(tick / (24 * 60)) + ".jpg");
             }
@@ -378,6 +401,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      *
      * @return An array containing the count of cells for each state.
      */
+    // TODO: Currently not working (the immune system does not react)
     void TimeStepImmune(int tick){
 
         // decay of the immuneResponseLevel
@@ -410,12 +434,22 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     void TimeStepVirus(int tick) {
         // Decay of the virus
         for (Cells cell : this) {
+            // TODO: Drug currently does not react
             double drugVirusRemovalEff = 0.0 * drugCon; // Nirmatrelvir has 0 effect on virus removal
             double immuneVirusRemovalEff = 1 / (1 + 1 / (Math.pow(immuneResponseLevel.Get(cell.Isq()), 2)));
 
-            virusCon.Add(cell.Isq(), -virusRemovalRate * virusCon.Get(cell.Isq()));
+            // TODO: Resolve with Apache solver
+            /*virusCon.Add(cell.Isq(), -virusRemovalRate * virusCon.Get(cell.Isq()));
             virusCon.Add(cell.Isq(), -drugVirusRemovalEff * virusCon.Get(cell.Isq()));
-            virusCon.Add(cell.Isq(), -immuneVirusRemovalEff * virusCon.Get(cell.Isq()));
+            virusCon.Add(cell.Isq(), -immuneVirusRemovalEff * virusCon.Get(cell.Isq()));*/
+            double currentCell = virusCon.Get(cell.Isq());
+            virusCon.Add(cell.Isq(), currentCell*(-virusRemovalRate - drugVirusRemovalEff - immuneVirusRemovalEff));
+
+            /*FirstOrderDifferentialEquations ode = new VirusDiffEquation(virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff);
+
+            double[] y = {currentCell};
+            integrator.integrate(ode, 0, y, 1, y);
+            virusCon.Add(cell.Isq(), y[0]);*/
         }
         virusCon.Update();
 
@@ -495,10 +529,11 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      */
     double TotalVirusCon() {
         double totalVirusCon = 0;
-        for (int i = 0; i < length; i++) {
+        /*for (int i = 0; i < length; i++) {
+            // TODO: Figure out what this line is doing
             cellularVirusCon[i] = virusCon.Get(i);
-        }
-        for (double virusConInCell : cellularVirusCon) {
+        }*/
+        for (double virusConInCell : virusCon.GetField()) {
             totalVirusCon += virusConInCell;
         }
         return totalVirusCon;
@@ -512,10 +547,10 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      */
     double TotalImmuneResponseLevel() {
         double totalImmuneResponseLevel = 0;
-        for (int i = 0; i < length; i++) {
+        /*for (int i = 0; i < length; i++) {
             cellularImmuneResponseLevel[i] = immuneResponseLevel.Get(i);
-        }
-        for (double immuneResponseInCell : cellularImmuneResponseLevel) {
+        }*/
+        for (double immuneResponseInCell : immuneResponseLevel.GetField()) {
             totalImmuneResponseLevel += immuneResponseInCell;
         }
         return totalImmuneResponseLevel;
@@ -540,6 +575,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      * @return The immune response source.
      */
     double ImmuneResponseSource(int tick, Cells cell) {
+        // TODO: Currently, the immune system does not react.
         return 0.0 * Math.pow(10,-3);
     }
 

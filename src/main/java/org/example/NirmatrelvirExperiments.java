@@ -33,7 +33,7 @@ public class NirmatrelvirExperiments {
     /**
      * Specifies the experimental condition for drug administration, either "inVivo" or "inVitro".
      */
-    public static String inVivoOrInVitro = "inVivo";
+    public static String inVivoOrInVitro = "inVitro";
 
     /**
      * The vertical dimension of the cellular state space grid.
@@ -53,7 +53,7 @@ public class NirmatrelvirExperiments {
     /**
      * Indicates whether Nirmatrelvir is present in the experiment. If true, Nirmatrelvir is included; otherwise, it is excluded.
      */
-    public static boolean isNirmatrelvir = true;
+    public static boolean isNirmatrelvir = false;
 
     /**
      * Indicates whether Ritonavir is boosted in the experiment. If true, Ritonavir is boosted; otherwise, it is not boosted.

@@ -82,8 +82,10 @@ public class PDEGrid2D implements Grid2D,Serializable {
             scratch=new double[length];
         }
         if(tdma==null){
+            // TODO: Find out what this line do
             tdma=new TdmaSolver(Math.max(xDim,yDim));
         }
+        // TODO: Find out what this line do
         Diffusion2DADI(field,scratch,deltas,diffCoef,xDim,yDim,wrapX,wrapY,null,tdma);
     }
     public void DiffusionADI(double diffCoef,double boundaryCond){
