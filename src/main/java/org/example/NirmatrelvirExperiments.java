@@ -28,37 +28,37 @@ public class NirmatrelvirExperiments {
      * Specifies whether the experiment is set to a singular or sweep condition.
      * Possible values are "singular" or "sweep".
      */
-    public static String singularOrSweep = "singular"; // "singular" or "sweep"
+    public static String singularOrSweep; // "singular" or "sweep"
 
     /**
      * Specifies the experimental condition for drug administration, either "inVivo" or "inVitro".
      */
-    public static String inVivoOrInVitro = "inVitro";
+    public static String inVivoOrInVitro;
 
     /**
      * The vertical dimension of the cellular state space grid.
      */
-    public static int y = 200;
+    public static int y;
 
     /**
      * The horizontal dimension of the cellular state space grid.
      */
-    public static int x = 200;
+    public static int x;
 
     /**
      * The scale factor for visualization, affecting the display size of the grid.
      */
-    public static int visScale = 2;
+    public static int visScale;
 
     /**
      * Indicates whether Nirmatrelvir is present in the experiment. If true, Nirmatrelvir is included; otherwise, it is excluded.
      */
-    public static boolean isNirmatrelvir = false;
+    public static boolean isNirmatrelvir;
 
     /**
      * Indicates whether Ritonavir is boosted in the experiment. If true, Ritonavir is boosted; otherwise, it is not boosted.
      */
-    public static boolean isRitonavirBoosted = false;
+    public static boolean isRitonavirBoosted;
 
     /**
      * Represents the grid window for visualizing the cellular state space and virus concentration.

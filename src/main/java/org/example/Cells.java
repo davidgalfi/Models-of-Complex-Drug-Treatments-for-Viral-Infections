@@ -18,6 +18,10 @@ import HAL.GridsAndAgents.AgentSQ2Dunstackable;
  */
 public class Cells extends AgentSQ2Dunstackable<NewExperiment> {
 
+    public int xDim;
+    public int yDim;
+    public int visScale;
+
     /**
      * The type of the cell:
      * 0 - Healthy

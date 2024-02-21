@@ -21,22 +21,6 @@ import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 public class NewExperiment extends AgentGrid2D<Cells> {
 
     /**
-     * The x-dimension of the grid in the simulation.
-     */
-    public int x = 200;
-
-    /**
-     * The y-dimension of the grid in the simulation.
-     */
-    public int y = 200;
-
-    /**
-     * The visualization scale used in the simulation.
-     */
-    // TODO: This is currently do nothing, need to figure out what the author wanted to do with it.
-    public int visScale = 2;
-
-    /**
      * The number of ticks to delay drug administration in the simulation.
      */
     public int numberOfTicksDelay;
@@ -63,31 +47,9 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     public PDEGrid2D immuneResponseLevel;
 
     /**
-     * The concentration of the drug in the simulation.
-     */
-    public double drugCon = 0;
-
-    /**
-     * The concentration of the drug in the stomach in the simulation.
-     */
-    public double drugConStomach = 0;
-
-    /**
      * The random number generator used in the simulation.
      */
     public HAL.Rand rn;
-
-    /**
-     * An array storing cellular virus concentrations for each grid location in the simulation.
-     */
-    // TODO: It seems to be a useless thing, need to delete
-    public double[] cellularVirusCon = new double[length];
-
-    /**
-     * An array storing cellular immune response levels for each grid location in the simulation.
-     */
-    // TODO: It seems to be a useless thing, need to delete
-    public double[] cellularImmuneResponseLevel = new double[length];
 
     /**
      * The fixed damage rate in the simulation.
@@ -96,90 +58,40 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     public double fixedDamageRate;
 
     /**
+     * The infection rate parameter in the simulation.
+     */
+    public double infectionRate; // beta in the ODE
+
+    /**
+     * The concentration of the drug in the simulation.
+     */
+    public double drugCon;
+
+    /**
+     * The cell death probability parameter in the simulation.
+     */
+    public double deathProb; // P_D
+
+    /**
      * The ratio of healthy cells in the initial configuration of the simulation.
      */
-    public double ratioHealthy = 0.9995;
+    public double ratioHealthy;
 
     /**
      * The ratio of infected cells in the initial configuration of the simulation.
      */
-    public double ratioInfected = 0.0005;
+    public double ratioInfected;
 
     /**
      * The ratio of capillary cells in the initial configuration of the simulation.
      */
     // TODO: Implement this line somewhere
-    public double ratioCapillaries = 0;
-
-    /**
-     * The virus removal rate parameter in the simulation.
-     */
-    public double virusRemovalRate = 1.67 * Math.pow(10, -3); // mu_V
-
-    /**
-     * The maximum virus production parameter in the simulation.
-     */
-    public double virusMax = 3.72 * Math.pow(10, -3); // f_{i,j}
-
-    /**
-     * The infection rate parameter in the simulation.
-     */
-    public double infectionRate = 1.01 * Math.pow(10, -7); // beta in the ODE
-
-    /**
-     * The cell death probability parameter in the simulation.
-     */
-    public double deathProb = 7.02 * Math.pow(10, -4); // P_D
-
-    /**
-     * The virus diffusion coefficient parameter in the simulation.
-     */
-    public double virusDiffCoeff; // D_V [sigma^2 / min]
+    public double ratioCapillaries;
 
     /**
      * The drug object used in the simulation.
      */
     NirmatrelvirDrug drug;
-
-    /**
-     * The type of experiment, either "inVivo" or "inVitro".
-     */
-    String inVivoOrInVitro;
-
-    /**
-     * The decay rate of immune response in the simulation.
-     */
-    // TODO: Seems do nothing
-    public double immuneResponseDecay = 0.0005;
-
-    /**
-     * The diffusion coefficient of immune response in the simulation.
-     */
-    // TODO: Seems do nothing
-    public double immuneResponseDiffCoeff = 0.1;
-
-    /**
-     * The maximum PDE step size in the simulation.
-     */
-    public double MAX_PDE_STEP = 1;
-
-    /**
-     * The threshold value used in the simulation.
-     */
-    public double threshold = 0.000001;
-
-    /**
-     * A boolean indicating whether Nirmatrelvir is used in the simulation.
-     */
-    // TODO: Seems do nothing
-    public boolean isNirmatrelvir = true;
-
-    /**
-     * A boolean indicating whether Ritonavir boosting is used in the simulation.
-     * Note: This switch only makes sense if isNirmatrelvir is true.
-     */
-    // TODO: Seems do nothing
-    public boolean isRitonavirBoosted = true;
 
     /**
      * The FileIO object for writing simulation output to a file.
@@ -206,39 +118,6 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     // public FirstOrderDifferentialEquations ode;
 
     /**
-     * Constants representing different cell types or states in the simulation.
-     * Each constant corresponds to a unique integer value.
-     *
-     * H (0): Healthy cell
-     */
-    public static final int H = 0;
-
-    /**
-     * Constants representing different cell types or states in the simulation.
-     * Each constant corresponds to a unique integer value.
-     *
-     * I (1): Infected cell
-     */
-    public static final int I = 1;
-
-    /**
-     * Constants representing different cell types or states in the simulation.
-     * Each constant corresponds to a unique integer value.
-     *
-     * D (2): Dead cell
-     */
-    public static final int D = 2;
-
-    /**
-     * Constants representing different cell types or states in the simulation.
-     * Each constant corresponds to a unique integer value.
-     *
-     * C (3): Capillary (blood vessel)
-     */
-    public static final int C = 3;
-
-
-    /**
      * Initializes a new instance of the NewExperiment class with the specified parameters.
      *
      * @param xDim                 The x-dimension of the grid.
@@ -252,32 +131,29 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      * @param inVivoOrInVitro      The type of experiment (inVivo or inVitro).
      * @param fixedDamageRate      The fixed damage rate.
      */
-    public NewExperiment(int xDim, int yDim, int visScale, HAL.Rand rn, boolean isNirmatrelvir, boolean isRitonavirBoosted, int numberOfTicksDelay, double virusDiffCoeff, String inVivoOrInVitro, double fixedDamageRate){
+    public NewExperiment(Cells cells,
+                         HAL.Rand rn, Drug drug,
+                         int numberOfTicksDelay, double virusDiffCoeff, String inVivoOrInVitro, double fixedDamageRate){
 
-        super(xDim, yDim, Cells.class);
-        this.x = xDim;
-        this.y = yDim;
-        this.visScale = visScale;
+        super(cells.xDim, cells.yDim, Cells.class);
+
         this.numberOfTicksDelay = numberOfTicksDelay;
-        this.virusDiffCoeff = virusDiffCoeff;
         this.rn = rn;
-
-        this.inVivoOrInVitro = inVivoOrInVitro;
-        this.isNirmatrelvir = isNirmatrelvir;
-        this.isRitonavirBoosted = isRitonavirBoosted;
 
         this.fixedDamageRate = fixedDamageRate;
 
-        if (inVivoOrInVitro.equals("inVivo")) {
-
-            this.drug = new NirmatrelvirDrug(isRitonavirBoosted);
-            this.numberOfTicksDrug = 5 * 24 * 60; // we administer paxlovid for 5 days, i.e. 5*24*60 minutes
-
+        if (drug instanceof NirmatrelvirDrug) {
+            NirmatrelvirDrug nirmatrevilDrug = (NirmatrelvirDrug) drug;
+            // Most már hozzáférhetsz a Nirmatrevil specifikus tulajdonságokhoz
+            if (inVivoOrInVitro.equals("inVivo")) {
+                this.drug = new NirmatrelvirDrug(nirmatrevilDrug.isRitonavirBoosted);
+                this.numberOfTicksDrug = 5 * 24 * 60; // we administer paxlovid for 5 days, i.e. 5*24*60 minutes
+            } else {
+                this.drug = new NirmatrelvirDrug(5.0, nirmatrevilDrug.isNirmatrelvir);
+                this.numberOfTicksDrug = 4 * 24 * 60; // we incubate for 4 days
+            }
         } else {
-
-            this.drug = new NirmatrelvirDrug(5.0, isNirmatrelvir);
-            this.numberOfTicksDrug = 4 * 24 * 60; // we incubate for 4 days
-
+            throw new IllegalArgumentException("No specific drug used!");
         }
 
         // this.ode = new VirusDiffEquation(virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff);
@@ -339,7 +215,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
                     (((cellCounts[1] + cellCounts[2]) / 40000) * 100 >= fixedDamageRate)) {
                 this.numberOfTicksDelay = tick - 1;
                 this.numberOfTicks = this.numberOfTicksDelay + this.numberOfTicksDrug;
-                System.out.println("Diffusion coeff.: " + this.virusDiffCoeff + ". Damage info: " +
+                System.out.println("Diffusion coeff.: " + virusDiffCoeff + ". Damage info: " +
                         fixedDamageRate + " percent damage was found at tick " + numberOfTicksDelay + ".");
             }
 

@@ -5,42 +5,14 @@ package org.example;
  * It includes properties for both in vitro and in vivo scenarios, with specific characteristics such as drug concentration,
  * decay rates, and drug-virus interaction parameters.
  */
-public class NirmatrelvirDrug {
-
-    /**
-     * IC50 for the drug in nM, nanoMolars. The concentration at which the drug inhibits 50% of the virus. [nM] = 10^-9 [mol/L].
-     */
-    double EC50 = 62;
-
-    /**
-     * Molar mass of the drug in g/mol. Used for converting drug concentration between ng/ml and nanomolars.
-     */
-    double molarMassDrug = 499.535;
-
-    /**
-     * Initial drug concentration for in vitro experiments.
-     */
-    double inVitroDrugCon = 5;
+public class NirmatrelvirDrug extends Drug{
 
     /**
      * Flag indicating whether Ritonavir is boosted. Determines adjustments in drug properties for in vivo scenarios.
      */
-    boolean isRitonavirBoosted = true;
+    boolean isRitonavirBoosted;
 
-    /**
-     * Decay rate of the drug in in vivo scenarios.
-     */
-    double drugDecay = 0.013;
-
-    /**
-     * Drug source in the stomach for in vivo scenarios. Represents the initial drug concentration in the stomach.
-     */
-    double drugSourceStomach = 1800;
-
-    /**
-     * Decay rate of the drug in the stomach for in vivo scenarios.
-     */
-    double drugDecayStomach = 0.015;
+    boolean isNirmatrelvir;
 
     /**
      * In vitro constructor for NirmatrelvirDrug.
