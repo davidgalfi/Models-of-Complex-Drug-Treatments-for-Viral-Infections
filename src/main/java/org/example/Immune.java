@@ -18,4 +18,28 @@ public class Immune {
      */
     // TODO: Seems do nothing
     public double immuneResponseDiffCoeff;
+
+    public double getVirusRemovalRate() {
+        return virusRemovalRate;
+    }
+
+    public void setVirusRemovalRate(double virusRemovalRate) {
+        this.virusRemovalRate = virusRemovalRate;
+    }
+
+    public double getImmuneResponseDecay() {
+        return immuneResponseDecay;
+    }
+
+    public void setImmuneResponseDecay(double immuneResponseDecay) {
+        this.immuneResponseDecay = immuneResponseDecay;
+    }
+
+    public double getImmuneResponseDiffCoeff() {
+        return immuneResponseDiffCoeff;
+    }
+
+    public void setImmuneResponseDiffCoeff(double immuneResponseDiffCoeff) {
+        this.immuneResponseDiffCoeff = immuneResponseDiffCoeff;
+    }
 }

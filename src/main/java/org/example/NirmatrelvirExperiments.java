@@ -7,8 +7,10 @@ package org.example;
 import HAL.Gui.GridWindow;
 import HAL.Rand;
 import HAL.Tools.FileIO;
+import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 import static HAL.Util.PWD;
 
@@ -28,37 +30,12 @@ public class NirmatrelvirExperiments {
      * Specifies whether the experiment is set to a singular or sweep condition.
      * Possible values are "singular" or "sweep".
      */
-    public static String singularOrSweep; // "singular" or "sweep"
+    public static String singularOrSweep = "singular"; // "singular" or "sweep"
 
-    /**
-     * Specifies the experimental condition for drug administration, either "inVivo" or "inVitro".
-     */
-    public static String inVivoOrInVitro;
-
-    /**
-     * The vertical dimension of the cellular state space grid.
-     */
-    public static int y;
-
-    /**
-     * The horizontal dimension of the cellular state space grid.
-     */
-    public static int x;
-
-    /**
-     * The scale factor for visualization, affecting the display size of the grid.
-     */
-    public static int visScale;
-
-    /**
-     * Indicates whether Nirmatrelvir is present in the experiment. If true, Nirmatrelvir is included; otherwise, it is excluded.
-     */
-    public static boolean isNirmatrelvir;
-
-    /**
-     * Indicates whether Ritonavir is boosted in the experiment. If true, Ritonavir is boosted; otherwise, it is not boosted.
-     */
-    public static boolean isRitonavirBoosted;
+    public static Cells cells = new Cells();
+    public static Drug drug = new Drug();
+    public static Immune immune = new Immune();
+    public static Virus virus = new Virus();
 
     /**
      * Represents the grid window for visualizing the cellular state space and virus concentration.
@@ -66,7 +43,7 @@ public class NirmatrelvirExperiments {
      * The dimensions are determined by doubling the horizontal dimension (x * 2), the vertical dimension (y),
      * and the visualization scale (visScale), with additional information about the grid's toroidal nature (true).
      */
-    public static GridWindow win = new GridWindow("Cellular state space, virus concentration.", x * 2, y, visScale, true);
+    public static GridWindow win;
 
     /**
      * Executes Nirmatrelvir experiments based on the specified experiment type.
@@ -118,14 +95,21 @@ public class NirmatrelvirExperiments {
     public static void executeNirmatrelvirExperiments(){
         if (singularOrSweep.equals("singular")) {
             // Singular experiment
-            NewExperiment experiment = new NewExperiment(x, y, visScale, new Rand(1), isNirmatrelvir, isRitonavirBoosted, 12 * 60, 0.2, inVivoOrInVitro, 110.0);
+            NewExperiment experiment = new NewExperiment(
+                    cells,
+                    new Rand(1),
+                    drug,
+                    immune,
+                    12 * 60,
+                    virus,
+                    110.0);
             experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
             experiment.Init();
             double remainingHealthyCells = experiment.RunExperiment(win);
 
             // Output results
-            if (isNirmatrelvir) {
-                System.out.println(inVivoOrInVitro.equals("inVivo") ? "In vivo drug source [ng / ml]: " + experiment.drug.drugSourceStomach : "In vitro drug concentration [nM]: " + experiment.drug.NgPerMlToNanomolars(experiment.drug.inVitroDrugCon));
+            if (drug.name.equals("Nirmatrelvir")) {
+                System.out.println(drug.inVivoOrInVitro.equals("inVivo") ? "In vivo drug source [ng / ml]: " + experiment.drug.drugSourceStomach : "In vitro drug concentration [nM]: " + experiment.drug.NgPerMlToNanomolars(experiment.drug.inVitroDrugCon));
             }
             System.out.println("Remaining healthy cells: " + remainingHealthyCells);
         } else if (singularOrSweep.equals("sweep")) {
@@ -140,7 +124,14 @@ public class NirmatrelvirExperiments {
                 collectiveResults += virusDiffCoeffSweep + ", ";
 
                 for (double damageRateSweep = 0.0; damageRateSweep < 100.0; damageRateSweep += 5.0) {
-                    NewExperiment experiment = new NewExperiment(x, y, visScale, new Rand(1), isNirmatrelvir, isRitonavirBoosted, BIG_VALUE, virusDiffCoeffSweep, inVivoOrInVitro, damageRateSweep);
+                    NewExperiment experiment = new NewExperiment(
+                            cells,
+                            new Rand(1),
+                            drug,
+                            immune,
+                            BIG_VALUE,
+                            virus,
+                            damageRateSweep);
                     experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
                     experiment.Init();
                     double remainingHealthyCells = experiment.RunExperiment(win);
@@ -194,9 +185,9 @@ public class NirmatrelvirExperiments {
         String projPath = PWD() + "/output/NirmatrelvirExperiments";
 
         // Adjust the path based on drug conditions
-        if (!isNirmatrelvir) {
+        if (!drug.name.equals("Nirmatrelvir")) {
             projPath += "/noDrug";
-        } else if (isRitonavirBoosted) {
+        } else if (drug.isRitonavirBoosted) {
             projPath += "/ritoBoostedNirmatrelvir";
         } else {
             projPath += "/nirmatrelvirOnly";
@@ -212,13 +203,62 @@ public class NirmatrelvirExperiments {
         return collectiveOutputDir;
     }
 
-    /**
-     * The main method that initiates and runs the cellular state space and virus concentration experiments.
-     *
-     * @param args Command line arguments (not used in this implementation).
-     */
-    public static void main(String[] args) {
+    public static JSONObject readDatas(String path) throws URISyntaxException {
+        return JSONReader.getJSONObjectFromJSON(path);
+    }
+
+    public static void storeCellsData(JSONObject newExperiment){
+        JSONObject cell_ = (JSONObject) newExperiment.get("Cell");
+        cells.setxDim(Math.toIntExact((Long) cell_.get("xDim")));
+        cells.setyDim(Math.toIntExact((Long) cell_.get("yDim")));
+        cells.setVisScale(Math.toIntExact((Long) cell_.get("visScale")));
+    }
+
+    public static void storeDrugData(JSONObject newExperiment){
+        JSONObject drug_ = (JSONObject) newExperiment.get("Drug");
+        drug.setName((String) drug_.get("name"));
+        drug.setEC50((double) drug_.get("EC50"));
+        drug.setMolarMassDrug((double) drug_.get("molarMassDrug"));
+        drug.setInVitroDrugCon((double) drug_.get("inVitroDrugCon"));
+        drug.setDrugDecay((double) drug_.get("drugDecay"));
+        drug.setDrugSourceStomach((double) drug_.get("drugSourceStomach"));
+        drug.setDrugDecay((double) drug_.get("drugDecayStomach"));
+        drug.setDrugConStomach((double) drug_.get("drugConStomach"));
+        drug.setInVivoOrInVitro((String) drug_.get("inVivoOrInVitro"));
+        drug.setRitonavirBoosted((boolean) drug_.get("isRitonavirBoosted"));
+    }
+
+    public static void storeImmuneData(JSONObject newExperiment){
+        JSONObject immune_ = (JSONObject) newExperiment.get("Immune");
+        immune.setVirusRemovalRate((double) immune_.get("virusRemovalRate"));
+        immune.setImmuneResponseDecay((double) immune_.get("immuneResponseDecay"));
+        immune.setImmuneResponseDiffCoeff((double) immune_.get("immuneResponseDiffCoeff"));
+    }
+
+    public static void storeVirusData(JSONObject newExperiment){
+        JSONObject virus_ = (JSONObject) newExperiment.get("Virus");
+        virus.setVirusMax((double) virus_.get("virusMax"));
+        virus.setVirusDiffCoeff((double) virus_.get("virusDiffCoeff"));
+    }
+
+    public static void storeDatas(String path) throws URISyntaxException {
+        JSONObject jsonObject = readDatas(path);
+        JSONObject newExperiment = (JSONObject) jsonObject.get("NewExperiment");
+        storeCellsData(newExperiment);
+        storeDrugData(newExperiment);
+        storeImmuneData(newExperiment);
+        storeVirusData(newExperiment);
+    }
+
+    public static void createWin(){
+        win = new GridWindow(
+                "Cellular state space, virus concentration.",
+                cells.xDim * 2, cells.yDim, cells.visScale, true);
+    }
+    public static void main(String[] args) throws URISyntaxException {
         // Executes Nirmatrelvir experiments
+        storeDatas("json/datas.json");
+        createWin();
         executeNirmatrelvirExperiments();
     }
 }

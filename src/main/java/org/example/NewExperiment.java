@@ -7,7 +7,10 @@ import java.io.File;
 import java.util.Objects;
 
 import static HAL.Util.*;
+import static org.example.Cells.*;
 
+import HAL.Rand;
+import HAL.Tools.FileIO;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
@@ -60,39 +63,41 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     /**
      * The infection rate parameter in the simulation.
      */
-    public double infectionRate; // beta in the ODE
+    public double infectionRate = 1.01 * Math.pow(10, -7); // beta in the ODE
 
     /**
      * The concentration of the drug in the simulation.
      */
-    public double drugCon;
+    public double drugCon = 0;
 
     /**
      * The cell death probability parameter in the simulation.
      */
-    public double deathProb; // P_D
+    public double deathProb =  7.02 * Math.pow(10, -3); // P_D
 
     /**
      * The ratio of healthy cells in the initial configuration of the simulation.
      */
-    public double ratioHealthy;
+    public double ratioHealthy = 0.9995;
 
     /**
      * The ratio of infected cells in the initial configuration of the simulation.
      */
-    public double ratioInfected;
+    public double ratioInfected = 0.0005;
 
     /**
      * The ratio of capillary cells in the initial configuration of the simulation.
      */
     // TODO: Implement this line somewhere
-    public double ratioCapillaries;
+    public double ratioCapillaries = 0;
 
     /**
      * The drug object used in the simulation.
      */
-    NirmatrelvirDrug drug;
-
+    Drug drug;
+    Virus virus;
+    Cells cells;
+    Immune immune;
     /**
      * The FileIO object for writing simulation output to a file.
      */
@@ -120,20 +125,16 @@ public class NewExperiment extends AgentGrid2D<Cells> {
     /**
      * Initializes a new instance of the NewExperiment class with the specified parameters.
      *
-     * @param xDim                 The x-dimension of the grid.
-     * @param yDim                 The y-dimension of the grid.
-     * @param visScale             The visualization scale.
-     * @param rn                   A random number generator.
-     * @param isNirmatrelvir       A boolean indicating whether Nirmatrelvir is used.
-     * @param isRitonavirBoosted   A boolean indicating whether Ritonavir boosting is used.
      * @param numberOfTicksDelay   The number of ticks to delay drug administration.
-     * @param virusDiffCoeff       The virus diffusion coefficient.
-     * @param inVivoOrInVitro      The type of experiment (inVivo or inVitro).
      * @param fixedDamageRate      The fixed damage rate.
      */
     public NewExperiment(Cells cells,
-                         HAL.Rand rn, Drug drug,
-                         int numberOfTicksDelay, double virusDiffCoeff, String inVivoOrInVitro, double fixedDamageRate){
+                         Rand rn,
+                         Drug drug,
+                         Immune immune,
+                         int numberOfTicksDelay,
+                         Virus virus,
+                         double fixedDamageRate){
 
         super(cells.xDim, cells.yDim, Cells.class);
 
@@ -142,32 +143,33 @@ public class NewExperiment extends AgentGrid2D<Cells> {
 
         this.fixedDamageRate = fixedDamageRate;
 
-        if (drug instanceof NirmatrelvirDrug) {
-            NirmatrelvirDrug nirmatrevilDrug = (NirmatrelvirDrug) drug;
-            // Most már hozzáférhetsz a Nirmatrevil specifikus tulajdonságokhoz
-            if (inVivoOrInVitro.equals("inVivo")) {
-                this.drug = new NirmatrelvirDrug(nirmatrevilDrug.isRitonavirBoosted);
-                this.numberOfTicksDrug = 5 * 24 * 60; // we administer paxlovid for 5 days, i.e. 5*24*60 minutes
-            } else {
-                this.drug = new NirmatrelvirDrug(5.0, nirmatrevilDrug.isNirmatrelvir);
-                this.numberOfTicksDrug = 4 * 24 * 60; // we incubate for 4 days
-            }
+
+        this.drug = drug;
+
+        if (drug.inVivoOrInVitro.equals("inVivo")) {
+            this.drug.setInVivo();
+            this.numberOfTicksDrug = 5 * 24 * 60; // we administer paxlovid for 5 days, i.e. 5*24*60 minutes
         } else {
-            throw new IllegalArgumentException("No specific drug used!");
+            this.drug.setInVitro(5.0, drug.name.equals("Nirmatrelvir"));
+            this.numberOfTicksDrug = 4 * 24 * 60; // we incubate for 4 days
         }
+
+        this.virus = virus;
+        this.cells = cells;
+        this.immune = immune;
 
         // this.ode = new VirusDiffEquation(virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff);
         this.integrator = new DormandPrince54Integrator(1e-8, 100, 1e-10, 1e-10);
 
-        virusCon = new HAL.GridsAndAgents.PDEGrid2D(xDim, yDim);
-        immuneResponseLevel = new HAL.GridsAndAgents.PDEGrid2D(xDim, yDim);
+        virusCon = new PDEGrid2D(xDim, yDim);
+        immuneResponseLevel = new PDEGrid2D(xDim, yDim);
         virusCon.Update();
         immuneResponseLevel.Update();
 
         outputDir = this.OutputDirectory();
-        outFile = new HAL.Tools.FileIO(outputDir.concat("/").concat("Out").concat(".csv"), "w");
-        paramFile = new HAL.Tools.FileIO(outputDir.concat("/").concat("Param").concat(".csv"), "w");
-        concentrationsFile = new HAL.Tools.FileIO(outputDir.concat("/").concat("concentrations").concat(".csv"), "w");
+        outFile = new FileIO(outputDir.concat("/").concat("Out").concat(".csv"), "w");
+        paramFile = new FileIO(outputDir.concat("/").concat("Param").concat(".csv"), "w");
+        concentrationsFile = new FileIO(outputDir.concat("/").concat("concentrations").concat(".csv"), "w");
 
     }
 
@@ -215,7 +217,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
                     (((cellCounts[1] + cellCounts[2]) / 40000) * 100 >= fixedDamageRate)) {
                 this.numberOfTicksDelay = tick - 1;
                 this.numberOfTicks = this.numberOfTicksDelay + this.numberOfTicksDrug;
-                System.out.println("Diffusion coeff.: " + virusDiffCoeff + ". Damage info: " +
+                System.out.println("Diffusion coeff.: " + virus.virusDiffCoeff + ". Damage info: " +
                         fixedDamageRate + " percent damage was found at tick " + numberOfTicksDelay + ".");
             }
 
@@ -234,9 +236,9 @@ public class NewExperiment extends AgentGrid2D<Cells> {
             double totalImmuneResponseLevel = TotalImmuneResponseLevel();
             cellCounts = CountCells();
             concentrationsFile.Write(totalVirusCon + "," + totalImmuneResponseLevel + "," +
-                    drugCon + "," + drugConStomach + "\n");
+                    drugCon + "," + drug.drugConStomach + "\n");
             outFile.Write(tick + "," + cellCounts[0] + "," + cellCounts[1] +
-                    "," + cellCounts[2] + "," + totalVirusCon + "," + drugCon + "," + drugConStomach + "\n");
+                    "," + cellCounts[2] + "," + totalVirusCon + "," + drugCon + "," + drug.drugConStomach + "\n");
         }
 
         // Close output files and return the count of healthy cells
@@ -283,7 +285,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
         // decay of the immuneResponseLevel
         for (Cells cell : this){
             double immuneResponseNow = immuneResponseLevel.Get(cell.Isq());
-            immuneResponseLevel.Add(cell.Isq(), -immuneResponseDecay * immuneResponseNow);
+            immuneResponseLevel.Add(cell.Isq(), -immune.immuneResponseDecay * immuneResponseNow);
         }
         immuneResponseLevel.Update();
 
@@ -297,7 +299,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
             }
         }
 
-        immuneResponseLevel.DiffusionADI(immuneResponseDiffCoeff);
+        immuneResponseLevel.DiffusionADI(immune.immuneResponseDiffCoeff);
         immuneResponseLevel.Update();
 
     }
@@ -319,7 +321,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
             virusCon.Add(cell.Isq(), -drugVirusRemovalEff * virusCon.Get(cell.Isq()));
             virusCon.Add(cell.Isq(), -immuneVirusRemovalEff * virusCon.Get(cell.Isq()));*/
             double currentCell = virusCon.Get(cell.Isq());
-            virusCon.Add(cell.Isq(), currentCell*(-virusRemovalRate - drugVirusRemovalEff - immuneVirusRemovalEff));
+            virusCon.Add(cell.Isq(), currentCell*(-immune.virusRemovalRate - drugVirusRemovalEff - immuneVirusRemovalEff));
 
             /*FirstOrderDifferentialEquations ode = new VirusDiffEquation(virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff);
 
@@ -339,7 +341,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
             }
         }
 
-        virusCon.DiffusionADI(virusDiffCoeff);
+        virusCon.DiffusionADI(virus.virusDiffCoeff);
         virusCon.Update();
     }
 
@@ -350,19 +352,19 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      * @param tick The current time step.
      */
     void TimeStepDrug(int tick) {
-        if (this.inVivoOrInVitro.equals("inVitro")) {
+        if (drug.inVivoOrInVitro.equals("inVitro")) {
             this.drugCon = this.drug.inVitroDrugCon;
-        } else if (this.inVivoOrInVitro.equals("inVivo")) {
+        } else if (drug.inVivoOrInVitro.equals("inVivo")) {
             // Decay of the drug
             this.drugCon -= this.drug.drugDecay * this.drugCon;
 
             // Decay of the drug in the stomach and appearance in lung epithelial cells
-            double transferQuantity = this.drug.drugDecayStomach * this.drugConStomach;
+            double transferQuantity = this.drug.drugDecayStomach * drug.drugConStomach;
             this.drugCon += transferQuantity;
-            this.drugConStomach -= transferQuantity;
+            drug.drugConStomach -= transferQuantity;
 
             // Drug appearance in the stomach
-            this.drugConStomach += DrugSourceStomach(tick);
+            drug.drugConStomach += DrugSourceStomach(tick);
         } else {
             System.out.println("inVitro and inVivo are the only two choices currently.");
         }
@@ -439,7 +441,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      * @return The virus source.
      */
     double VirusSource() {
-        return virusMax * (1 - this.drug.DrugVirusProdEff(this.drugCon));
+        return virus.virusMax * (1 - this.drug.DrugVirusProdEff(this.drugCon));
     }
 
 
@@ -463,7 +465,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      * @return The drug source in the stomach.
      */
     double DrugSourceStomach(int tick) {
-        if ((tick > numberOfTicksDelay) && (isNirmatrelvir == true) && (((tick - numberOfTicksDelay) % (12 * 60)) == 1)) {
+        if ((tick > numberOfTicksDelay) && (drug instanceof NirmatrelvirDrug) && (((tick - numberOfTicksDelay) % (12 * 60)) == 1)) {
             return this.drug.drugSourceStomach;
         } else {
             return 0.0;
@@ -476,7 +478,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      */
     void WriteHeader() {
         paramFile.Write("Parameters: \n init. ratio of healthy cells, virus removal rate, diff. coeff. \n");
-        paramFile.Write(this.ratioHealthy + "," + this.virusRemovalRate + "," + this.virusDiffCoeff + "\n");
+        paramFile.Write(this.ratioHealthy + "," + immune.virusRemovalRate + "," + virus.virusDiffCoeff + "\n");
         outFile.Write("tick, healthy cells, infected cells, dead cells, "
                 + "total virus conc., total drug conc., total drug conc. transfer \n");
     }
@@ -514,21 +516,21 @@ public class NewExperiment extends AgentGrid2D<Cells> {
         String projPath = PWD() + "/output/NirmatrelvirExperiments";
 
         // Append subdirectories based on drug type and boosted status
-        if (!this.isNirmatrelvir) {
+        if (!(drug instanceof NirmatrelvirDrug)) {
             projPath += "/noDrug";
-        } else if (this.isRitonavirBoosted) {
+        } else if (drug.isRitonavirBoosted) {
             projPath += "/ritoBoostedNirmatrelvir";
         } else {
             projPath += "/nirmatrelvirOnly";
         }
 
         // Determine the drug information based on experiment conditions
-        double drugInfo = (!this.isNirmatrelvir) ? 0.0 :
-                (this.inVivoOrInVitro.equals("inVitro")) ? this.drug.NgPerMlToNanomolars(this.drug.inVitroDrugCon) :
+        double drugInfo = (!drug.name.equals("Nirmatrelvir")) ? 0.0 :
+                (drug.inVivoOrInVitro.equals("inVitro")) ? this.drug.NgPerMlToNanomolars(this.drug.inVitroDrugCon) :
                         this.drug.drugSourceStomach;
 
         // Generate the output directory path
-        String outputDir = projPath + "/" + date_time + this.inVivoOrInVitro + drugInfo + "__diff" + this.virusDiffCoeff;
+        String outputDir = projPath + "/" + date_time + drug.inVivoOrInVitro + drugInfo + "__diff" + virus.virusDiffCoeff;
 
         // Append subdirectories based on fixed damage rate or delay time
         if (this.fixedDamageRate < 100.0) {

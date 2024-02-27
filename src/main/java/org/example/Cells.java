@@ -139,4 +139,36 @@ public class Cells extends AgentSQ2Dunstackable<NewExperiment> {
             }
         }
     }
+
+    public int getxDim() {
+        return xDim;
+    }
+
+    public void setxDim(int xDim) {
+        this.xDim = xDim;
+    }
+
+    public int getyDim() {
+        return yDim;
+    }
+
+    public void setyDim(int yDim) {
+        this.yDim = yDim;
+    }
+
+    public int getVisScale() {
+        return visScale;
+    }
+
+    public void setVisScale(int visScale) {
+        this.visScale = visScale;
+    }
+
+    public int getCellType() {
+        return cellType;
+    }
+
+    public void setCellType(int cellType) {
+        this.cellType = cellType;
+    }
 }

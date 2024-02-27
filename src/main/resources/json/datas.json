@@ -1,0 +1,30 @@
+{
+  "NewExperiment": {
+    "Drug": {
+      "name": "Nirmatrelvir",
+      "EC50": 62.0,
+      "molarMassDrug": 499.535,
+      "inVitroDrugCon": 5.0,
+      "drugDecay": 0.013,
+      "drugSourceStomach": 1800.0,
+      "drugDecayStomach": 0.015,
+      "drugConStomach": 0.0,
+      "inVivoOrInVitro": "inVivo",
+      "isRitonavirBoosted": true
+    },
+    "Cell": {
+      "xDim": 200,
+      "yDim": 200,
+      "visScale": 2
+    },
+    "Virus": {
+      "virusMax": 0.00372,
+      "virusDiffCoeff": 0.0
+    },
+    "Immune": {
+      "virusRemovalRate": 0.00167,
+      "immuneResponseDecay": 0.0005,
+      "immuneResponseDiffCoeff": 0.1
+    }
+  }
+}
