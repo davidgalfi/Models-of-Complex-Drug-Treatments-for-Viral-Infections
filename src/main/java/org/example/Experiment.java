@@ -4,7 +4,6 @@ import HAL.GridsAndAgents.AgentGrid2D;
 import HAL.GridsAndAgents.PDEGrid2D;
 
 import java.io.File;
-import java.util.Objects;
 
 import static HAL.Util.*;
 import static org.example.Cells.*;
@@ -13,7 +12,6 @@ import HAL.Rand;
 import HAL.Tools.FileIO;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
-import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 
 /**
  * The NewExperiment class represents a simulation experiment with individual cells in a 2D square grid.
@@ -21,7 +19,7 @@ import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
  * The simulation involves interactions between cells, drug diffusion, virus concentration dynamics, and immune response.
  * The experiment can be run for a specified number of ticks, and the state of the system is visualized at each tick.
  */
-public class NewExperiment extends AgentGrid2D<Cells> {
+public class Experiment extends AgentGrid2D<Cells> {
 
     /**
      * The number of ticks to delay drug administration in the simulation.
@@ -128,13 +126,13 @@ public class NewExperiment extends AgentGrid2D<Cells> {
      * @param numberOfTicksDelay   The number of ticks to delay drug administration.
      * @param fixedDamageRate      The fixed damage rate.
      */
-    public NewExperiment(Cells cells,
-                         Rand rn,
-                         Drug drug,
-                         Immune immune,
-                         int numberOfTicksDelay,
-                         Virus virus,
-                         double fixedDamageRate){
+    public Experiment(Cells cells,
+                      Rand rn,
+                      Drug drug,
+                      Immune immune,
+                      int numberOfTicksDelay,
+                      Virus virus,
+                      double fixedDamageRate){
 
         super(cells.xDim, cells.yDim, Cells.class);
 
@@ -213,7 +211,7 @@ public class NewExperiment extends AgentGrid2D<Cells> {
         for (int tick = 0; tick < this.numberOfTicks; tick++) {
             // Check for a specific event and adjust simulation parameters if necessary
             // TODO: Permanently not working, need to find a way to use it.
-            if ((numberOfTicksDelay == NirmatrelvirExperiments.BIG_VALUE) && (fixedDamageRate <= 100) &&
+            if ((numberOfTicksDelay == Main.BIG_VALUE) && (fixedDamageRate <= 100) &&
                     (((cellCounts[1] + cellCounts[2]) / 40000) * 100 >= fixedDamageRate)) {
                 this.numberOfTicksDelay = tick - 1;
                 this.numberOfTicks = this.numberOfTicksDelay + this.numberOfTicksDrug;

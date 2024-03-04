@@ -1,6 +1,7 @@
 package org.example;
 
 import HAL.GridsAndAgents.AgentSQ2Dunstackable;
+import org.json.simple.JSONObject;
 
 /**
  * The `Cells` class represents individual cells in a 2D square grid simulation.
@@ -16,7 +17,7 @@ import HAL.GridsAndAgents.AgentSQ2Dunstackable;
  * - `D (2)`: Dead cell
  * - `C (3)`: Capillary (blood vessel)
  */
-public class Cells extends AgentSQ2Dunstackable<NewExperiment> {
+public class Cells extends AgentSQ2Dunstackable<Experiment> {
 
     public int xDim;
     public int yDim;
@@ -62,6 +63,10 @@ public class Cells extends AgentSQ2Dunstackable<NewExperiment> {
      * C (3): Capillary (blood vessel)
      */
     public static final int C = 3;
+
+    public Cells(JSONObject jsonObject){
+        notify();
+    }
 
     /**
      * Initializes the cell based on its health status and type.

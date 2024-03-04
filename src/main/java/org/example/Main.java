@@ -19,7 +19,7 @@ import static HAL.Util.PWD;
  * It includes constants, properties, and methods for both singular and parameter sweep experiments, along with visualization and data output functionalities.
  */
 
-public class NirmatrelvirExperiments {
+public class Main {
 
     /**
      * A constant representing a large integer value, calculated as (Integer.MAX_VALUE-1) / 2.
@@ -32,7 +32,7 @@ public class NirmatrelvirExperiments {
      */
     public static String singularOrSweep = "singular"; // "singular" or "sweep"
 
-    public static Cells cells = new Cells();
+    public static Cells cells;
     public static Drug drug = new Drug();
     public static Immune immune = new Immune();
     public static Virus virus = new Virus();
@@ -95,7 +95,7 @@ public class NirmatrelvirExperiments {
     public static void executeNirmatrelvirExperiments(){
         if (singularOrSweep.equals("singular")) {
             // Singular experiment
-            NewExperiment experiment = new NewExperiment(
+            Experiment experiment = new Experiment(
                     cells,
                     new Rand(1),
                     drug,
@@ -124,7 +124,7 @@ public class NirmatrelvirExperiments {
                 collectiveResults += virusDiffCoeffSweep + ", ";
 
                 for (double damageRateSweep = 0.0; damageRateSweep < 100.0; damageRateSweep += 5.0) {
-                    NewExperiment experiment = new NewExperiment(
+                    Experiment experiment = new Experiment(
                             cells,
                             new Rand(1),
                             drug,
@@ -209,6 +209,8 @@ public class NirmatrelvirExperiments {
 
     public static void storeCellsData(JSONObject newExperiment){
         JSONObject cell_ = (JSONObject) newExperiment.get("Cell");
+        cells = new Cells(cell_);
+
         cells.setxDim(Math.toIntExact((Long) cell_.get("xDim")));
         cells.setyDim(Math.toIntExact((Long) cell_.get("yDim")));
         cells.setVisScale(Math.toIntExact((Long) cell_.get("visScale")));
