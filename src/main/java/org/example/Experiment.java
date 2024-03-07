@@ -3,12 +3,11 @@ package org.example;
 import HAL.GridsAndAgents.AgentGrid2D;
 import HAL.GridsAndAgents.PDEGrid2D;
 
-import java.io.File;
-
 import static HAL.Util.*;
 import static org.example.Cells.*;
 
 import HAL.Rand;
+import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 
@@ -126,40 +125,37 @@ public class Experiment extends AgentGrid2D<Cells> {
 
         this.numberOfTicksDelay = numberOfTicksDelay; //  parameter that represents the number of time steps (or ticks) to delay the administration of the drug in the simulation.
         this.rn = rn;
-
         this.fixedDamageRate = fixedDamageRate;
 
 
         this.drug = drug;
-
-        if (drug.inVivoOrInVitro.equals("inVivo")) {
-            this.drug.setInVivo();
-            this.numberOfTicksDrug = 5 * 24 * 60; // we administer paxlovid for 5 days, i.e. 5*24*60 minutes
-        } else {
-            this.drug.setInVitro(5.0);
-            this.numberOfTicksDrug = 4 * 24 * 60; // we incubate for 4 days
-        }
-
         this.virus = virus;
         this.cells = cells;
         this.immune = immune;
 
+        setupDrugAdministrationProtocol();
+
         // this.ode = new VirusDiffEquation(virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff);
-        this.integrator = new DormandPrince54Integrator(1e-8, 100, 1e-10, 1e-10);
+        this.integrator = new DormandPrince54Integrator(10, 10, 10, 10);
 
         virusCon = new PDEGrid2D(xDim, yDim);
         immuneResponseLevel = new PDEGrid2D(xDim, yDim);
 
-        virusCon.Update();
-        immuneResponseLevel.Update();
+        updateFields(virusCon, immuneResponseLevel);
     }
+
+
+
+    // Main functions
+
+
 
     /**
      * Initializes the simulation by setting up the grid and initializing cells based on specified ratios.
      * This method writes the header for output files and populates the grid with cells based on random values
      * and predefined ratios for healthy, infected, and capillary cells.
      */
-    public void Init(){
+    public void init(){
 
         for (int i = 0; i < length; i++){
             double randomValue = rn.Double();
@@ -181,7 +177,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      *
      * @param win The GUI window for visualization.
      */
-    public void RunExperiment(HAL.Gui.GridWindow win) {
+    public void runExperiment(HAL.Gui.GridWindow win) {
         double[] cellCounts = countCells();
 
         for (int tick = 0; tick < this.numberOfTicks; tick++) {
@@ -189,6 +185,89 @@ public class Experiment extends AgentGrid2D<Cells> {
             // Progress the simulation by one time step
             TimeStep(tick);
             DrawModel(win);
+        }
+    }
+
+    /**
+     * Performs a time step for all components of the experiment, including immune response,
+     * drug dynamics, virus dynamics, and cell-related processes.
+     *
+     * @param tick The current time step.
+     */
+    void TimeStep(int tick) {
+        TimeStepCells(tick);
+        TimeStepVirus(tick);
+        TimeStepImmune(tick);
+        TimeStepDrug(tick);
+    }
+
+    /**
+     * Performs a time step for the virus-related processes, including virus decay, removal, and production.
+     *
+     * @param tick The current time step.
+     */
+    void TimeStepVirus(int tick) {
+        // Decay of the virus
+        for (Cells cell : this) {
+            // TODO: Drug currently does not react
+            double drugVirusRemovalEff = drug.drugVirusRemovalEff.getEfficacy(drugCon);
+            double immuneVirusRemovalEff = 1 / (1 + 1 / (Math.pow(immuneResponseLevel.Get(cell.Isq()), 2)));
+
+            double currentCell = virusCon.Get(cell.Isq());
+
+            // TODO: Resolve with Apache solver
+            virusCon.Add(cell.Isq(), currentCell*(-immune.virusRemovalRate - drugVirusRemovalEff - immuneVirusRemovalEff));
+
+            /*double[] y = {currentCell};
+            integrator.integrate(new VirusDiffEquation(immune.virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff),
+                    0, y, 1, y);
+            virusCon.Add(cell.Isq(), y[0]);*/
+        }
+
+        // Virus production by infected cells
+        doVirusProduction();
+
+        performDiffusion(virusCon, virus.virusDiffCoeff);
+
+        updateFields(virusCon);
+    }
+
+    void TimeStepImmune(int tick){
+
+        // decay of the immuneResponseLevel
+        decayImmunResponseLevel();
+
+        // immune response level increases
+        increaseImmunResponseLevel(tick);
+
+        performDiffusion(immuneResponseLevel, immune.immuneResponseDiffCoeff);
+
+        updateFields(immuneResponseLevel);
+    }
+
+    /**
+     * Performs a time step for drug-related processes, including drug decay and movement between stomach and lung epithelial cells.
+     *
+     * @param tick The current time step.
+     */
+    void TimeStepDrug(int tick) {
+        if (drug.inVivoOrInVitro.equals("inVitro")) {
+            TimeStepDrugInVitro();
+        } else if (drug.inVivoOrInVitro.equals("inVivo")) {
+            TimeStepDrugInVivo(tick);
+        } else {
+            System.out.println("inVitro and inVivo are the only two choices currently.");
+        }
+    }
+
+    /**
+     * Performs a time step for cell-related processes, including infection and cell death.
+     *
+     * @param tick The current time step.
+     */
+    void TimeStepCells(int tick) {
+        for (Cells cell : this) {
+            cell.cellState();
         }
     }
 
@@ -219,187 +298,6 @@ public class Experiment extends AgentGrid2D<Cells> {
 
         return cellCount;
     }
-
-    void TimeStepImmune(int tick){
-
-        // decay of the immuneResponseLevel
-        decayImmunResponseLevel();
-
-        // immune response level increases
-        increaseImmunResponseLevel(tick);
-
-        performDiffusion();
-
-        immuneResponseLevel.Update();
-
-    }
-
-    public void performDiffusion(){
-        immuneResponseLevel.DiffusionADI(immune.immuneResponseDiffCoeff);
-    }
-
-    public void increaseImmunResponseLevel(int tick){
-        for (Cells cell : this){
-            if (cell.cellType == I){ // infected cells produce interferon
-                double addedImmuneResponseLevel = ImmuneResponseSource(tick, cell);
-                double currentImmuneResponseLevel = immuneResponseLevel.Get(cell.Isq());
-                double newImmuneResponseLevel = addedImmuneResponseLevel + currentImmuneResponseLevel;
-                immuneResponseLevel.Set(cell.Isq(), newImmuneResponseLevel);
-            }
-        }
-    }
-
-    public void decayImmunResponseLevel(){
-        for (Cells cell : this){
-            double immuneResponseNow = immuneResponseLevel.Get(cell.Isq());
-            immuneResponseLevel.Add(cell.Isq(), -immune.immuneResponseDecay * immuneResponseNow);
-        }
-        immuneResponseLevel.Update();
-    }
-
-    /**
-     * Performs a time step for the virus-related processes, including virus decay, removal, and production.
-     *
-     * @param tick The current time step.
-     */
-    void TimeStepVirus(int tick) {
-        // Decay of the virus
-        for (Cells cell : this) {
-            // TODO: Drug currently does not react
-            double drugVirusRemovalEff = 0.0 * drugCon; // Nirmatrelvir has 0 effect on virus removal
-            double immuneVirusRemovalEff = 1 / (1 + 1 / (Math.pow(immuneResponseLevel.Get(cell.Isq()), 2)));
-
-            // TODO: Resolve with Apache solver
-            /*virusCon.Add(cell.Isq(), -virusRemovalRate * virusCon.Get(cell.Isq()));
-            virusCon.Add(cell.Isq(), -drugVirusRemovalEff * virusCon.Get(cell.Isq()));
-            virusCon.Add(cell.Isq(), -immuneVirusRemovalEff * virusCon.Get(cell.Isq()));*/
-            double currentCell = virusCon.Get(cell.Isq());
-            virusCon.Add(cell.Isq(), currentCell*(-immune.virusRemovalRate - drugVirusRemovalEff - immuneVirusRemovalEff));
-
-            /*FirstOrderDifferentialEquations ode = new VirusDiffEquation(virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff);
-
-            double[] y = {currentCell};
-            integrator.integrate(ode, 0, y, 1, y);
-            virusCon.Add(cell.Isq(), y[0]);*/
-        }
-
-        // Virus production by infected cells
-        doVirusProduction();
-
-        virusCon.DiffusionADI(virus.virusDiffCoeff);
-        virusCon.Update();
-    }
-
-    public void doVirusProduction(){
-        for (Cells cell : this) {
-            if (cell.cellType == I) { // Infected cell
-                double addedVirusCon = VirusSource();
-                double currentVirusCon = virusCon.Get(cell.Isq());
-                double newVirusCon = addedVirusCon + currentVirusCon;
-                virusCon.Set(cell.Isq(), newVirusCon);
-            }
-        }
-    }
-
-
-    /**
-     * Performs a time step for drug-related processes, including drug decay and movement between stomach and lung epithelial cells.
-     *
-     * @param tick The current time step.
-     */
-    void TimeStepDrug(int tick) {
-        if (drug.inVivoOrInVitro.equals("inVitro")) {
-            TimeStepDrugInVitro();
-        } else if (drug.inVivoOrInVitro.equals("inVivo")) {
-            TimeStepDrugInVivo(tick);
-        } else {
-            System.out.println("inVitro and inVivo are the only two choices currently.");
-        }
-    }
-
-    public void TimeStepDrugInVitro() {
-        this.drugCon = this.drug.inVitroDrugCon;
-    }
-
-    public void TimeStepDrugInVivo(int tick) {
-        // Decay of the drug
-        drugDecay();
-
-        // Decay of the drug in the stomach and appearance in lung epithelial cells
-        decayAndAppearanceInLungCells();
-
-        // Drug appearance in the stomach
-        drugAppearanceInStomach(tick);
-    }
-
-    public void drugAppearanceInStomach(int tick){
-        drug.drugConStomach += DrugSourceStomach(tick);
-    }
-
-    public void decayAndAppearanceInLungCells(){
-        double transferQuantity = this.drug.drugDecayStomach * drug.drugConStomach;
-        this.drugCon += transferQuantity;
-        drug.drugConStomach -= transferQuantity;
-    }
-
-    public void drugDecay(){
-        this.drugCon -= this.drug.drugDecay * this.drugCon;
-    }
-
-
-    /**
-     * Performs a time step for cell-related processes, including infection and cell death.
-     *
-     * @param tick The current time step.
-     */
-    void TimeStepCells(int tick) {
-        for (Cells cell : this) {
-            cell.cellState();
-        }
-    }
-
-
-    /**
-     * Performs a time step for all components of the experiment, including immune response,
-     * drug dynamics, virus dynamics, and cell-related processes.
-     *
-     * @param tick The current time step.
-     */
-    void TimeStep(int tick) {
-        TimeStepVirus(tick);
-        TimeStepImmune(tick);
-        TimeStepDrug(tick);
-        TimeStepCells(tick);
-    }
-
-
-    /**
-     * Calculates the total virus concentration across all cells.
-     *
-     * @return The total virus concentration.
-     */
-    double TotalVirusCon() {
-        double totalVirusCon = 0;
-        for (double virusConInCell : virusCon.GetField()) {
-            totalVirusCon += virusConInCell;
-        }
-        return totalVirusCon;
-    }
-
-
-    /**
-     * Calculates the total immune response level across all cells.
-     *
-     * @return The total immune response level.
-     */
-    double TotalImmuneResponseLevel() {
-        double totalImmuneResponseLevel = 0;
-        for (double immuneResponseInCell : immuneResponseLevel.GetField()) {
-            totalImmuneResponseLevel += immuneResponseInCell;
-        }
-        return totalImmuneResponseLevel;
-    }
-
 
     /**
      * Calculates the virus source based on the maximum virus concentration and drug effectiveness.
@@ -471,5 +369,101 @@ public class Experiment extends AgentGrid2D<Cells> {
             // Visualize virus concentration using a heat map
             vis.SetPix(ItoX(i) + xDim, ItoY(i), HeatMapRBG(virusCon.Get(i)));
         }
+    }
+
+
+
+    // Helper functions
+
+    private void updateFields(Object... fields) {
+        for (Object field : fields) {
+            try {
+                // Find and invoke the Update method using reflection
+                field.getClass().getMethod("Update").invoke(field);
+            } catch (Exception e) {
+                // Handle any exceptions if the method is not found or cannot be invoked
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void setupDrugAdministrationProtocol(){
+        if (drug.inVivoOrInVitro.equals("inVivo")) {
+            this.drug.setInVivo();
+            this.numberOfTicksDrug = 5 * 24 * 60; // we administer paxlovid for 5 days, i.e. 5*24*60 minutes
+        } else {
+            this.drug.setInVitro(5.0);
+            this.numberOfTicksDrug = 4 * 24 * 60; // we incubate for 4 days
+        }
+    }
+
+    private void performDiffusion(Object object, double coefficient) {
+        try {
+            // Find and invoke the DiffusionADI method using reflection
+            object.getClass().getMethod("DiffusionADI", double.class).invoke(object, coefficient);
+        } catch (Exception e) {
+            // Handle any exceptions if the method is not found or cannot be invoked
+            e.printStackTrace();
+        }
+    }
+
+    private void increaseImmunResponseLevel(int tick){
+        for (Cells cell : this){
+            if (cell.cellType == I){ // infected cells produce interferon
+                double addedImmuneResponseLevel = ImmuneResponseSource(tick, cell);
+                double currentImmuneResponseLevel = immuneResponseLevel.Get(cell.Isq());
+                double newImmuneResponseLevel = addedImmuneResponseLevel + currentImmuneResponseLevel;
+                immuneResponseLevel.Set(cell.Isq(), newImmuneResponseLevel);
+            }
+        }
+    }
+
+    private void decayImmunResponseLevel(){
+        for (Cells cell : this){
+            double immuneResponseNow = immuneResponseLevel.Get(cell.Isq());
+            immuneResponseLevel.Add(cell.Isq(), -immune.immuneResponseDecay * immuneResponseNow);
+        }
+        updateFields(immuneResponseLevel);
+    }
+
+    private void doVirusProduction(){
+        for (Cells cell : this) {
+            if (cell.cellType == I) { // Infected cell
+                double addedVirusCon = VirusSource();
+                double currentVirusCon = virusCon.Get(cell.Isq());
+                double newVirusCon = addedVirusCon + currentVirusCon;
+                virusCon.Set(cell.Isq(), newVirusCon);
+            }
+        }
+    }
+
+
+    private void TimeStepDrugInVitro() {
+        this.drugCon = this.drug.inVitroDrugCon;
+    }
+
+    private void TimeStepDrugInVivo(int tick) {
+        // Decay of the drug
+        drugDecay();
+
+        // Decay of the drug in the stomach and appearance in lung epithelial cells
+        decayAndAppearanceInLungCells();
+
+        // Drug appearance in the stomach
+        drugAppearanceInStomach(tick);
+    }
+
+    private void drugAppearanceInStomach(int tick){
+        drug.drugConStomach += DrugSourceStomach(tick);
+    }
+
+    private void decayAndAppearanceInLungCells(){
+        double transferQuantity = this.drug.drugDecayStomach * drug.drugConStomach;
+        this.drugCon += transferQuantity;
+        drug.drugConStomach -= transferQuantity;
+    }
+
+    private void drugDecay(){
+        this.drugCon -= this.drug.drugDecay * this.drugCon;
     }
 }

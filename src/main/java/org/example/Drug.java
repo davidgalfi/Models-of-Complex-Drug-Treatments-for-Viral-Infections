@@ -48,6 +48,8 @@ public class Drug {
 
     boolean isRitonavirBoosted;
 
+    Efficacy drugVirusRemovalEff;
+
     public Drug(){}
     public Drug(JSONObject jsonObject){
 
@@ -61,6 +63,15 @@ public class Drug {
         setDrugConStomach((double) jsonObject.get("drugConStomach"));
         setInVivoOrInVitro((String) jsonObject.get("inVivoOrInVitro"));
         setRitonavirBoosted((boolean) jsonObject.get("isRitonavirBoosted"));
+        setdrugVirusRemovalEff(getEC50());
+    }
+
+    public void setdrugVirusRemovalEff(double ec50){
+        if(ec50 > 0){
+            drugVirusRemovalEff = new StandardHill(getEC50());
+        } else {
+            drugVirusRemovalEff = new NoEffect();
+        }
     }
 
     public void setInVitro(double inVitroDrugCon){

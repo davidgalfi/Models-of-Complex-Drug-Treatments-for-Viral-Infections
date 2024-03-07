@@ -6,7 +6,6 @@ package org.example;
 
 import HAL.Gui.GridWindow;
 import HAL.Rand;
-import HAL.Tools.FileIO;
 import org.json.simple.JSONObject;
 
 import java.io.File;
@@ -104,8 +103,8 @@ public class Main {
                     virus,
                     110.0);
             experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
-            experiment.Init();
-            experiment.RunExperiment(win);
+            experiment.init();
+            experiment.runExperiment(win);
         } else if (singularOrSweep.equals("sweep")) {
             // Sweep experiment
             String collectiveOutputDir = collectiveOutputDir();
@@ -123,8 +122,8 @@ public class Main {
                             virus,
                             damageRateSweep);
                     experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
-                    experiment.Init();
-                    experiment.RunExperiment(win);
+                    experiment.init();
+                    experiment.runExperiment(win);
                 }
             }
         } else {
