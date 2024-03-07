@@ -64,8 +64,11 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      */
     public static final int C = 3;
 
-    public Cells(JSONObject jsonObject){
-        notify();
+    public Cells(){}
+    public Cells(JSONObject jsonObject) {
+        setxDim(Math.toIntExact((Long) jsonObject.get("xDim")));
+        setyDim(Math.toIntExact((Long) jsonObject.get("yDim")));
+        setVisScale(Math.toIntExact((Long) jsonObject.get("visScale")));
     }
 
     /**
@@ -120,10 +123,8 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
         double infectionProb = G.infectionRate * G.xDim * G.yDim;
         double effectiveInfectionProb = infectionProb * (1 - drugInfectionRedEff) * virusConAtCell;
 
-        if (this.cellType == H) { // healthy cell
-            if (G.rn.Double() < effectiveInfectionProb) {
-                this.cellType = I; // Transition to infected state
-            }
+        if (G.rn.Double() < effectiveInfectionProb) {
+            this.cellType = I; // Transition to infected state
         }
     }
 
@@ -138,10 +139,16 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * value is less than the death probability. If true, the cell transitions to a dead state.
      */
     public void cellDeath() {
-        if (this.cellType == I) { // infected
-            if (G.rn.Double() < G.deathProb) {
-                this.cellType = D; // Transition to dead state
-            }
+        if (G.rn.Double() < G.deathProb) {
+            this.cellType = D; // Transition to dead state
+        }
+    }
+
+    public void cellState() {
+        if (this.cellType == I) {
+            cellDeath();
+        } else if(this.cellType == H){
+            cellInfection();
         }
     }
 

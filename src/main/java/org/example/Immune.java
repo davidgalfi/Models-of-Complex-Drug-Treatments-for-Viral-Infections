@@ -1,5 +1,7 @@
 package org.example;
 
+import org.json.simple.JSONObject;
+
 public class Immune {
 
     /**
@@ -18,6 +20,15 @@ public class Immune {
      */
     // TODO: Seems do nothing
     public double immuneResponseDiffCoeff;
+
+    public Immune(){}
+
+    public Immune(JSONObject jsonObject){
+
+        setVirusRemovalRate((double) jsonObject.get("virusRemovalRate"));
+        setImmuneResponseDecay((double) jsonObject.get("immuneResponseDecay"));
+        setImmuneResponseDiffCoeff((double) jsonObject.get("immuneResponseDiffCoeff"));
+    }
 
     public double getVirusRemovalRate() {
         return virusRemovalRate;

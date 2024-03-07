@@ -10,7 +10,7 @@
       "drugDecayStomach": 0.015,
       "drugConStomach": 0.0,
       "inVivoOrInVitro": "inVivo",
-      "isRitonavirBoosted": true
+      "isRitonavirBoosted": false
     },
     "Cell": {
       "xDim": 200,
@@ -19,7 +19,7 @@
     },
     "Virus": {
       "virusMax": 0.00372,
-      "virusDiffCoeff": 0.0
+      "virusDiffCoeff": 0.2
     },
     "Immune": {
       "virusRemovalRate": 0.00167,

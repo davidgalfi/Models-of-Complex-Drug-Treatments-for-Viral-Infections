@@ -9,7 +9,6 @@ import static HAL.Util.*;
 import static org.example.Cells.*;
 
 import HAL.Rand;
-import HAL.Tools.FileIO;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 
@@ -83,11 +82,6 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     public double ratioInfected = 0.0005;
 
-    /**
-     * The ratio of capillary cells in the initial configuration of the simulation.
-     */
-    // TODO: Implement this line somewhere
-    public double ratioCapillaries = 0;
 
     /**
      * The drug object used in the simulation.
@@ -148,7 +142,7 @@ public class Experiment extends AgentGrid2D<Cells> {
             this.drug.setInVivo();
             this.numberOfTicksDrug = 5 * 24 * 60; // we administer paxlovid for 5 days, i.e. 5*24*60 minutes
         } else {
-            this.drug.setInVitro(5.0, drug.name.equals("Nirmatrelvir"));
+            this.drug.setInVitro(5.0);
             this.numberOfTicksDrug = 4 * 24 * 60; // we incubate for 4 days
         }
 
@@ -163,12 +157,6 @@ public class Experiment extends AgentGrid2D<Cells> {
         immuneResponseLevel = new PDEGrid2D(xDim, yDim);
         virusCon.Update();
         immuneResponseLevel.Update();
-
-        outputDir = this.OutputDirectory();
-        outFile = new FileIO(outputDir.concat("/").concat("Out").concat(".csv"), "w");
-        paramFile = new FileIO(outputDir.concat("/").concat("Param").concat(".csv"), "w");
-        concentrationsFile = new FileIO(outputDir.concat("/").concat("concentrations").concat(".csv"), "w");
-
     }
 
     /**
@@ -177,8 +165,6 @@ public class Experiment extends AgentGrid2D<Cells> {
      * and predefined ratios for healthy, infected, and capillary cells.
      */
     public void Init(){
-
-        WriteHeader();
 
         for (int i = 0; i < length; i++){
             double randomValue = rn.Double();
@@ -191,10 +177,6 @@ public class Experiment extends AgentGrid2D<Cells> {
                 Cells c = NewAgentSQ(i);
                 c.cellInit(false,true, false, false);
             }
-            else {
-                Cells c = NewAgentSQ(i);
-                c.cellInit(false,false, false, true);
-            }
         }
     }
 
@@ -206,45 +188,19 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @return The count of healthy cells at the end of the simulation.
      */
     public double RunExperiment(HAL.Gui.GridWindow win) {
-        double[] cellCounts = CountCells();
+        double[] cellCounts = countCells();
 
         for (int tick = 0; tick < this.numberOfTicks; tick++) {
-            // Check for a specific event and adjust simulation parameters if necessary
-            // TODO: Permanently not working, need to find a way to use it.
-            if ((numberOfTicksDelay == Main.BIG_VALUE) && (fixedDamageRate <= 100) &&
-                    (((cellCounts[1] + cellCounts[2]) / 40000) * 100 >= fixedDamageRate)) {
-                this.numberOfTicksDelay = tick - 1;
-                this.numberOfTicks = this.numberOfTicksDelay + this.numberOfTicksDrug;
-                System.out.println("Diffusion coeff.: " + virus.virusDiffCoeff + ". Damage info: " +
-                        fixedDamageRate + " percent damage was found at tick " + numberOfTicksDelay + ".");
-            }
 
             // Progress the simulation by one time step
             TimeStep(tick);
             DrawModel(win);
-
-            // Capture and save snapshots at regular intervals
-            // TODO: Permanently does not work, need to find a way to use it.
-            if (tick > 0 && ((tick % (24 * 60)) == 0)) {
-                win.ToPNG(outputDir + "day" + Integer.toString(tick / (24 * 60)) + ".jpg");
-            }
-
-            // Record and write data for analysis
-            double totalVirusCon = TotalVirusCon();
-            double totalImmuneResponseLevel = TotalImmuneResponseLevel();
-            cellCounts = CountCells();
-            concentrationsFile.Write(totalVirusCon + "," + totalImmuneResponseLevel + "," +
-                    drugCon + "," + drug.drugConStomach + "\n");
-            outFile.Write(tick + "," + cellCounts[0] + "," + cellCounts[1] +
-                    "," + cellCounts[2] + "," + totalVirusCon + "," + drugCon + "," + drug.drugConStomach + "\n");
         }
 
-        // Close output files and return the count of healthy cells
-        CloseFiles();
         return cellCounts[0];
     }
 
-    double[] CountCells(){
+    double[] countCells(){
 
         double healthyCells = 0, infectedCells = 0, deadCells = 0,
                 capillaryCells = 0;
@@ -277,7 +233,6 @@ public class Experiment extends AgentGrid2D<Cells> {
      *
      * @return An array containing the count of cells for each state.
      */
-    // TODO: Currently not working (the immune system does not react)
     void TimeStepImmune(int tick){
 
         // decay of the immuneResponseLevel
@@ -327,7 +282,6 @@ public class Experiment extends AgentGrid2D<Cells> {
             integrator.integrate(ode, 0, y, 1, y);
             virusCon.Add(cell.Isq(), y[0]);*/
         }
-        virusCon.Update();
 
         // Virus production by infected cells
         for (Cells cell : this) {
@@ -376,10 +330,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     void TimeStepCells(int tick) {
         for (Cells cell : this) {
-            cell.cellInfection();
-        }
-        for (Cells cell : this) {
-            cell.cellDeath();
+            cell.cellState();
         }
     }
 
@@ -391,9 +342,9 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @param tick The current time step.
      */
     void TimeStep(int tick) {
+        TimeStepVirus(tick);
         TimeStepImmune(tick);
         TimeStepDrug(tick);
-        TimeStepVirus(tick);
         TimeStepCells(tick);
     }
 
@@ -405,10 +356,6 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     double TotalVirusCon() {
         double totalVirusCon = 0;
-        /*for (int i = 0; i < length; i++) {
-            // TODO: Figure out what this line is doing
-            cellularVirusCon[i] = virusCon.Get(i);
-        }*/
         for (double virusConInCell : virusCon.GetField()) {
             totalVirusCon += virusConInCell;
         }
@@ -423,9 +370,6 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     double TotalImmuneResponseLevel() {
         double totalImmuneResponseLevel = 0;
-        /*for (int i = 0; i < length; i++) {
-            cellularImmuneResponseLevel[i] = immuneResponseLevel.Get(i);
-        }*/
         for (double immuneResponseInCell : immuneResponseLevel.GetField()) {
             totalImmuneResponseLevel += immuneResponseInCell;
         }
@@ -469,81 +413,6 @@ public class Experiment extends AgentGrid2D<Cells> {
             return 0.0;
         }
     }
-
-
-    /**
-     * Writes the header information to the parameter file and output file.
-     */
-    void WriteHeader() {
-        paramFile.Write("Parameters: \n init. ratio of healthy cells, virus removal rate, diff. coeff. \n");
-        paramFile.Write(this.ratioHealthy + "," + immune.virusRemovalRate + "," + virus.virusDiffCoeff + "\n");
-        outFile.Write("tick, healthy cells, infected cells, dead cells, "
-                + "total virus conc., total drug conc., total drug conc. transfer \n");
-    }
-
-
-    /**
-     * Closes the output files.
-     */
-    void CloseFiles() {
-        outFile.Close();
-        paramFile.Close();
-        concentrationsFile.Close();
-    }
-
-
-    /**
-     * Generates the output directory path based on experiment parameters and creates the directory.
-     *
-     * This method creates a directory path for the output of a simulation experiment, taking into account various
-     * parameters such as drug type, drug concentration, in vivo or in vitro conditions, virus diffusion coefficient,
-     * and fixed damage rate. The directory structure is organized by experiment type and timestamp, with subdirectories
-     * created based on specific conditions such as drug type, in vivo conditions, and damage rate or delay time.
-     *
-     * @return The generated output directory path as a string.
-     */
-    String OutputDirectory() {
-        // Get the current date and time
-        java.util.Date now = new java.util.Date();
-
-        // Format the date and time
-        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        String date_time = dateFormat.format(now);
-
-        // Define the base project path for experiment outputs
-        String projPath = PWD() + "/output/NirmatrelvirExperiments";
-
-        // Append subdirectories based on drug type and boosted status
-        if (!(drug instanceof NirmatrelvirDrug)) {
-            projPath += "/noDrug";
-        } else if (drug.isRitonavirBoosted) {
-            projPath += "/ritoBoostedNirmatrelvir";
-        } else {
-            projPath += "/nirmatrelvirOnly";
-        }
-
-        // Determine the drug information based on experiment conditions
-        double drugInfo = (!drug.name.equals("Nirmatrelvir")) ? 0.0 :
-                (drug.inVivoOrInVitro.equals("inVitro")) ? this.drug.NgPerMlToNanomolars(this.drug.inVitroDrugCon) :
-                        this.drug.drugSourceStomach;
-
-        // Generate the output directory path
-        String outputDir = projPath + "/" + date_time + drug.inVivoOrInVitro + drugInfo + "__diff" + virus.virusDiffCoeff;
-
-        // Append subdirectories based on fixed damage rate or delay time
-        if (this.fixedDamageRate < 100.0) {
-            outputDir += "__damagerate" + this.fixedDamageRate + "/";
-        } else {
-            outputDir += "__delaytime" + this.numberOfTicksDelay + "/";
-        }
-
-        // Create the output directory and its parent directories if they do not exist
-        new File(outputDir).mkdirs();
-
-        // Return the generated output directory path
-        return outputDir;
-    }
-
 
     /**
      * Draws the current state of the model on the visualization grid window.

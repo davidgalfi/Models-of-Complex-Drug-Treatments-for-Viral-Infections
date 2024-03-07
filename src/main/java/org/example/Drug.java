@@ -1,5 +1,7 @@
 package org.example;
 
+import org.json.simple.JSONObject;
+
 public class Drug {
 
     String name;
@@ -47,19 +49,24 @@ public class Drug {
     boolean isRitonavirBoosted;
 
     public Drug(){}
+    public Drug(JSONObject jsonObject){
 
-    public void setInVitro(double inVitroDrugCon, boolean isNirmatrelvir){
-        if (isNirmatrelvir) {
-            this.inVitroDrugCon = inVitroDrugCon;
-        } else {
-            this.inVitroDrugCon = 0.0;
-        }
+        setName((String) jsonObject.get("name"));
+        setEC50((double) jsonObject.get("EC50"));
+        setMolarMassDrug((double) jsonObject.get("molarMassDrug"));
+        setInVitroDrugCon((double) jsonObject.get("inVitroDrugCon"));
+        setDrugDecay((double) jsonObject.get("drugDecay"));
+        setDrugSourceStomach((double) jsonObject.get("drugSourceStomach"));
+        setDrugDecay((double) jsonObject.get("drugDecayStomach"));
+        setDrugConStomach((double) jsonObject.get("drugConStomach"));
+        setInVivoOrInVitro((String) jsonObject.get("inVivoOrInVitro"));
+        setRitonavirBoosted((boolean) jsonObject.get("isRitonavirBoosted"));
     }
 
-    /**
-     * In vivo constructor for NirmatrelvirDrug.
-     * @param isRitonavirBoosted Boolean indicating whether Ritonavir is boosted.
-     */
+    public void setInVitro(double inVitroDrugCon){
+        this.inVitroDrugCon = inVitroDrugCon;
+    }
+
     public void setInVivo(){
         // Adjust properties if Ritonavir is boosted
         if (isRitonavirBoosted) {

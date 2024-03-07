@@ -1,5 +1,7 @@
 package org.example;
 
+import org.json.simple.JSONObject;
+
 public class Virus {
 
     /**
@@ -13,6 +15,13 @@ public class Virus {
      * The virus diffusion coefficient parameter in the simulation.
      */
     public double virusDiffCoeff; // D_V [sigma^2 / min]
+
+    public Virus(){}
+
+    public Virus(JSONObject jsonObject){
+        setVirusMax((double) jsonObject.get("virusMax"));
+        setVirusDiffCoeff((double) jsonObject.get("virusDiffCoeff"));
+    }
 
     public double getVirusMax() {
         return virusMax;

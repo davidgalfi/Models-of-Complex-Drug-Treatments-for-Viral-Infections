@@ -33,9 +33,9 @@ public class Main {
     public static String singularOrSweep = "singular"; // "singular" or "sweep"
 
     public static Cells cells;
-    public static Drug drug = new Drug();
-    public static Immune immune = new Immune();
-    public static Virus virus = new Virus();
+    public static Drug drug;
+    public static Immune immune;
+    public static Virus virus;
 
     /**
      * Represents the grid window for visualizing the cellular state space and virus concentration.
@@ -211,36 +211,22 @@ public class Main {
         JSONObject cell_ = (JSONObject) newExperiment.get("Cell");
         cells = new Cells(cell_);
 
-        cells.setxDim(Math.toIntExact((Long) cell_.get("xDim")));
-        cells.setyDim(Math.toIntExact((Long) cell_.get("yDim")));
-        cells.setVisScale(Math.toIntExact((Long) cell_.get("visScale")));
+
     }
 
     public static void storeDrugData(JSONObject newExperiment){
         JSONObject drug_ = (JSONObject) newExperiment.get("Drug");
-        drug.setName((String) drug_.get("name"));
-        drug.setEC50((double) drug_.get("EC50"));
-        drug.setMolarMassDrug((double) drug_.get("molarMassDrug"));
-        drug.setInVitroDrugCon((double) drug_.get("inVitroDrugCon"));
-        drug.setDrugDecay((double) drug_.get("drugDecay"));
-        drug.setDrugSourceStomach((double) drug_.get("drugSourceStomach"));
-        drug.setDrugDecay((double) drug_.get("drugDecayStomach"));
-        drug.setDrugConStomach((double) drug_.get("drugConStomach"));
-        drug.setInVivoOrInVitro((String) drug_.get("inVivoOrInVitro"));
-        drug.setRitonavirBoosted((boolean) drug_.get("isRitonavirBoosted"));
+        drug = new Drug(drug_);
     }
 
     public static void storeImmuneData(JSONObject newExperiment){
         JSONObject immune_ = (JSONObject) newExperiment.get("Immune");
-        immune.setVirusRemovalRate((double) immune_.get("virusRemovalRate"));
-        immune.setImmuneResponseDecay((double) immune_.get("immuneResponseDecay"));
-        immune.setImmuneResponseDiffCoeff((double) immune_.get("immuneResponseDiffCoeff"));
+        immune = new Immune(immune_);
     }
 
     public static void storeVirusData(JSONObject newExperiment){
         JSONObject virus_ = (JSONObject) newExperiment.get("Virus");
-        virus.setVirusMax((double) virus_.get("virusMax"));
-        virus.setVirusDiffCoeff((double) virus_.get("virusDiffCoeff"));
+        virus = new Virus(virus_);
     }
 
     public static void storeDatas(String path) throws URISyntaxException {
