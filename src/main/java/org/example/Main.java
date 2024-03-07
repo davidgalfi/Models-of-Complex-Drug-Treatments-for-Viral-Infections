@@ -92,7 +92,7 @@ public class Main {
      * collectiveResults    The string containing collective results.
      * win                  The visualization window.
      */
-    public static void executeNirmatrelvirExperiments(){
+    public static void RunExperiments(){
         if (singularOrSweep.equals("singular")) {
             // Singular experiment
             Experiment experiment = new Experiment(
@@ -105,23 +105,13 @@ public class Main {
                     110.0);
             experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
             experiment.Init();
-            double remainingHealthyCells = experiment.RunExperiment(win);
-
-            // Output results
-            if (drug.name.equals("Nirmatrelvir")) {
-                System.out.println(drug.inVivoOrInVitro.equals("inVivo") ? "In vivo drug source [ng / ml]: " + experiment.drug.drugSourceStomach : "In vitro drug concentration [nM]: " + experiment.drug.NgPerMlToNanomolars(experiment.drug.inVitroDrugCon));
-            }
-            System.out.println("Remaining healthy cells: " + remainingHealthyCells);
+            experiment.RunExperiment(win);
         } else if (singularOrSweep.equals("sweep")) {
             // Sweep experiment
             String collectiveOutputDir = collectiveOutputDir();
-            FileIO collectiveOutFile = new FileIO(collectiveOutputDir.concat("/").concat("collectiveRemainingHealthyCells").concat(".csv"), "w");
-            String collectiveResults;
 
             // Sweep parameters
             for (double virusDiffCoeffSweep = 0.00625; virusDiffCoeffSweep < 50; virusDiffCoeffSweep *= 2) {
-                collectiveResults = "";
-                collectiveResults += virusDiffCoeffSweep + ", ";
 
                 for (double damageRateSweep = 0.0; damageRateSweep < 100.0; damageRateSweep += 5.0) {
                     Experiment experiment = new Experiment(
@@ -134,17 +124,9 @@ public class Main {
                             damageRateSweep);
                     experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
                     experiment.Init();
-                    double remainingHealthyCells = experiment.RunExperiment(win);
-                    collectiveResults += remainingHealthyCells + ", ";
+                    experiment.RunExperiment(win);
                 }
-
-                // Write results to file and print to console
-                collectiveOutFile.Write(collectiveResults + "\n");
-                System.out.println(collectiveResults);
             }
-
-            collectiveOutFile.Close();
-
         } else {
             System.out.println("The only options are singular and sweep.");
         }
@@ -247,6 +229,6 @@ public class Main {
         // Executes Nirmatrelvir experiments
         storeDatas("json/datas.json");
         createWin();
-        executeNirmatrelvirExperiments();
+        RunExperiments();
     }
 }

@@ -114,12 +114,6 @@ public class Experiment extends AgentGrid2D<Cells> {
 
     // public FirstOrderDifferentialEquations ode;
 
-    /**
-     * Initializes a new instance of the NewExperiment class with the specified parameters.
-     *
-     * @param numberOfTicksDelay   The number of ticks to delay drug administration.
-     * @param fixedDamageRate      The fixed damage rate.
-     */
     public Experiment(Cells cells,
                       Rand rn,
                       Drug drug,
@@ -130,7 +124,7 @@ public class Experiment extends AgentGrid2D<Cells> {
 
         super(cells.xDim, cells.yDim, Cells.class);
 
-        this.numberOfTicksDelay = numberOfTicksDelay;
+        this.numberOfTicksDelay = numberOfTicksDelay; //  parameter that represents the number of time steps (or ticks) to delay the administration of the drug in the simulation.
         this.rn = rn;
 
         this.fixedDamageRate = fixedDamageRate;
@@ -155,6 +149,7 @@ public class Experiment extends AgentGrid2D<Cells> {
 
         virusCon = new PDEGrid2D(xDim, yDim);
         immuneResponseLevel = new PDEGrid2D(xDim, yDim);
+
         virusCon.Update();
         immuneResponseLevel.Update();
     }
@@ -185,9 +180,8 @@ public class Experiment extends AgentGrid2D<Cells> {
      * The method also monitors and reports specific events during the simulation, such as reaching a fixed damage rate.
      *
      * @param win The GUI window for visualization.
-     * @return The count of healthy cells at the end of the simulation.
      */
-    public double RunExperiment(HAL.Gui.GridWindow win) {
+    public void RunExperiment(HAL.Gui.GridWindow win) {
         double[] cellCounts = countCells();
 
         for (int tick = 0; tick < this.numberOfTicks; tick++) {
@@ -196,8 +190,6 @@ public class Experiment extends AgentGrid2D<Cells> {
             TimeStep(tick);
             DrawModel(win);
         }
-
-        return cellCounts[0];
     }
 
     double[] countCells(){
@@ -228,21 +220,25 @@ public class Experiment extends AgentGrid2D<Cells> {
         return cellCount;
     }
 
-    /**
-     * Counts the number of cells in each state (healthy, infected, dead, capillary) in the model.
-     *
-     * @return An array containing the count of cells for each state.
-     */
     void TimeStepImmune(int tick){
 
         // decay of the immuneResponseLevel
-        for (Cells cell : this){
-            double immuneResponseNow = immuneResponseLevel.Get(cell.Isq());
-            immuneResponseLevel.Add(cell.Isq(), -immune.immuneResponseDecay * immuneResponseNow);
-        }
-        immuneResponseLevel.Update();
+        decayImmunResponseLevel();
 
         // immune response level increases
+        increaseImmunResponseLevel(tick);
+
+        performDiffusion();
+
+        immuneResponseLevel.Update();
+
+    }
+
+    public void performDiffusion(){
+        immuneResponseLevel.DiffusionADI(immune.immuneResponseDiffCoeff);
+    }
+
+    public void increaseImmunResponseLevel(int tick){
         for (Cells cell : this){
             if (cell.cellType == I){ // infected cells produce interferon
                 double addedImmuneResponseLevel = ImmuneResponseSource(tick, cell);
@@ -251,10 +247,14 @@ public class Experiment extends AgentGrid2D<Cells> {
                 immuneResponseLevel.Set(cell.Isq(), newImmuneResponseLevel);
             }
         }
+    }
 
-        immuneResponseLevel.DiffusionADI(immune.immuneResponseDiffCoeff);
+    public void decayImmunResponseLevel(){
+        for (Cells cell : this){
+            double immuneResponseNow = immuneResponseLevel.Get(cell.Isq());
+            immuneResponseLevel.Add(cell.Isq(), -immune.immuneResponseDecay * immuneResponseNow);
+        }
         immuneResponseLevel.Update();
-
     }
 
     /**
@@ -284,6 +284,13 @@ public class Experiment extends AgentGrid2D<Cells> {
         }
 
         // Virus production by infected cells
+        doVirusProduction();
+
+        virusCon.DiffusionADI(virus.virusDiffCoeff);
+        virusCon.Update();
+    }
+
+    public void doVirusProduction(){
         for (Cells cell : this) {
             if (cell.cellType == I) { // Infected cell
                 double addedVirusCon = VirusSource();
@@ -292,9 +299,6 @@ public class Experiment extends AgentGrid2D<Cells> {
                 virusCon.Set(cell.Isq(), newVirusCon);
             }
         }
-
-        virusCon.DiffusionADI(virus.virusDiffCoeff);
-        virusCon.Update();
     }
 
 
@@ -305,21 +309,41 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     void TimeStepDrug(int tick) {
         if (drug.inVivoOrInVitro.equals("inVitro")) {
-            this.drugCon = this.drug.inVitroDrugCon;
+            TimeStepDrugInVitro();
         } else if (drug.inVivoOrInVitro.equals("inVivo")) {
-            // Decay of the drug
-            this.drugCon -= this.drug.drugDecay * this.drugCon;
-
-            // Decay of the drug in the stomach and appearance in lung epithelial cells
-            double transferQuantity = this.drug.drugDecayStomach * drug.drugConStomach;
-            this.drugCon += transferQuantity;
-            drug.drugConStomach -= transferQuantity;
-
-            // Drug appearance in the stomach
-            drug.drugConStomach += DrugSourceStomach(tick);
+            TimeStepDrugInVivo(tick);
         } else {
             System.out.println("inVitro and inVivo are the only two choices currently.");
         }
+    }
+
+    public void TimeStepDrugInVitro() {
+        this.drugCon = this.drug.inVitroDrugCon;
+    }
+
+    public void TimeStepDrugInVivo(int tick) {
+        // Decay of the drug
+        drugDecay();
+
+        // Decay of the drug in the stomach and appearance in lung epithelial cells
+        decayAndAppearanceInLungCells();
+
+        // Drug appearance in the stomach
+        drugAppearanceInStomach(tick);
+    }
+
+    public void drugAppearanceInStomach(int tick){
+        drug.drugConStomach += DrugSourceStomach(tick);
+    }
+
+    public void decayAndAppearanceInLungCells(){
+        double transferQuantity = this.drug.drugDecayStomach * drug.drugConStomach;
+        this.drugCon += transferQuantity;
+        drug.drugConStomach -= transferQuantity;
+    }
+
+    public void drugDecay(){
+        this.drugCon -= this.drug.drugDecay * this.drugCon;
     }
 
 
