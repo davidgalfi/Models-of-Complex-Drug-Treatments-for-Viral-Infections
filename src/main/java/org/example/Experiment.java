@@ -69,7 +69,7 @@ public class Experiment extends AgentGrid2D<Cells> {
     /**
      * The cell death probability parameter in the simulation.
      */
-    public double deathProb =  7.02 * Math.pow(10, -3); // P_D
+    public double deathProb =  7.02 * Math.pow(10, -4); // P_D
 
     /**
      * The ratio of healthy cells in the initial configuration of the simulation.
@@ -164,7 +164,7 @@ public class Experiment extends AgentGrid2D<Cells> {
                 Cells c = NewAgentSQ(i);
                 c.cellInit(true,false, false, false);
             }
-            else if(randomValue > ratioHealthy && randomValue < ratioHealthy + ratioInfected ) {
+            else if(randomValue > ratioHealthy && randomValue < ratioHealthy + ratioInfected) {
                 Cells c = NewAgentSQ(i);
                 c.cellInit(false,true, false, false);
             }

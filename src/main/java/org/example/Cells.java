@@ -65,6 +65,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
     public static final int C = 3;
 
     public Cells(){}
+
     public Cells(JSONObject jsonObject) {
         setxDim(Math.toIntExact((Long) jsonObject.get("xDim")));
         setyDim(Math.toIntExact((Long) jsonObject.get("yDim")));
@@ -94,7 +95,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
         } else if (isInfected) {
             this.cellType = I;
         } else if (isDead) {
-            this.cellType = D;
+            this.cellType = H;
         } else if (isCapillary) {
             this.cellType = C;
         }
