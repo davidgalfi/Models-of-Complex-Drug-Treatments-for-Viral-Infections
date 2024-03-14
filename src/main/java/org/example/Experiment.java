@@ -195,10 +195,10 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @param tick The current time step.
      */
     void TimeStep(int tick) {
-        TimeStepCells(tick);
         TimeStepVirus(tick);
         TimeStepImmune(tick);
         TimeStepDrug(tick);
+        TimeStepCells(tick);
     }
 
     /**
@@ -330,7 +330,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @return The drug source in the stomach.
      */
     double DrugSourceStomach(int tick) {
-        if ((tick > numberOfTicksDelay) && (drug instanceof NirmatrelvirDrug) && (((tick - numberOfTicksDelay) % (12 * 60)) == 1)) {
+        if ((tick > numberOfTicksDelay) && (((tick - numberOfTicksDelay) % (12 * 60)) == 1)) {
             return this.drug.drugSourceStomach;
         } else {
             return 0.0;

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.utils;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
