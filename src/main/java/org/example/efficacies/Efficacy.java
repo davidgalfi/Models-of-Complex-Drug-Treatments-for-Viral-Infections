@@ -1,4 +1,4 @@
-package org.example;
+package org.example.efficacies;
 
 public interface Efficacy {
 

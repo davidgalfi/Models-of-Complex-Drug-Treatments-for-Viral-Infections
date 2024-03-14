@@ -209,9 +209,10 @@ public class Experiment extends AgentGrid2D<Cells> {
     void TimeStepVirus(int tick) {
         // Decay of the virus
         for (Cells cell : this) {
-            // TODO: Drug currently does not react
+
+            // Drug reaction
             double drugVirusRemovalEff = drug.drugVirusRemovalEff.getEfficacy(drugCon);
-            double immuneVirusRemovalEff = 1 / (1 + 1 / (Math.pow(immuneResponseLevel.Get(cell.Isq()), 2)));
+            double immuneVirusRemovalEff = drug.immuneVirusRemovalEff.getEfficacy(immuneResponseLevel.Get(cell.Isq()));
 
             double currentCell = virusCon.Get(cell.Isq());
 
@@ -305,7 +306,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @return The virus source.
      */
     double VirusSource() {
-        return virus.virusMax * (1 - this.drug.DrugVirusProdEff(this.drugCon));
+        return virus.virusMax * (1 - drug.drugVirusRemovalEff.getEfficacy(drug.getConvertedAndGeneratedDrug(drugCon)));
     }
 
 

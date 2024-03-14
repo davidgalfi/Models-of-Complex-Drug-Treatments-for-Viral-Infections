@@ -1,5 +1,9 @@
 package org.example;
 
+import org.example.efficacies.Efficacy;
+import org.example.efficacies.NoEffect;
+import org.example.efficacies.NotStandardSigmoid;
+import org.example.efficacies.StandardHill;
 import org.json.simple.JSONObject;
 
 public class Drug {
@@ -49,6 +53,8 @@ public class Drug {
     boolean isRitonavirBoosted;
 
     Efficacy drugVirusRemovalEff;
+    Efficacy immuneVirusRemovalEff;
+    Efficacy drugVirusProdEff;
 
     public Drug(){}
     public Drug(JSONObject jsonObject){
@@ -64,6 +70,8 @@ public class Drug {
         setInVivoOrInVitro((String) jsonObject.get("inVivoOrInVitro"));
         setRitonavirBoosted((boolean) jsonObject.get("isRitonavirBoosted"));
         setdrugVirusRemovalEff(getEC50());
+        setImmuneVirusRemovalEff(getEC50());
+        setDrugVirusProdEff(getEC50());
     }
 
     public void setdrugVirusRemovalEff(double ec50){
@@ -71,6 +79,22 @@ public class Drug {
             drugVirusRemovalEff = new StandardHill(getEC50());
         } else {
             drugVirusRemovalEff = new NoEffect();
+        }
+    }
+
+    public void setImmuneVirusRemovalEff(double ec50) {
+        if(ec50 > 0){
+            immuneVirusRemovalEff = new NotStandardSigmoid();
+        } else {
+            immuneVirusRemovalEff = new NoEffect();
+        }
+    }
+
+    public void setDrugVirusProdEff(double ec50){
+        if(ec50 > 0){
+            immuneVirusRemovalEff = new StandardHill(getEC50());
+        } else {
+            immuneVirusRemovalEff = new NoEffect();
         }
     }
 
@@ -87,15 +111,12 @@ public class Drug {
         }
     }
 
+    public double getConvertedAndGeneratedDrug(double drugNow) {
+        // Convert drug concentration from ng/ml to nanomolars
+        double drugInNanomolars = getNgPerMlToNanomolars(drugNow);
 
-    /**
-     * Calculates the drug-virus production efficiency based on the drug concentration.
-     * @param drugNow The current drug concentration in nanograms/ml.
-     * @return The drug-virus production efficiency.
-     */
-    double DrugVirusProdEff(double drugNow){
-        double drugNowInNanoMolars = NgPerMlToNanomolars(drugNow);
-        return 1 / (1 + (EC50 / StochasticDrug(drugNowInNanoMolars)));
+        // Generate stochastic drug concentration based on a Gaussian distribution
+        return getStochasticDrug(drugInNanomolars);
     }
 
     /**
@@ -103,7 +124,7 @@ public class Drug {
      * @param drugNow The drug concentration in ng/ml.
      * @return The drug concentration in nanomolars.
      */
-    double NgPerMlToNanomolars(double drugNow){
+    public double getNgPerMlToNanomolars(double drugNow){
         return drugNow * Math.pow(10,3) / molarMassDrug;
     }
 
@@ -113,7 +134,7 @@ public class Drug {
      * @param drug The mean drug concentration.
      * @return The stochastic drug concentration.
      */
-    double StochasticDrug(double drug){
+    public double getStochasticDrug(double drug){
         double stdDevOfGaussian = drug / 100;
         HAL.Rand random = new HAL.Rand();
         double stochasticDrug = random.Gaussian(drug, stdDevOfGaussian);
