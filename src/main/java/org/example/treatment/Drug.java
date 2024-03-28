@@ -1,9 +1,8 @@
-package org.example;
+package org.example.treatment;
 
 import org.example.efficacies.Efficacy;
 import org.example.efficacies.NoEffect;
-import org.example.efficacies.NotStandardSigmoid;
-import org.example.efficacies.StandardHill;
+import org.example.efficacies.Hill;
 import org.json.simple.JSONObject;
 
 public class Drug {
@@ -52,8 +51,8 @@ public class Drug {
 
     boolean isRitonavirBoosted;
 
-    Efficacy drugVirusRemovalEff;
-    Efficacy immuneVirusRemovalEff;
+    Efficacy drugVirusRemoval;
+    Efficacy immuneVirusRemoval;
     Efficacy drugVirusProdEff;
 
     public Drug(){}
@@ -70,31 +69,34 @@ public class Drug {
         setInVivoOrInVitro((String) jsonObject.get("inVivoOrInVitro"));
         setRitonavirBoosted((boolean) jsonObject.get("isRitonavirBoosted"));
         setdrugVirusRemovalEff(getEC50());
-        setImmuneVirusRemovalEff(getEC50());
+        setImmuneVirusRemoval(getEC50());
         setDrugVirusProdEff(getEC50());
     }
 
-    public void setdrugVirusRemovalEff(double ec50){
-        if(ec50 > 0){
-            drugVirusRemovalEff = new StandardHill(getEC50());
+    public void setdrugVirusRemovalEff(double EC50){
+        if(EC50 > 0){
+            // TODO: get the right parameters in the StandardHill()
+            drugVirusRemoval = new Hill(getEC50(), );
         } else {
-            drugVirusRemovalEff = new NoEffect();
+            drugVirusRemoval = new NoEffect();
         }
     }
 
-    public void setImmuneVirusRemovalEff(double ec50) {
+    public void setImmuneVirusRemoval(double ec50) {
         if(ec50 > 0){
-            immuneVirusRemovalEff = new NotStandardSigmoid();
+            // TODO: rewrite HillEfficacy()
+            immuneVirusRemoval = new HillEfficacy();
         } else {
-            immuneVirusRemovalEff = new NoEffect();
+            immuneVirusRemoval = new NoEffect();
         }
     }
 
     public void setDrugVirusProdEff(double ec50){
         if(ec50 > 0){
-            immuneVirusRemovalEff = new StandardHill(getEC50());
+            // TODO: get the right parameters in the StandardHill()
+            immuneVirusRemoval = new Hill(getEC50());
         } else {
-            immuneVirusRemovalEff = new NoEffect();
+            immuneVirusRemoval = new NoEffect();
         }
     }
 

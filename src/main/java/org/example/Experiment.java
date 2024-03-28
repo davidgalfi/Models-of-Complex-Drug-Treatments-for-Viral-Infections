@@ -7,9 +7,9 @@ import static HAL.Util.*;
 import static org.example.Cells.*;
 
 import HAL.Rand;
-import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
+import org.example.treatment.Drug;
 
 /**
  * The NewExperiment class represents a simulation experiment with individual cells in a 2D square grid.
@@ -253,9 +253,9 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     void TimeStepDrug(int tick) {
         if (drug.inVivoOrInVitro.equals("inVitro")) {
-            TimeStepDrugInVitro();
+            timeStepDrugInVitro();
         } else if (drug.inVivoOrInVitro.equals("inVivo")) {
-            TimeStepDrugInVivo(tick);
+            timeStepDrugInVivo(tick);
         } else {
             System.out.println("inVitro and inVivo are the only two choices currently.");
         }
@@ -439,11 +439,11 @@ public class Experiment extends AgentGrid2D<Cells> {
     }
 
 
-    private void TimeStepDrugInVitro() {
+    private void timeStepDrugInVitro() {
         this.drugCon = this.drug.inVitroDrugCon;
     }
 
-    private void TimeStepDrugInVivo(int tick) {
+    private void timeStepDrugInVivo(int tick) {
         // Decay of the drug
         drugDecay();
 
