@@ -4,11 +4,12 @@ public class Hill implements Efficacy {
 
     double EC50;
     int n;
-    double maxEfficacy = 1;
+    double maxEfficacy;
 
     public Hill(double ec50, int n) {
         this.EC50 = ec50;
         this.n = n;
+        this.maxEfficacy = 1;
     }
 
     public Hill(double ec50, int n, double maxEfficacy) {

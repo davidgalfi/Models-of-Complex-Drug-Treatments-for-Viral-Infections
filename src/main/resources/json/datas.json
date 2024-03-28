@@ -5,19 +5,20 @@
         "Treatment_1": {
           "Drug": {
             "name": "Nirmatrelvir",
-            "molarMassDrug": 499.535,
-            "inVitroDrugCon": 5.0,
-            "drugDecay": 0.013,
-            "drugSourceStomach": 1800.0,
-            "drugDecayStomach": 0.015,
-            "drugConStomach": 0.0,
-            "inVivoOrInVitro": "inVivo",
-            "isRitonavirBoosted": false,
-            "virusProductionReduction": {
+            "virusProductionReductionEff": {
               "EC50": 62.0,
               "maxEfficacy": 1,
               "n": 1
             }
+          },
+          "Dosage": {
+            "drugDecay": 0.013,
+            "drugSourceStomach": 1800.0,
+            "drugDecayStomach": 0.015,
+            "transferRate": 0,
+            "metabolismRate": 0,
+            "dosage": 0,
+            "interval": 0
           }
         }
       },
@@ -27,14 +28,18 @@
         "visScale": 2
       },
       "Virus": {
-        "virusMax": 0.00372,
+        "virusProduction": 0.00372,
         "virusDiffCoeff": 0.2
       },
       "Host": {
         "virusRemovalRate": 0.00167
       },
-      "numberOfTicksDrug": 7200,
-      "numberOfTicksDelay": 720
+      "Technical": {
+        "simulationTime": 0,
+        "timeStep": 0,
+        "numberOfTicksDrug": 7200,
+        "numberOfTicksDelay": 720
+      }
     }
   }
 }

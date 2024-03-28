@@ -20,6 +20,12 @@ import org.example.treatment.Treatment;
  */
 public class Experiment extends AgentGrid2D<Cells> {
 
+    Infection infection;
+    Treatment[] treatments;
+    Time time;
+    Virus virus;
+    Cells cells;
+
     /**
      * The number of ticks to delay drug administration in the simulation.
      */
@@ -35,10 +41,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     public int numberOfTicks;
 
-    /**
-     * The 2D partial differential equation (PDE) grid representing virus concentration in the simulation.
-     */
-    public PDEGrid2D virusCon;
+
 
     /**
      * The 2D PDE grid representing the immune response level in the simulation.
@@ -82,10 +85,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     public double ratioInfected = 0.0005;
 
-    Treatment[] treatments;
-    Time time;
-    Virus virus;
-    Cells cells;
+
     /**
      * The FileIO object for writing simulation output to a file.
      */

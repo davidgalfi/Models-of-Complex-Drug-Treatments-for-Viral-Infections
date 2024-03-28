@@ -1,4 +1,4 @@
-package org.example;
+package org.example.differential_equation;
 
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.exception.MaxCountExceededException;
