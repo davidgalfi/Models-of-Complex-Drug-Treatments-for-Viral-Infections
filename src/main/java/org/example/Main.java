@@ -99,9 +99,8 @@ public class Main {
             Experiment experiment = new Experiment(
                     cells,
                     new Rand(1),
-                    drug,
-                    immune,
-                    12 * 60,
+                    treatments,
+                    time,
                     virus,
                     110.0);
             experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
@@ -118,9 +117,8 @@ public class Main {
                     Experiment experiment = new Experiment(
                             cells,
                             new Rand(1),
-                            drug,
-                            immune,
-                            BIG_VALUE,
+                            treatments,
+                            time,
                             virus,
                             damageRateSweep);
                     experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
@@ -168,13 +166,7 @@ public class Main {
         String projPath = PWD() + "/output/NirmatrelvirExperiments";
 
         // Adjust the path based on drug conditions
-        if (!drug.name.equals("Nirmatrelvir")) {
-            projPath += "/noDrug";
-        } else if (drug.isRitonavirBoosted) {
-            projPath += "/ritoBoostedNirmatrelvir";
-        } else {
-            projPath += "/nirmatrelvirOnly";
-        }
+        projPath += drug.getName();
 
         // Generate the final collective output directory path
         String collectiveOutputDir = projPath + "/" + date_time + "__collective";

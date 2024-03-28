@@ -22,22 +22,22 @@ public class Drug {
     /**
      * Initial drug concentration for in vitro experiments.
      */
-    double inVitroDrugCon;
+    public double inVitroDrugCon;
 
     /**
      * Decay rate of the drug in in vivo scenarios.
      */
-    double drugDecay;
+    public double drugDecay;
 
     /**
      * Drug source in the stomach for in vivo scenarios. Represents the initial drug concentration in the stomach.
      */
-    double drugSourceStomach;
+    public double drugSourceStomach;
 
     /**
      * Decay rate of the drug in the stomach for in vivo scenarios.
      */
-    double drugDecayStomach;
+    public double drugDecayStomach;
 
     /**
      * The concentration of the drug in the stomach in the simulation.
@@ -51,9 +51,9 @@ public class Drug {
 
     boolean isRitonavirBoosted;
 
-    Efficacy drugVirusRemoval;
-    Efficacy immuneVirusRemoval;
-    Efficacy drugVirusProdEff;
+    public Efficacy drugVirusRemoval;
+    public Efficacy immuneVirusRemoval;
+    public Efficacy drugVirusProdEff;
 
     public Drug(){}
     public Drug(JSONObject jsonObject){
@@ -75,8 +75,7 @@ public class Drug {
 
     public void setdrugVirusRemovalEff(double EC50){
         if(EC50 > 0){
-            // TODO: get the right parameters in the StandardHill()
-            drugVirusRemoval = new Hill(getEC50(), );
+            drugVirusRemoval = new Hill(getEC50(), 1);
         } else {
             drugVirusRemoval = new NoEffect();
         }
@@ -84,8 +83,7 @@ public class Drug {
 
     public void setImmuneVirusRemoval(double ec50) {
         if(ec50 > 0){
-            // TODO: rewrite HillEfficacy()
-            immuneVirusRemoval = new HillEfficacy();
+            immuneVirusRemoval = new Hill(getEC50(), 1);
         } else {
             immuneVirusRemoval = new NoEffect();
         }
@@ -93,8 +91,7 @@ public class Drug {
 
     public void setDrugVirusProdEff(double ec50){
         if(ec50 > 0){
-            // TODO: get the right parameters in the StandardHill()
-            immuneVirusRemoval = new Hill(getEC50());
+            immuneVirusRemoval = new Hill(getEC50(), 1);
         } else {
             immuneVirusRemoval = new NoEffect();
         }

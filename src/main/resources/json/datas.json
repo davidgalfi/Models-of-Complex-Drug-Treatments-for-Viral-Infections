@@ -1,32 +1,40 @@
 {
-  "NewExperiment": {
-    "Drug": {
-      "name": "Nirmatrelvir",
-      "molarMassDrug": 499.535,
-      "inVitroDrugCon": 5.0,
-      "drugDecay": 0.013,
-      "drugSourceStomach": 1800.0,
-      "drugDecayStomach": 0.015,
-      "drugConStomach": 0.0,
-      "inVivoOrInVitro": "inVivo",
-      "isRitonavirBoosted": false,
-      "virusProductionReduction": {
-        "EC50": 62.0,
-        "maxEfficacy": 1,
-        "n": 1
-      }
-    },
-    "Cell": {
-      "xDim": 200,
-      "yDim": 200,
-      "visScale": 2
-    },
-    "Virus": {
-      "virusMax": 0.00372,
-      "virusDiffCoeff": 0.2
-    },
-    "Host": {
-      "virusRemovalRate": 0.00167
+  "Experiements": {
+    "Experiement_1": {
+      "Treatments": {
+        "Treatment_1": {
+          "Drug": {
+            "name": "Nirmatrelvir",
+            "molarMassDrug": 499.535,
+            "inVitroDrugCon": 5.0,
+            "drugDecay": 0.013,
+            "drugSourceStomach": 1800.0,
+            "drugDecayStomach": 0.015,
+            "drugConStomach": 0.0,
+            "inVivoOrInVitro": "inVivo",
+            "isRitonavirBoosted": false,
+            "virusProductionReduction": {
+              "EC50": 62.0,
+              "maxEfficacy": 1,
+              "n": 1
+            }
+          }
+        }
+      },
+      "Cell": {
+        "xDim": 200,
+        "yDim": 200,
+        "visScale": 2
+      },
+      "Virus": {
+        "virusMax": 0.00372,
+        "virusDiffCoeff": 0.2
+      },
+      "Host": {
+        "virusRemovalRate": 0.00167
+      },
+      "numberOfTicksDrug": 7200,
+      "numberOfTicksDelay": 720
     }
   }
 }
