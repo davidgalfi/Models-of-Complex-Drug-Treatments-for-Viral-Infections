@@ -14,4 +14,17 @@ public class Utils {
     }
 
 
+    public static void addList(double[] array, ArrayList<Double> arrayList) {
+        if (array == null || arrayList == null) {
+            throw new IllegalArgumentException("Array or ArrayList cannot be null");
+        }
+
+        if (array.length < arrayList.size()) {
+            throw new IllegalArgumentException("Array length is not sufficient to accommodate all elements from ArrayList");
+        }
+
+        for (int i = 0; i < arrayList.size(); i++) {
+            array[i] += arrayList.get(i);
+        }
+    }
 }

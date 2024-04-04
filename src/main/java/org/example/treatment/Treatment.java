@@ -20,7 +20,7 @@ public class Treatment {
     }
 
     private void setDosage(JSONObject jsonObject){
-        this.dosage = new Dosage(jsonObject);
+        this.dosage = DosageFactory.createDosage(jsonObject);
     }
 
     private void setConcentration(JSONObject jsonObject){

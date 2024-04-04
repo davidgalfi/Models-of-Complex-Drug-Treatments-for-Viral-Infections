@@ -34,10 +34,10 @@ public class DosageInVivo implements Dosage{
     public double[] getSample(double simulationTime, double timeStep) {
         double[] sample = new double[(int)(simulationTime/timeStep)+1];
 
-        ArrayList<Double> results = new ArrayList<Double>();
+        ArrayList<Double> results = new ArrayList<>();
 
         FirstOrderDifferentialEquations equation = dosageInVivo;
-        RungeKuttaIntegrator solver = new ClassicalRungeKuttaIntegrator(1);
+        RungeKuttaIntegrator solver = new ClassicalRungeKuttaIntegrator(timeStep);
 
         StepHandler stepHandler = new StepHandler() {
             @Override
@@ -76,6 +76,7 @@ public class DosageInVivo implements Dosage{
 
         solver.integrate(equation, 0, y, simulationTime, y);
 
+        Utils.addList(sample, results);
 
         return sample;
     }
