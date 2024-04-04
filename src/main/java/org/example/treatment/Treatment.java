@@ -9,9 +9,10 @@ public class Treatment {
 
     public ODEVirtualGrid concentration;
 
-    public Treatment(JSONObject treatmentJsonObject){
+    public Treatment(JSONObject treatmentJsonObject, JSONObject technicalJsonObject){
         setDrug((JSONObject) treatmentJsonObject.get("Drug"));
         setDosage((JSONObject) treatmentJsonObject.get("Dosage"));
+        setConcentration((JSONObject) technicalJsonObject);
     }
 
     private void setDrug(JSONObject jsonObject){
@@ -20,5 +21,11 @@ public class Treatment {
 
     private void setDosage(JSONObject jsonObject){
         this.dosage = new Dosage(jsonObject);
+    }
+
+    private void setConcentration(JSONObject jsonObject){
+        double simulationTime = (double)jsonObject.get("simulationTime");
+        double timeStep = (double)jsonObject.get("timeStep");
+        this.concentration = new ODEVirtualGrid(dosage.getSample(simulationTime, timeStep));
     }
 }
