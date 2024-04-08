@@ -13,10 +13,7 @@
           },
           "Dosage": {
             "drugDecay": 0.013,
-            "drugSourceStomach": 1800.0,
-            "drugDecayStomach": 0.015,
             "transferRate": 0,
-            "metabolismRate": 0,
             "dosage": 0,
             "interval": 0
           }
@@ -35,10 +32,9 @@
         "virusRemovalRate": 0.00167
       },
       "Technical": {
-        "simulationTime": 0,
-        "timeStep": 0,
-        "numberOfTicksDrug": 7200,
-        "numberOfTicksDelay": 720
+        "simulationTime": 10000,
+        "timeStep": 0.25,
+        "interval": 720
       }
     }
   }

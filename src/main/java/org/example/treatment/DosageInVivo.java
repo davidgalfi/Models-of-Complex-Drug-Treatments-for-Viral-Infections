@@ -45,7 +45,7 @@ public class DosageInVivo implements Dosage{
             @Override
             public void handleStep(StepInterpolator interpolator, boolean b) {
                 double[] y = interpolator.getInterpolatedState();
-                results.add(y[0]);
+                results.add(y[1]);
             }
         };
 
@@ -72,7 +72,7 @@ public class DosageInVivo implements Dosage{
         solver.addStepHandler(stepHandler);
         solver.addEventHandler(eventHandler, 1, 1.0e-6, 100);
 
-        double[] y = {dosage};
+        double[] y = {0};
 
         solver.integrate(equation, 0, y, simulationTime, y);
 
