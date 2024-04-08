@@ -1,6 +1,7 @@
 package org.example;
 
 import HAL.GridsAndAgents.AgentSQ2Dunstackable;
+import org.example.treatment.Treatment;
 import org.json.simple.JSONObject;
 
 /**
@@ -19,10 +20,6 @@ import org.json.simple.JSONObject;
  */
 public class Cells extends AgentSQ2Dunstackable<Experiment> {
 
-    public int xDim;
-    public int yDim;
-    public int visScale;
-
     /**
      * The type of the cell:
      * 0 - Healthy
@@ -38,7 +35,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      *
      * H (0): Healthy cell
      */
-    public static final int H = 0;
+    public static final int T = 0;
 
     /**
      * Constants representing different cell types or states in the simulation.
@@ -56,20 +53,10 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      */
     public static final int D = 2;
 
-    /**
-     * Constants representing different cell types or states in the simulation.
-     * Each constant corresponds to a unique integer value.
-     *
-     * C (3): Capillary (blood vessel)
-     */
-    public static final int C = 3;
-
     public Cells(){}
 
     public Cells(JSONObject jsonObject) {
-        setxDim(Math.toIntExact((Long) jsonObject.get("xDim")));
-        setyDim(Math.toIntExact((Long) jsonObject.get("yDim")));
-        setVisScale(Math.toIntExact((Long) jsonObject.get("visScale")));
+
     }
 
     /**
@@ -83,22 +70,9 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      *
      * The method accepts boolean parameters indicating the cell's health status. If multiple parameters are true, the method
      * prioritizes the health status in the following order: Healthy > Infected > Dead > Capillary.
-     *
-     * @param isHealthy   A boolean indicating whether the cell is in a healthy state.
-     * @param isInfected  A boolean indicating whether the cell is infected.
-     * @param isDead      A boolean indicating whether the cell is dead.
-     * @param isCapillary A boolean indicating whether the cell is a capillary.
      */
-    public void cellInit(boolean isHealthy, boolean isInfected, boolean isDead, boolean isCapillary) {
-        if (isHealthy) {
-            this.cellType = H;
-        } else if (isInfected) {
-            this.cellType = I;
-        } else if (isDead) {
-            this.cellType = H;
-        } else if (isCapillary) {
-            this.cellType = C;
-        }
+    public void Init(int cellType) {
+        this.cellType = cellType;
     }
 
     /**
@@ -115,17 +89,21 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * infection rate, cell dimensions, and virus concentration. If the random value is less than the
      * effective infection probability, the cell transitions to an infected state (Type 1).
      */
-    public void cellInfection() {
+    public void stochasticInfection() {
         double drugConAtCell = G.drugCon;
-        double virusConAtCell = G.virusCon.Get((Isq()));
+        double virusConAtCell = G.infection.virusCon.Get((Isq()));
 
         // Sigmoid function for drug efficacy
         double drugInfectionRedEff = 100 * Math.pow(drugConAtCell, 2) / (1 + 100 * Math.pow(drugConAtCell, 2));
-        double infectionProb = G.infectionRate * G.xDim * G.yDim;
+        double infectionProb = G.infection.infectionRate * G.xDim * G.yDim * virusConAtCell;
         double effectiveInfectionProb = infectionProb * (1 - drugInfectionRedEff) * virusConAtCell;
 
         if (G.rn.Double() < effectiveInfectionProb) {
             this.cellType = I; // Transition to infected state
+        }
+
+        for(Treatment treatment: G.treatments){
+            infectionProb *= (1-treatment.drug.infectionReductionEff.getEfficacy(treatment.concentration.Get()));
         }
     }
 
@@ -139,42 +117,18 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * The death process is applied only to infected cells (Type 1), and it involves checking if a random
      * value is less than the death probability. If true, the cell transitions to a dead state.
      */
-    public void cellDeath() {
-        if (G.rn.Double() < G.deathProb) {
+    public void stochasticDeath() {
+        if (G.rn.Double() < G.infection.cellDeathRate) {
             this.cellType = D; // Transition to dead state
         }
     }
 
-    public void cellState() {
+    public void stochasticStateChange() {
         if (this.cellType == I) {
-            cellDeath();
-        } else if(this.cellType == H){
-            cellInfection();
+            stochasticDeath();
+        } else if(this.cellType == T){
+            stochasticInfection();
         }
-    }
-
-    public int getxDim() {
-        return xDim;
-    }
-
-    public void setxDim(int xDim) {
-        this.xDim = xDim;
-    }
-
-    public int getyDim() {
-        return yDim;
-    }
-
-    public void setyDim(int yDim) {
-        this.yDim = yDim;
-    }
-
-    public int getVisScale() {
-        return visScale;
-    }
-
-    public void setVisScale(int visScale) {
-        this.visScale = visScale;
     }
 
     public int getCellType() {

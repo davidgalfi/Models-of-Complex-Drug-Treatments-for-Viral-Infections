@@ -72,7 +72,7 @@ public class DosageInVivo implements Dosage{
         solver.addStepHandler(stepHandler);
         solver.addEventHandler(eventHandler, 1, 1.0e-6, 100);
 
-        double[] y = {0};
+        double[] y = {dosage, 0};
 
         solver.integrate(equation, 0, y, simulationTime, y);
 

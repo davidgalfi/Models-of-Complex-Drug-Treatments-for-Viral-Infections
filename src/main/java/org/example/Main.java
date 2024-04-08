@@ -214,9 +214,10 @@ public class Main {
     }
 
     public static void createWin(){
+        // TODO: visScale
         win = new GridWindow(
                 "Cellular state space, virus concentration.",
-                cells.xDim * 2, cells.yDim, cells.visScale, true);
+                cells.xDim * 2, cells.yDim, 2, true);
     }
     public static void main(String[] args) throws URISyntaxException {
         // Executes Nirmatrelvir experiments

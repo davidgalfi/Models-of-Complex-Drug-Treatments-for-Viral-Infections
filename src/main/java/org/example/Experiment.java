@@ -158,11 +158,11 @@ public class Experiment extends AgentGrid2D<Cells> {
 
             if (randomValue < ratioHealthy){
                 Cells c = NewAgentSQ(i);
-                c.cellInit(true,false, false, false);
+                c.Init(T);
             }
             else if(randomValue > ratioHealthy && randomValue < ratioHealthy + ratioInfected) {
                 Cells c = NewAgentSQ(i);
-                c.cellInit(false,true, false, false);
+                c.Init(I);
             }
         }
     }
@@ -193,7 +193,7 @@ public class Experiment extends AgentGrid2D<Cells> {
     void timeStep(int tick) {
         timeStepVirus(tick);
         //TimeStepImmune(tick);
-        timeStepDrug(tick);
+        //timeStepDrug(tick);
         timeStepCells(tick);
     }
 
@@ -252,7 +252,8 @@ public class Experiment extends AgentGrid2D<Cells> {
      *
      * @param tick The current time step.
      */
-    void timeStepDrug(int tick) {
+
+    /*void timeStepDrug(int tick) {
         for (Treatment treatment : treatments){
             Drug drug = treatment.drug;
             if (drug.inVivoOrInVitro.equals("inVitro")) {
@@ -263,7 +264,7 @@ public class Experiment extends AgentGrid2D<Cells> {
                 System.out.println("inVitro and inVivo are the only two choices currently.");
             }
         }
-    }
+    }*/
 
     /**
      * Performs a time step for cell-related processes, including infection and cell death.
@@ -272,7 +273,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     void timeStepCells(int tick) {
         for (Cells cell : this) {
-            cell.cellState();
+            cell.stochasticStateChange();
         }
     }
 
@@ -282,7 +283,7 @@ public class Experiment extends AgentGrid2D<Cells> {
                 capillaryCells = 0;
         double[] cellCount = new double[4];
         for (Cells cell: this){
-            if (cell.cellType == H){
+            if (cell.cellType == T){
                 healthyCells += 1;
             }
             else if (cell.cellType == I ){
@@ -296,7 +297,7 @@ public class Experiment extends AgentGrid2D<Cells> {
             }
         }
 
-        cellCount[H] = healthyCells;
+        cellCount[T] = healthyCells;
         cellCount[I] = infectedCells;
         cellCount[D] = deadCells;
         cellCount[C] = capillaryCells;
@@ -360,14 +361,12 @@ public class Experiment extends AgentGrid2D<Cells> {
                 vis.SetPix(i, RGB256(255, 255, 255)); // Set empty cell color to white
             } else {
                 // Set colors based on cell type
-                if (drawMe.cellType == H) {        // Healthy cells
+                if (drawMe.cellType == T) {        // Healthy cells
                     vis.SetPix(i, RGB256(119, 198, 110)); // Set healthy cell color to green
                 } else if (drawMe.cellType == I) { // Infected cells
                     vis.SetPix(i, RGB256(124, 65, 120));  // Set infected cell color to purple
                 } else if (drawMe.cellType == D) { // Dead cells
                     vis.SetPix(i, RGB(0, 0, 0)); // Set dead cell color to black
-                } else if (drawMe.cellType == C) { // Capillary cells
-                    vis.SetPix(i, RGB(255, 255, 255)); // Set capillary cell color to white
                 }
             }
 
