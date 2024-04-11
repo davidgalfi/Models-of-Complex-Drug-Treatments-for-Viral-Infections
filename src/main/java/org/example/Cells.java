@@ -55,10 +55,6 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
 
     public Cells(){}
 
-    public Cells(JSONObject jsonObject) {
-
-    }
-
     /**
      * Initializes the cell based on its health status and type.
      *
@@ -66,7 +62,6 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * - Healthy (Type 0): The cell is in a healthy state.
      * - Infected (Type 1): The cell is infected.
      * - Dead (Type 2): The cell is dead.
-     * - Capillary (Type 3): The cell is a capillary.
      *
      * The method accepts boolean parameters indicating the cell's health status. If multiple parameters are true, the method
      * prioritizes the health status in the following order: Healthy > Infected > Dead > Capillary.
@@ -90,21 +85,19 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * effective infection probability, the cell transitions to an infected state (Type 1).
      */
     public void stochasticInfection() {
-        double drugConAtCell = G.drugCon;
         double virusConAtCell = G.infection.virusCon.Get((Isq()));
 
         // Sigmoid function for drug efficacy
-        double drugInfectionRedEff = 100 * Math.pow(drugConAtCell, 2) / (1 + 100 * Math.pow(drugConAtCell, 2));
-        double infectionProb = G.infection.infectionRate * G.xDim * G.yDim * virusConAtCell;
-        double effectiveInfectionProb = infectionProb * (1 - drugInfectionRedEff) * virusConAtCell;
-
-        if (G.rn.Double() < effectiveInfectionProb) {
-            this.cellType = I; // Transition to infected state
-        }
+        double infectionProb = G.infection.infectionProbability * G.xDim * G.yDim * virusConAtCell;
 
         for(Treatment treatment: G.treatments){
             infectionProb *= (1-treatment.drug.infectionReductionEff.getEfficacy(treatment.concentration.Get()));
         }
+
+        if (G.rn.Double() < infectionProb) {
+            this.cellType = I; // Transition to infected state
+        }
+
     }
 
     /**
@@ -118,7 +111,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * value is less than the death probability. If true, the cell transitions to a dead state.
      */
     public void stochasticDeath() {
-        if (G.rn.Double() < G.infection.cellDeathRate) {
+        if (G.rn.Double() < G.infection.cellDeathProbability) {
             this.cellType = D; // Transition to dead state
         }
     }
@@ -129,13 +122,5 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
         } else if(this.cellType == T){
             stochasticInfection();
         }
-    }
-
-    public int getCellType() {
-        return cellType;
-    }
-
-    public void setCellType(int cellType) {
-        this.cellType = cellType;
     }
 }

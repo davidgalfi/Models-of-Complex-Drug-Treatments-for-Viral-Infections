@@ -22,25 +22,7 @@ public class Experiment extends AgentGrid2D<Cells> {
 
     Infection infection;
     Treatment[] treatments;
-    Time time;
-    Virus virus;
     Cells cells;
-
-    /**
-     * The number of ticks to delay drug administration in the simulation.
-     */
-    public int numberOfTicksDelay;
-
-    /**
-     * The number of ticks the drug is administered in the simulation.
-     */
-    public int numberOfTicksDrug;
-
-    /**
-     * The total number of ticks for the simulation.
-     */
-    public int numberOfTicks;
-
 
 
     /**
@@ -54,26 +36,12 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     public HAL.Rand rn;
 
-    /**
-     * The fixed damage rate in the simulation.
-     */
-    // TODO: Do nothing
-    public double fixedDamageRate;
-
-    /**
-     * The infection rate parameter in the simulation.
-     */
-    public double infectionRate = 1.01 * Math.pow(10, -7); // beta in the ODE
 
     /**
      * The concentration of the drug in the simulation.
      */
     public double drugCon = 0;
 
-    /**
-     * The cell death probability parameter in the simulation.
-     */
-    public double deathProb =  7.02 * Math.pow(10, -4); // P_D
 
     /**
      * The ratio of healthy cells in the initial configuration of the simulation.
@@ -113,8 +81,6 @@ public class Experiment extends AgentGrid2D<Cells> {
     public Experiment(Cells cells,
                       Rand rn,
                       Treatment[] treatments,
-                      Time time,
-                      Virus virus,
                       double fixedDamageRate){
 
         super(cells.xDim, cells.yDim, Cells.class);
@@ -158,11 +124,11 @@ public class Experiment extends AgentGrid2D<Cells> {
 
             if (randomValue < ratioHealthy){
                 Cells c = NewAgentSQ(i);
-                c.Init(T);
+                c.Init(Cells.T);
             }
             else if(randomValue > ratioHealthy && randomValue < ratioHealthy + ratioInfected) {
                 Cells c = NewAgentSQ(i);
-                c.Init(I);
+                c.Init(Cells.I);
             }
         }
     }
@@ -179,7 +145,7 @@ public class Experiment extends AgentGrid2D<Cells> {
         for (int tick = 0; tick < this.numberOfTicks; tick++) {
 
             // Progress the simulation by one time step
-            timeStep(tick);
+            simulationStep(tick);
             DrawModel(win);
         }
     }
@@ -190,11 +156,17 @@ public class Experiment extends AgentGrid2D<Cells> {
      *
      * @param tick The current time step.
      */
-    void timeStep(int tick) {
-        timeStepVirus(tick);
-        //TimeStepImmune(tick);
-        //timeStepDrug(tick);
+    void simulationStep(int tick) {
         timeStepCells(tick);
+        timeStepVirus(tick);
+        timeStepTreatments(tick);
+        //timeStepDrug(tick);
+    }
+
+    private void timeStepTreatments(int tick) {
+        for(Treatment treatment: treatments){
+            treatment.concentration.Update();
+        }
     }
 
     /**
@@ -203,33 +175,27 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @param tick The current time step.
      */
     void timeStepVirus(int tick) {
+
+        performDiffusion(infection.virusCon, infection.virusDiffCoeff);
+
         // Decay of the virus
         for (Cells cell : this) {
-
-            for (Treatment treatment : treatments){
-                // Drug reaction
-                double drugVirusRemovalEff = treatment.drug.drugVirusRemoval.getEfficacy(drugCon);
-                double immuneVirusRemovalEff = treatment.drug.immuneVirusRemoval.getEfficacy(immuneResponseLevel.Get(cell.Isq()));
-
-                double currentCell = virusCon.Get(cell.Isq());
-
-                // TODO: Resolve with Apache solver
-                // virusCon.Add(cell.Isq(), currentCell*(-immune.virusRemovalRate - drugVirusRemovalEff - immuneVirusRemovalEff));
-                virusCon.Add(cell.Isq(), currentCell*(drugVirusRemovalEff - immuneVirusRemovalEff));
-
-            /*double[] y = {currentCell};
-            integrator.integrate(new VirusDiffEquation(immune.virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff),
-                    0, y, 1, y);
-            virusCon.Add(cell.Isq(), y[0]);*/
+            double virusSource = 0;
+            if (cell.cellType == I) { // Infected cell
+                virusSource = infection.virusProduction;
             }
+
+            for (Treatment treatment : treatments) {
+
+                virusSource *= 1 - treatment.drug.virusProductionReductionEff.getEfficacy(treatment.concentration.Get());
+            }
+
+            double virusConcentrationChange = (infection.virusCon.Get(cell.Isq()) - virusSource/infection.virusRemovalRate) * (Math.exp(-infection.virusRemovalRate * timeStep) - 1);
+
+            infection.virusCon.Add(cell.Isq(), virusConcentrationChange);
         }
 
-        // Virus production by infected cells
-        doVirusProduction();
-
-        performDiffusion(virusCon, virus.virusDiffCoeff);
-
-        updateFields(virusCon);
+        updateFields(infection.virusCon);
     }
 
     // Currently the immune system does not react
@@ -422,19 +388,14 @@ public class Experiment extends AgentGrid2D<Cells> {
     }
     */
 
-    private void doVirusProduction(){
+    /*private void doVirusProduction(){
         for (Cells cell : this) {
             for (Treatment treatment: treatments){
                 Drug drug = treatment.drug;
-                if (cell.cellType == I) { // Infected cell
-                    double addedVirusCon = virusSource(drug);
-                    double currentVirusCon = virusCon.Get(cell.Isq());
-                    double newVirusCon = addedVirusCon + currentVirusCon;
-                    virusCon.Set(cell.Isq(), newVirusCon);
-                }
+
             }
         }
-    }
+    }*/
 
 
     private void timeStepDrugInVitro(Drug drug) {

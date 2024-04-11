@@ -7,12 +7,10 @@ class DosageFactory {
 
         String type = (String) jsonObject.get("experimentType");
 
-        if ("InVivo".equals(type)) {
-            return new DosageInVivo(jsonObject);
-        } else if ("InVitro".equals(type)) {
+        if (jsonObject.containsKey("concentration")) {
             return new DosageInVitro(jsonObject);
         } else {
-            throw new IllegalArgumentException("Invalid dosage type: " + type);
+            return new DosageInVivo(jsonObject);
         }
     }
 }
