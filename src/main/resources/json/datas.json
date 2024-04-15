@@ -17,6 +17,22 @@
             "dosage": 0.2,
             "interval": 720.0
           }
+        },
+        "Treatment_2": {
+          "Drug": {
+            "name": "Drug2",
+            "virusProductionReductionEff": {
+              "EC50": 62.0,
+              "maxEfficacy": 1.0,
+              "n": 1
+            }
+          },
+          "Dosage": {
+            "drugDecay": 0.013,
+            "transferRate": 0.0,
+            "dosage": 0.2,
+            "interval": 720.0
+          }
         }
       },
       "Infection": {
