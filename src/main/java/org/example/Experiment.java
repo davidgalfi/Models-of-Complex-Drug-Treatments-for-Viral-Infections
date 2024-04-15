@@ -5,6 +5,7 @@ import HAL.GridsAndAgents.PDEGrid2D;
 
 import static HAL.Util.*;
 import static org.example.Cells.*;
+import static org.example.Technical.*;
 
 import HAL.Rand;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
@@ -23,13 +24,7 @@ public class Experiment extends AgentGrid2D<Cells> {
     Infection infection;
     Treatment[] treatments;
     Cells cells;
-
-
-    /**
-     * The 2D PDE grid representing the immune response level in the simulation.
-     * This is similar to interferon concentrations but more generic.
-     */
-    public PDEGrid2D immuneResponseLevel;
+    Technical technical;
 
     /**
      * The random number generator used in the simulation.
@@ -79,20 +74,20 @@ public class Experiment extends AgentGrid2D<Cells> {
     // public FirstOrderDifferentialEquations ode;
 
     public Experiment(Cells cells,
-                      Rand rn,
+                      Infection infection,
                       Treatment[] treatments,
-                      double fixedDamageRate){
+                      Technical technical,
+                      Rand rn){
 
-        super(cells.xDim, cells.yDim, Cells.class);
+        super(technical.dim[X], technical.dim[Y], Cells.class);
 
-        this.time = time; //  parameter that represents the number of time steps (or ticks) to delay the administration of the drug in the simulation.
         this.rn = rn;
-        this.fixedDamageRate = fixedDamageRate;
 
 
         this.treatments = treatments;
-        this.virus = virus;
+        this.infection = infection;
         this.cells = cells;
+        this.technical = technical;
 
 
 
@@ -100,10 +95,9 @@ public class Experiment extends AgentGrid2D<Cells> {
         // this.ode = new VirusDiffEquation(virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff);
         this.integrator = new DormandPrince54Integrator(10, 10, 10, 10);
 
-        virusCon = new PDEGrid2D(xDim, yDim);
-        immuneResponseLevel = new PDEGrid2D(xDim, yDim);
+        infection.virusCon = new PDEGrid2D(xDim, yDim);
 
-        updateFields(virusCon, immuneResponseLevel);
+        updateFields(infection.virusCon);
     }
 
 
@@ -142,7 +136,7 @@ public class Experiment extends AgentGrid2D<Cells> {
     public void runExperiment(HAL.Gui.GridWindow win) {
         double[] cellCounts = countCells();
 
-        for (int tick = 0; tick < this.numberOfTicks; tick++) {
+        for (int tick = 0; tick < technical.simulationTime; tick++) {
 
             // Progress the simulation by one time step
             simulationStep(tick);
@@ -190,47 +184,13 @@ public class Experiment extends AgentGrid2D<Cells> {
                 virusSource *= 1 - treatment.drug.virusProductionReductionEff.getEfficacy(treatment.concentration.Get());
             }
 
-            double virusConcentrationChange = (infection.virusCon.Get(cell.Isq()) - virusSource/infection.virusRemovalRate) * (Math.exp(-infection.virusRemovalRate * timeStep) - 1);
+            double virusConcentrationChange = (infection.virusCon.Get(cell.Isq()) - virusSource/infection.virusRemovalRate) * (Math.exp(-infection.virusRemovalRate * technical.timeStep) - 1);
 
             infection.virusCon.Add(cell.Isq(), virusConcentrationChange);
         }
 
         updateFields(infection.virusCon);
     }
-
-    // Currently the immune system does not react
-    /*
-    void TimeStepImmune(int tick){
-
-        // decay of the immuneResponseLevel
-        decayImmunResponseLevel();
-
-        // immune response level increases
-        increaseImmunResponseLevel(tick);
-
-        performDiffusion(immuneResponseLevel, immune.immuneResponseDiffCoeff);
-
-        updateFields(immuneResponseLevel);
-    }*/
-
-    /**
-     * Performs a time step for drug-related processes, including drug decay and movement between stomach and lung epithelial cells.
-     *
-     * @param tick The current time step.
-     */
-
-    /*void timeStepDrug(int tick) {
-        for (Treatment treatment : treatments){
-            Drug drug = treatment.drug;
-            if (drug.inVivoOrInVitro.equals("inVitro")) {
-                timeStepDrugInVitro(drug);
-            } else if (drug.inVivoOrInVitro.equals("inVivo")) {
-                timeStepDrugInVivo(drug, tick);
-            } else {
-                System.out.println("inVitro and inVivo are the only two choices currently.");
-            }
-        }
-    }*/
 
     /**
      * Performs a time step for cell-related processes, including infection and cell death.
@@ -258,39 +218,13 @@ public class Experiment extends AgentGrid2D<Cells> {
             else if (cell.cellType == D){
                 deadCells += 1;
             }
-            else if (cell.cellType == C){
-                capillaryCells += 1;
-            }
         }
 
         cellCount[T] = healthyCells;
         cellCount[I] = infectedCells;
         cellCount[D] = deadCells;
-        cellCount[C] = capillaryCells;
 
         return cellCount;
-    }
-
-    /**
-     * Calculates the virus source based on the maximum virus concentration and drug effectiveness.
-     *
-     * @return The virus source.
-     */
-    double virusSource(Drug drug) {
-        return virus.virusMax * (1 - drug.drugVirusRemoval.getEfficacy(drug.getConvertedAndGeneratedDrug(drugCon)));
-    }
-
-
-    /**
-     * Calculates the immune response source for a given tick and cell.
-     *
-     * @param tick The current tick of the simulation.
-     * @param cell The cell for which the immune response is calculated.
-     * @return The immune response source.
-     */
-    double immuneResponseSource(int tick, Cells cell) {
-        // TODO: Currently, the immune system does not react.
-        return 0.0 * Math.pow(10,-3);
     }
 
 
@@ -300,13 +234,13 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @param tick The current tick of the simulation.
      * @return The drug source in the stomach.
      */
-    double DrugSourceStomach(Drug drug, int tick) {
+    /*double DrugSourceStomach(Drug drug, int tick) {
         if ((tick > numberOfTicksDelay) && (((tick - numberOfTicksDelay) % (12 * 60)) == 1)) {
             return drug.drugSourceStomach;
         } else {
             return 0.0;
         }
-    }
+    }*/
 
     /**
      * Draws the current state of the model on the visualization grid window.
@@ -337,7 +271,7 @@ public class Experiment extends AgentGrid2D<Cells> {
             }
 
             // Visualize virus concentration using a heat map
-            vis.SetPix(ItoX(i) + xDim, ItoY(i), HeatMapRBG(virusCon.Get(i)));
+            vis.SetPix(ItoX(i) + xDim, ItoY(i), HeatMapRBG(infection.virusCon.Get(i)));
         }
     }
 
@@ -398,7 +332,7 @@ public class Experiment extends AgentGrid2D<Cells> {
     }*/
 
 
-    private void timeStepDrugInVitro(Drug drug) {
+    /*private void timeStepDrugInVitro(Drug drug) {
         this.drugCon = drug.inVitroDrugCon;
     }
 
@@ -425,5 +359,5 @@ public class Experiment extends AgentGrid2D<Cells> {
 
     private void drugDecay(Drug drug){
         this.drugCon -= drug.drugDecay * this.drugCon;
-    }
+    }*/
 }

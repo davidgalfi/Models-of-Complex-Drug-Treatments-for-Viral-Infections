@@ -1,40 +1,37 @@
 {
-  "Experiements": {
-    "Experiement_1": {
+  "Experiments": {
+    "Experiment_1": {
       "Treatments": {
         "Treatment_1": {
           "Drug": {
             "name": "Nirmatrelvir",
             "virusProductionReductionEff": {
               "EC50": 62.0,
-              "maxEfficacy": 1,
+              "maxEfficacy": 1.0,
               "n": 1
             }
           },
           "Dosage": {
             "drugDecay": 0.013,
-            "transferRate": 0,
-            "dosage": 0,
-            "interval": 0
+            "transferRate": 0.0,
+            "dosage": 0.2,
+            "interval": 720.0
           }
         }
       },
-      "Cell": {
-        "xDim": 200,
-        "yDim": 200,
-        "visScale": 2
-      },
-      "Virus": {
+      "Infection": {
         "virusProduction": 0.00372,
-        "virusDiffCoeff": 0.2
-      },
-      "Host": {
-        "virusRemovalRate": 0.00167
+        "virusDiffCoeff": 0.2,
+        "virusRemovalRate": 0.00167,
+        "cellDeathRate": 0.000702,
+        "infectionRate": 0.000000101
       },
       "Technical": {
-        "simulationTime": 10000,
+        "simulationTime": 10000.0,
         "timeStep": 0.25,
-        "interval": 720
+        "interval": 720.0,
+        "xDim": 200,
+        "yDim": 200
       }
     }
   }

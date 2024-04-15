@@ -33,7 +33,7 @@ public class Infection {
         this.cellDeathRate = (double) jsonObject.get("cellDeathRate");
         this.infectionRate = (double) jsonObject.get("infectionRate");
 
-        double timeStep = (double)technicalJsonObject.get("timeStep");
+        double timeStep = (double) technicalJsonObject.get("timeStep");
 
         this.cellDeathProbability = 1-Math.exp(-cellDeathRate*timeStep);
         this.infectionProbability = infectionRate*timeStep;

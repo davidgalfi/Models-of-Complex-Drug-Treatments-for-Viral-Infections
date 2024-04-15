@@ -18,15 +18,16 @@ public class DosageInVivo implements Dosage{
     public double drugDecay;
     public double transferRate;
     public double dosage;
-    public int interval;
+    public double interval;
 
     public DrugDosageInVivo dosageInVivo;
 
+    //interval is in the technical?
     public DosageInVivo(JSONObject jsonObject) {
         this.drugDecay = (double) jsonObject.get("drugDecay");
         this.transferRate = (double) jsonObject.get("transferRate");
         this.dosage = (double) jsonObject.get("dosage");
-        this.interval = (int) jsonObject.get("interval");
+        this.interval = (double) jsonObject.get("interval");
         this.dosageInVivo = new DrugDosageInVivo(drugDecay, transferRate);
     }
 

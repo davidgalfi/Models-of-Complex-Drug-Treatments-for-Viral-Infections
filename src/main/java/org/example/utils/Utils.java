@@ -1,4 +1,5 @@
 package org.example.utils;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 public class Utils {
 
@@ -11,6 +12,16 @@ public class Utils {
         }
 
         return doubleArray;
+    }
+
+    public static <T> T[] convertArrayListToTArray(
+            ArrayList<T> arrayList, Class<T> clazz) {
+        T[] array = (T[]) Array.newInstance(clazz, arrayList.size());
+        for (int i = 0; i < arrayList.size(); i++) {
+            array[i] = arrayList.get(i);
+        }
+
+        return array;
     }
 
 

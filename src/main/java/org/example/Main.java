@@ -7,13 +7,18 @@ package org.example;
 import HAL.Gui.GridWindow;
 import HAL.Rand;
 import org.example.treatment.Drug;
+import org.example.treatment.Treatment;
 import org.example.utils.JSONReader;
+import org.example.utils.Utils;
 import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static HAL.Util.PWD;
+import static org.example.Technical.*;
 
 /**
  * The NirmatrelvirExperiments class orchestrates and conducts experiments related to the cellular state space and virus concentration simulation.
@@ -31,12 +36,11 @@ public class Main {
      * Specifies whether the experiment is set to a singular or sweep condition.
      * Possible values are "singular" or "sweep".
      */
-    public static String singularOrSweep = "singular"; // "singular" or "sweep"
 
     public static Cells cells;
-    public static Drug drug;
-    public static Immune immune;
-    public static Virus virus;
+    public static Infection infection;
+    public static Treatment[] treatments;
+    public static Technical technical;
 
     /**
      * Represents the grid window for visualizing the cellular state space and virus concentration.
@@ -46,89 +50,16 @@ public class Main {
      */
     public static GridWindow win;
 
-    /**
-     * Executes Nirmatrelvir experiments based on the specified experiment type.
-     * If the experiment type is "singular," a single experiment is conducted,
-     * whereas if the type is "sweep," a parameter sweep is performed.
-     *
-     * For "singular" experiments:
-     * 1. Initializes a new experiment with the given parameters.
-     * 2. Sets the number of ticks based on delay and drug duration.
-     * 3. Initializes the experiment.
-     * 4. Runs the experiment, obtaining the remaining count of healthy cells.
-     * 5. Outputs the results to the console, including drug information if applicable.
-     *
-     * If the experiment type is neither "singular" nor "sweep," an error message is printed.
-     *
-     * The visualization window is closed after completing the experiments.
-     *
-     * singularOrSweep The type of experiment to perform ("singular" or "sweep").
-     * inVivoOrInVitro The context of the experiment ("inVivo" or "inVitro").
-     * win Represents the grid window for visualizing the cellular state space and virus concentration.
-     * y               The height of the grid space.
-     * x               The width of the grid space.
-     * visScale        The visualization scale factor.
-     * isNirmatrelvir  A boolean indicating whether Nirmatrelvir is used.
-     * isRitonavirBoosted A boolean indicating whether Ritonavir is boosted.
-     *
-     * Conducts a parameter sweep experiment based on the specified parameters.
-     *
-     * For each combination of virus diffusion coefficient and damage rate:
-     * 1. Initializes a new experiment with the given parameters.
-     * 2. Sets the number of ticks based on delay and drug duration.
-     * 3. Initializes the experiment.
-     * 4. Runs the experiment, obtaining the remaining count of healthy cells.
-     * 5. Records the results for each combination.
-     * 6. Writes the collective results to a CSV file and prints them to the console.
-     *
-     * isNirmatrelvir        A boolean indicating whether Nirmatrelvir is used.
-     * isRitonavirBoosted    A boolean indicating whether Ritonavir is boosted.
-     * x                    The width of the grid space.
-     * y                    The height of the grid space.
-     * visScale             The visualization scale factor.
-     * inVivoOrInVitro      The context of the experiment ("inVivo" or "inVitro").
-     * BIG_VALUE            A constant representing a large numerical value.
-     * singularOrSweep      The type of experiment to perform ("singular" or "sweep").
-     * collectiveOutFile    The output file for storing collective results.
-     * collectiveResults    The string containing collective results.
-     * win                  The visualization window.
-     */
     public static void RunExperiments(){
-        if (singularOrSweep.equals("singular")) {
-            // Singular experiment
-            Experiment experiment = new Experiment(
-                    cells,
-                    new Rand(1),
-                    treatments,
-                    time,
-                    virus,
-                    110.0);
-            experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
-            experiment.init();
-            experiment.runExperiment(win);
-        } else if (singularOrSweep.equals("sweep")) {
-            // Sweep experiment
-            String collectiveOutputDir = collectiveOutputDir();
-
-            // Sweep parameters
-            for (double virusDiffCoeffSweep = 0.00625; virusDiffCoeffSweep < 50; virusDiffCoeffSweep *= 2) {
-
-                for (double damageRateSweep = 0.0; damageRateSweep < 100.0; damageRateSweep += 5.0) {
-                    Experiment experiment = new Experiment(
-                            cells,
-                            new Rand(1),
-                            treatments,
-                            time,
-                            virus,
-                            damageRateSweep);
-                    experiment.numberOfTicks = experiment.numberOfTicksDelay + experiment.numberOfTicksDrug;
-                    experiment.init();
-                    experiment.runExperiment(win);
-                }
-            }
-        } else {
-            System.out.println("The only options are singular and sweep.");
-        }
+        // Singular experiment
+        Experiment experiment = new Experiment(
+                cells,
+                infection,
+                treatments,
+                technical,
+                new Rand(1));
+        experiment.init();
+        experiment.runExperiment(win);
 
         // Close visualization window
         win.Close();
@@ -163,10 +94,10 @@ public class Main {
         String date_time = dateFormat.format(now);
 
         // Set the base project path
-        String projPath = PWD() + "/output/NirmatrelvirExperiments";
+        String projPath = PWD() + "/output/Experiments";
 
         // Adjust the path based on drug conditions
-        projPath += drug.getName();
+        projPath += treatments[0].drug.name;
 
         // Generate the final collective output directory path
         String collectiveOutputDir = projPath + "/" + date_time + "__collective";
@@ -182,42 +113,62 @@ public class Main {
         return JSONReader.getJSONObjectFromJSON(path);
     }
 
-    public static void storeCellsData(JSONObject newExperiment){
+    /*public static void storeCellsData(JSONObject newExperiment){
         JSONObject cell_ = (JSONObject) newExperiment.get("Cell");
         cells = new Cells(cell_);
 
 
+    }*/
+
+    public static void storeTreatmentsData(JSONObject newExperiment){
+        JSONObject treatments_ = (JSONObject) newExperiment.get("Treatments");
+        JSONObject technical_ = (JSONObject) newExperiment.get("Technical");
+
+        ArrayList<Treatment> treatmentsArrayList = new ArrayList<>();
+
+        int numberOfTreatment_ = 1;
+        String treatmentName_ = "Treatment_" + Integer.toString(numberOfTreatment_);
+
+        while (treatments_.containsKey(treatmentName_)){
+            JSONObject currentTreatment = (JSONObject) treatments_.get(treatmentName_);
+            treatmentsArrayList.add(new Treatment(currentTreatment, technical_));
+
+            numberOfTreatment_++;
+            treatmentName_ = "Treatment_" + Integer.toString(numberOfTreatment_);
+        }
+
+        treatments = new Treatment[treatmentsArrayList.size()];
+        treatments = Utils.convertArrayListToTArray(treatmentsArrayList, Treatment.class);
     }
 
-    public static void storeDrugData(JSONObject newExperiment){
-        JSONObject drug_ = (JSONObject) newExperiment.get("Drug");
-        drug = new Drug(drug_);
+    public static void storeInfectionData(JSONObject newExperiment){
+        JSONObject infection_ = (JSONObject) newExperiment.get("Infection");
+        JSONObject technical_ = (JSONObject) newExperiment.get("Technical");
+        infection = new Infection(infection_, technical_);
     }
 
-    public static void storeImmuneData(JSONObject newExperiment){
-        JSONObject immune_ = (JSONObject) newExperiment.get("Immune");
-        immune = new Immune(immune_);
+    public static void storeTechnicalData(JSONObject newExperiment){
+        JSONObject technical_ = (JSONObject) newExperiment.get("Technical");
+        technical = new Technical(technical_);
     }
 
-    public static void storeVirusData(JSONObject newExperiment){
-        JSONObject virus_ = (JSONObject) newExperiment.get("Virus");
-        virus = new Virus(virus_);
-    }
-
+    //TODO: create array to work with multiple experiments
     public static void storeDatas(String path) throws URISyntaxException {
         JSONObject jsonObject = readDatas(path);
-        JSONObject newExperiment = (JSONObject) jsonObject.get("NewExperiment");
-        storeCellsData(newExperiment);
-        storeDrugData(newExperiment);
-        storeImmuneData(newExperiment);
-        storeVirusData(newExperiment);
+        JSONObject Experiments = (JSONObject) jsonObject.get("Experiments");
+        JSONObject newExperiment = (JSONObject) Experiments.get("Experiment_1");
+
+        //storeCellsData(newExperiment);
+        storeTreatmentsData(newExperiment);
+        storeTechnicalData(newExperiment);
+        storeInfectionData(newExperiment);
     }
 
     public static void createWin(){
         // TODO: visScale
         win = new GridWindow(
                 "Cellular state space, virus concentration.",
-                cells.xDim * 2, cells.yDim, 2, true);
+                technical.dim[X] * 2, technical.dim[Y], 2, true);
     }
     public static void main(String[] args) throws URISyntaxException {
         // Executes Nirmatrelvir experiments
