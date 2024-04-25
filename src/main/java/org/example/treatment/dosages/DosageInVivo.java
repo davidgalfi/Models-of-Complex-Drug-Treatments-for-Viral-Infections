@@ -1,8 +1,7 @@
-package org.example.treatment;
+package org.example.treatment.dosages;
 
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.events.EventHandler;
-import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
 import org.apache.commons.math3.ode.nonstiff.EulerIntegrator;
 import org.apache.commons.math3.ode.nonstiff.RungeKuttaIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
@@ -12,9 +11,8 @@ import org.example.utils.Utils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-public class DosageInVivo implements Dosage{
+public class DosageInVivo implements Dosage {
 
     public double drugDecay;
     public double transferRate;

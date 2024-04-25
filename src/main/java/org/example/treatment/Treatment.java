@@ -1,6 +1,8 @@
 package org.example.treatment;
 
 import org.example.ODEVirtualGrid;
+import org.example.treatment.dosages.Dosage;
+import org.example.treatment.dosages.DosageFactory;
 import org.json.simple.JSONObject;
 
 public class Treatment {

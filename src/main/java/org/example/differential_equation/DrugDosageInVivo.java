@@ -1,7 +1,6 @@
 package org.example.differential_equation;
 
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
-import org.example.treatment.Dosage;
 
 public class DrugDosageInVivo implements FirstOrderDifferentialEquations {
 
