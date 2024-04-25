@@ -223,9 +223,8 @@ public class Experiment extends AgentGrid2D<Cells> {
 
     double[] countCells(){
 
-        double healthyCells = 0, infectedCells = 0, deadCells = 0,
-                capillaryCells = 0;
-        double[] cellCount = new double[4];
+        double healthyCells = 0, infectedCells = 0, deadCells = 0;
+        double[] cellCount = new double[3];
         for (Cells cell: this){
             if (cell.cellType == T){
                 healthyCells += 1;
@@ -245,20 +244,6 @@ public class Experiment extends AgentGrid2D<Cells> {
         return cellCount;
     }
 
-
-    /**
-     * Calculates the drug source in the stomach for a given tick.
-     *
-     * @param tick The current tick of the simulation.
-     * @return The drug source in the stomach.
-     */
-    /*double DrugSourceStomach(Drug drug, int tick) {
-        if ((tick > numberOfTicksDelay) && (((tick - numberOfTicksDelay) % (12 * 60)) == 1)) {
-            return drug.drugSourceStomach;
-        } else {
-            return 0.0;
-        }
-    }*/
 
     /**
      * Draws the current state of the model on the visualization grid window.
@@ -318,64 +303,4 @@ public class Experiment extends AgentGrid2D<Cells> {
             e.printStackTrace();
         }
     }
-
-    /*
-    private void increaseImmunResponseLevel(int tick){
-        for (Cells cell : this){
-            if (cell.cellType == I){ // infected cells produce interferon
-                double addedImmuneResponseLevel = immuneResponseSource(tick, cell);
-                double currentImmuneResponseLevel = immuneResponseLevel.Get(cell.Isq());
-                double newImmuneResponseLevel = addedImmuneResponseLevel + currentImmuneResponseLevel;
-                immuneResponseLevel.Set(cell.Isq(), newImmuneResponseLevel);
-            }
-        }
-    }
-
-    private void decayImmunResponseLevel(){
-        for (Cells cell : this){
-            double immuneResponseNow = immuneResponseLevel.Get(cell.Isq());
-            immuneResponseLevel.Add(cell.Isq(), -immune.immuneResponseDecay * immuneResponseNow);
-        }
-        updateFields(immuneResponseLevel);
-    }
-    */
-
-    /*private void doVirusProduction(){
-        for (Cells cell : this) {
-            for (Treatment treatment: treatments){
-                Drug drug = treatment.drug;
-
-            }
-        }
-    }*/
-
-
-    /*private void timeStepDrugInVitro(Drug drug) {
-        this.drugCon = drug.inVitroDrugCon;
-    }
-
-    private void timeStepDrugInVivo(Drug drug, int tick) {
-        // Decay of the drug
-        drugDecay(drug);
-
-        // Decay of the drug in the stomach and appearance in lung epithelial cells
-        decayAndAppearanceInLungCells(drug);
-
-        // Drug appearance in the stomach
-        drugAppearanceInStomach(drug, tick);
-    }
-
-    private void drugAppearanceInStomach(Drug drug, int tick){
-        drug.drugConStomach += DrugSourceStomach(drug, tick);
-    }
-
-    private void decayAndAppearanceInLungCells(Drug drug){
-        double transferQuantity = drug.drugDecayStomach * drug.drugConStomach;
-        this.drugCon += transferQuantity;
-        drug.drugConStomach -= transferQuantity;
-    }
-
-    private void drugDecay(Drug drug){
-        this.drugCon -= drug.drugDecay * this.drugCon;
-    }*/
 }
