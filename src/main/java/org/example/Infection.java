@@ -7,7 +7,6 @@ public class Infection {
 
     public double virusRemovalRate;
     public double cellDeathRate;
-    public double cellDeathProbability;
     public double infectionRate;
 
     /**
@@ -24,19 +23,11 @@ public class Infection {
      */
     public PDEGrid2D virusCon;
 
-    public double infectionProbability;
-
-    public Infection(JSONObject jsonObject, JSONObject technicalJsonObject){
+    public Infection(JSONObject jsonObject){
         this.virusProduction = (double) jsonObject.get("virusProduction");
         this.virusDiffCoeff = (double) jsonObject.get("virusDiffCoeff");
         this.virusRemovalRate = (double) jsonObject.get("virusRemovalRate");
         this.cellDeathRate = (double) jsonObject.get("cellDeathRate");
         this.infectionRate = (double) jsonObject.get("infectionRate");
-
-        double timeStep = (double) technicalJsonObject.get("timeStep");
-
-        //this.cellDeathProbability = 1-Math.exp(-cellDeathRate*timeStep);
-        this.cellDeathProbability = cellDeathRate*timeStep;
-        this.infectionProbability = infectionRate*timeStep;
     }
 }

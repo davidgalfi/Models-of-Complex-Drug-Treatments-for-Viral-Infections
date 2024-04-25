@@ -143,8 +143,7 @@ public class Main {
 
     public static void storeInfectionData(JSONObject newExperiment){
         JSONObject infection_ = (JSONObject) newExperiment.get("Infection");
-        JSONObject technical_ = (JSONObject) newExperiment.get("Technical");
-        infection = new Infection(infection_, technical_);
+        infection = new Infection(infection_);
     }
 
     public static void storeTechnicalData(JSONObject newExperiment){

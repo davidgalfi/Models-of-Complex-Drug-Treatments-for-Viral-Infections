@@ -85,7 +85,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
         double virusConAtCell = G.infection.virusCon.Get(Isq());
 
         // Sigmoid function for drug efficacy
-        double infectionProb = G.infection.infectionProbability * G.xDim * G.yDim * virusConAtCell;
+        double infectionProb = G.infection.infectionRate * G.xDim * G.yDim * virusConAtCell * G.technical.timeStep;
 
         for(Treatment treatment: G.treatments){
             infectionProb *= (1 - treatment.drug.efficacy.get("infectionReduction").compute(treatment.concentration.Get(Isq())));
@@ -108,7 +108,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * value is less than the death probability. If true, the cell transitions to a dead state.
      */
     public void stochasticDeath() {
-        if (G.rn.Double() < G.infection.cellDeathProbability) {
+        if (G.rn.Double() < 1 - Math.exp(- G.infection.cellDeathRate * G.technical.timeStep)) {
             this.cellType = D; // Transition to dead state
         }
     }
