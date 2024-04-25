@@ -13,8 +13,8 @@
           },
           "Dosage": {
             "drugDecay": 0.013,
-            "transferRate": 0.0,
-            "dosage": 0.2,
+            "transferRate": 0.015,
+            "dosage": 0.0,
             "interval": 720.0
           }
         }
@@ -27,8 +27,8 @@
         "infectionRate": 0.000000101
       },
       "Technical": {
-        "simulationTime": 10000.0,
-        "timeStep": 0.25,
+        "simulationTime": 7920.0,
+        "timeStep": 1.0,
         "xDim": 200,
         "yDim": 200
       }

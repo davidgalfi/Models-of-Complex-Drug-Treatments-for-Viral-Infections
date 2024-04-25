@@ -3,6 +3,7 @@ package org.example.treatment;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.events.EventHandler;
 import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
+import org.apache.commons.math3.ode.nonstiff.EulerIntegrator;
 import org.apache.commons.math3.ode.nonstiff.RungeKuttaIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
@@ -28,17 +29,18 @@ public class DosageInVivo implements Dosage{
         this.transferRate = (double) jsonObject.get("transferRate");
         this.dosage = (double) jsonObject.get("dosage");
         this.interval = (double) jsonObject.get("interval");
-        this.dosageInVivo = new DrugDosageInVivo(drugDecay, transferRate);
+        this.dosageInVivo = new DrugDosageInVivo(transferRate, drugDecay);
     }
 
     @Override
     public double[] getSample(double simulationTime, double timeStep) {
-        double[] sample = new double[(int)(simulationTime/timeStep)+1];
+        double[] sample = new double[(int)(simulationTime/timeStep)+2];
 
         ArrayList<Double> results = new ArrayList<>();
 
         FirstOrderDifferentialEquations equation = dosageInVivo;
-        RungeKuttaIntegrator solver = new ClassicalRungeKuttaIntegrator(timeStep);
+        //RungeKuttaIntegrator solver = new ClassicalRungeKuttaIntegrator(timeStep);
+        RungeKuttaIntegrator solver = new EulerIntegrator(timeStep);
 
         StepHandler stepHandler = new StepHandler() {
             @Override
@@ -74,7 +76,7 @@ public class DosageInVivo implements Dosage{
         solver.addEventHandler(eventHandler, 1, 1.0e-6, 100);
 
         double[] y = {dosage, 0};
-
+        results.add(y[1]);
         solver.integrate(equation, 0, y, simulationTime, y);
 
         Utils.addList(sample, results);

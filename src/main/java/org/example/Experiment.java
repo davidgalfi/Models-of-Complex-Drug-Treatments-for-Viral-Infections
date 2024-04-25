@@ -136,10 +136,10 @@ public class Experiment extends AgentGrid2D<Cells> {
     public void runExperiment(HAL.Gui.GridWindow win) {
         double[] cellCounts = countCells();
 
-        for (int tick = 0; tick < technical.simulationTime; tick++) {
+        for (double tick = 0; tick < technical.simulationTime; tick += technical.timeStep) {
 
             // Progress the simulation by one time step
-            simulationStep(tick);
+            simulationStep( (int) tick);
             DrawModel(win);
         }
     }
@@ -151,10 +151,10 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @param tick The current time step.
      */
     void simulationStep(int tick) {
-        timeStepCells(tick);
+        //timeStepCells(tick);
         timeStepVirus(tick);
         timeStepTreatments(tick);
-        //timeStepDrug(tick);
+        timeStepCells(tick);
     }
 
     private void timeStepTreatments(int tick) {
@@ -169,9 +169,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @param tick The current time step.
      */
     void timeStepVirus(int tick) {
-
-        performDiffusion(infection.virusCon, infection.virusDiffCoeff);
-
+        //performDiffusion(infection.virusCon, infection.virusDiffCoeff);
         // Decay of the virus
         for (Cells cell : this) {
             double virusSource = 0;
@@ -186,8 +184,30 @@ public class Experiment extends AgentGrid2D<Cells> {
 
             double virusConcentrationChange = (infection.virusCon.Get(cell.Isq()) - virusSource/infection.virusRemovalRate) * (Math.exp(-infection.virusRemovalRate * technical.timeStep) - 1);
 
+            virusConcentrationChange = - infection.virusRemovalRate * infection.virusCon.Get(cell.Isq());
+
             infection.virusCon.Add(cell.Isq(), virusConcentrationChange);
         }
+
+        updateFields(infection.virusCon);
+
+        for (Cells cell : this) {
+            double virusSource = 0;
+            if (cell.cellType == I) { // Infected cell
+                virusSource = infection.virusProduction;
+
+                for (Treatment treatment : treatments) {
+
+
+                    virusSource *= 1 - treatment.drug.virusProductionReductionEff.getEfficacy(treatment.concentration.Get() * Math.pow(10,3) / 499.535);
+                }
+
+                double virusConcentrationChange = virusSource + infection.virusCon.Get(cell.Isq());
+                infection.virusCon.Set(cell.Isq(), virusConcentrationChange);
+            }
+        }
+        infection.virusCon.DiffusionADI(infection.virusDiffCoeff);
+
 
         updateFields(infection.virusCon);
     }
@@ -199,7 +219,15 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     void timeStepCells(int tick) {
         for (Cells cell : this) {
-            cell.stochasticStateChange();
+            //cell.stochasticStateChange();
+            if (cell.cellType == Cells.T) {
+                cell.stochasticStateChange();
+            }
+        }
+        for (Cells cell : this) {
+            if (cell.cellType == Cells.I) {
+                cell.stochasticStateChange();
+            }
         }
     }
 
