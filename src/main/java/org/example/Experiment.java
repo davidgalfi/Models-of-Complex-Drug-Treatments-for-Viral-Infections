@@ -118,11 +118,11 @@ public class Experiment extends AgentGrid2D<Cells> {
 
             if (randomValue < ratioHealthy){
                 Cells c = NewAgentSQ(i);
-                c.Init(Cells.T);
+                c.init(Cells.T);
             }
             else if(randomValue > ratioHealthy && randomValue < ratioHealthy + ratioInfected) {
                 Cells c = NewAgentSQ(i);
-                c.Init(Cells.I);
+                c.init(Cells.I);
             }
         }
     }

@@ -7,25 +7,23 @@ import org.json.simple.JSONObject;
 /**
  * The `Cells` class represents individual cells in a 2D square grid simulation.
  * Each cell is an agent capable of interacting with its environment and undergoing state transitions.
- * The state of each cell is determined by the cell type, indicating its health status (healthy, infected, dead, or capillary).
+ * The state of each cell is determined by the cell type, indicating its health status (target, infected, or dead).
  *
- * This class extends the `AgentSQ2Dunstackable` class with a generic parameter of type `NewExperiment`.
+ * This class extends the `AgentSQ2Dunstackable` class with a generic parameter of type `Experiment`.
  * The generic type allows cells to be part of a specific experiment.
  *
  * The different cell types are defined as constants:
- * - `H (0)`: Healthy cell
+ * - `T (0)`: Target cell
  * - `I (1)`: Infected cell
  * - `D (2)`: Dead cell
- * - `C (3)`: Capillary (blood vessel)
  */
 public class Cells extends AgentSQ2Dunstackable<Experiment> {
 
     /**
      * The type of the cell:
-     * 0 - Healthy
+     * 0 - Target
      * 1 - Infected
      * 2 - Dead
-     * 3 - Capillary
      */
     public int cellType;
 
@@ -33,7 +31,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * Constants representing different cell types or states in the simulation.
      * Each constant corresponds to a unique integer value.
      *
-     * H (0): Healthy cell
+     * T (0): Target cell
      */
     public static final int T = 0;
 
@@ -66,7 +64,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * The method accepts boolean parameters indicating the cell's health status. If multiple parameters are true, the method
      * prioritizes the health status in the following order: Healthy > Infected > Dead > Capillary.
      */
-    public void Init(int cellType) {
+    public void init(int cellType) {
         this.cellType = cellType;
     }
 
@@ -91,7 +89,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
         double infectionProb = G.infection.infectionProbability * G.xDim * G.yDim * virusConAtCell;
 
         for(Treatment treatment: G.treatments){
-            infectionProb *= (1-treatment.drug.infectionReductionEff.getEfficacy(treatment.concentration.Get()));
+            infectionProb *= (1 - treatment.drug.infectionReductionEff.getEfficacy(treatment.concentration.Get()));
         }
 
         if (G.rn.Double() < infectionProb) {
