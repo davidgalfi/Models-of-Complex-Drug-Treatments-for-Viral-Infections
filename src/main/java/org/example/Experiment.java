@@ -151,10 +151,9 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @param tick The current time step.
      */
     void simulationStep(int tick) {
-        //timeStepCells(tick);
+        timeStepCells(tick);
         timeStepVirus(tick);
         timeStepTreatments(tick);
-        timeStepCells(tick);
     }
 
     private void timeStepTreatments(int tick) {
@@ -219,15 +218,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     void timeStepCells(int tick) {
         for (Cells cell : this) {
-            //cell.stochasticStateChange();
-            if (cell.cellType == Cells.T) {
-                cell.stochasticStateChange();
-            }
-        }
-        for (Cells cell : this) {
-            if (cell.cellType == Cells.I) {
-                cell.stochasticStateChange();
-            }
+            cell.stochasticStateChange();
         }
     }
 
