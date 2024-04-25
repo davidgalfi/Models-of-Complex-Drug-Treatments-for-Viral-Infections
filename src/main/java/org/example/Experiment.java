@@ -197,7 +197,7 @@ public class Experiment extends AgentGrid2D<Cells> {
                 for (Treatment treatment : treatments) {
 
 
-                    virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get() * Math.pow(10,3) / 499.535);
+                    virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get());
                 }
 
                 double virusConcentrationChange = virusSource + infection.virusCon.Get(cell.Isq());

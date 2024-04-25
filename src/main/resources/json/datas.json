@@ -5,6 +5,7 @@
         "Treatment_1": {
           "Drug": {
             "name": "Nirmatrelvir",
+            "molarMass": 499.535,
             "virusProductionReduction": {
               "EC50": 62.0,
               "maxEfficacy": 1.0,
