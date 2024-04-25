@@ -31,7 +31,9 @@
         "simulationTime": 7920.0,
         "timeStep": 1.0,
         "xDim": 200,
-        "yDim": 200
+        "yDim": 200,
+        "initialCellRatioT": 0.9995,
+        "initialCellRatioI": 0.0005,
       }
     }
   }

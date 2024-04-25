@@ -33,15 +33,6 @@ public class Experiment extends AgentGrid2D<Cells> {
 
 
 
-    /**
-     * The ratio of healthy cells in the initial configuration of the simulation.
-     */
-    public double ratioHealthy = 0.9995;
-
-    /**
-     * The ratio of infected cells in the initial configuration of the simulation.
-     */
-    public double ratioInfected = 0.0005;
 
 
     /**
@@ -104,18 +95,18 @@ public class Experiment extends AgentGrid2D<Cells> {
     /**
      * Initializes the simulation by setting up the grid and initializing cells based on specified ratios.
      * This method writes the header for output files and populates the grid with cells based on random values
-     * and predefined ratios for healthy, infected, and capillary cells.
+     * and predefined ratios for target and infected cells.
      */
     public void init(){
 
         for (int i = 0; i < length; i++){
             double randomValue = rn.Double();
 
-            if (randomValue < ratioHealthy){
+            if (randomValue < technical.initialCellRatioT){
                 Cells c = NewAgentSQ(i);
                 c.init(Cells.T);
             }
-            else if(randomValue > ratioHealthy && randomValue < ratioHealthy + ratioInfected) {
+            else if(randomValue < technical.initialCellRatioT + technical.initialCellRatioI) {
                 Cells c = NewAgentSQ(i);
                 c.init(Cells.I);
             }
