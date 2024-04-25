@@ -31,10 +31,6 @@ public class Experiment extends AgentGrid2D<Cells> {
     public HAL.Rand rn;
 
 
-    /**
-     * The concentration of the drug in the simulation.
-     */
-    public double drugCon = 0;
 
 
     /**
