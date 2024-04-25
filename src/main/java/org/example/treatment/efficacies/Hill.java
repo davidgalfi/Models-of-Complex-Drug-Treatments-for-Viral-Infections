@@ -1,4 +1,4 @@
-package org.example.efficacies;
+package org.example.treatment.efficacies;
 
 public class Hill implements Efficacy {
 

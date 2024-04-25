@@ -1,8 +1,8 @@
 package org.example.treatment;
 
-import org.example.efficacies.Efficacy;
-import org.example.efficacies.NoEffect;
-import org.example.efficacies.Hill;
+import org.example.treatment.efficacies.Efficacy;
+import org.example.treatment.efficacies.NoEffect;
+import org.example.treatment.efficacies.Hill;
 import org.json.simple.JSONObject;
 
 public class Drug {

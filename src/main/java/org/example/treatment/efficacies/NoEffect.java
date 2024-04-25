@@ -1,6 +1,4 @@
-package org.example.efficacies;
-
-import org.example.efficacies.Efficacy;
+package org.example.treatment.efficacies;
 
 public class NoEffect implements Efficacy {
 
