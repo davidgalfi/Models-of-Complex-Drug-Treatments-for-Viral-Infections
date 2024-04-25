@@ -12,7 +12,7 @@
             }
           },
           "Dosage": {
-            "drugDecay": 0.013,
+            "targetDecay": 0.013,
             "transferRate": 0.015,
             "dosage": 0.0,
             "interval": 720.0

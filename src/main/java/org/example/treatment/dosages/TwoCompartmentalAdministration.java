@@ -2,43 +2,42 @@ package org.example.treatment.dosages;
 
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.events.EventHandler;
-import org.apache.commons.math3.ode.nonstiff.EulerIntegrator;
 import org.apache.commons.math3.ode.nonstiff.RungeKuttaIntegrator;
+import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
-import org.example.differential_equation.DrugDosageInVivo;
+import org.example.differential_equation.TwoCompartmentalPharmacoKinetics;
 import org.example.utils.Utils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 
-public class DosageInVivo implements Dosage {
+public class TwoCompartmentalAdministration implements Dosage {
 
-    public double drugDecay;
-    public double transferRate;
-    public double dosage;
-    public double interval;
+    double targetDecay;
+    double transferRate;
+    double dosage;
+    double interval;
 
-    public DrugDosageInVivo dosageInVivo;
+    TwoCompartmentalPharmacoKinetics pharmacoKineticalModel;
 
     //interval is in the technical?
-    public DosageInVivo(JSONObject jsonObject) {
-        this.drugDecay = (double) jsonObject.get("drugDecay");
+    public TwoCompartmentalAdministration(JSONObject jsonObject) {
+        this.targetDecay = (double) jsonObject.get("targetDecay");
         this.transferRate = (double) jsonObject.get("transferRate");
         this.dosage = (double) jsonObject.get("dosage");
         this.interval = (double) jsonObject.get("interval");
-        this.dosageInVivo = new DrugDosageInVivo(transferRate, drugDecay);
+        this.pharmacoKineticalModel = new TwoCompartmentalPharmacoKinetics(transferRate, targetDecay);
     }
 
     @Override
     public double[] getSample(double simulationTime, double timeStep) {
-        double[] sample = new double[(int)(simulationTime/timeStep)+2];
+        double[] sample = new double[(int)(simulationTime / timeStep) + 2];
 
         ArrayList<Double> results = new ArrayList<>();
 
-        FirstOrderDifferentialEquations equation = dosageInVivo;
-        //RungeKuttaIntegrator solver = new ClassicalRungeKuttaIntegrator(timeStep);
-        RungeKuttaIntegrator solver = new EulerIntegrator(timeStep);
+        FirstOrderDifferentialEquations equation = pharmacoKineticalModel;
+        RungeKuttaIntegrator solver = new ClassicalRungeKuttaIntegrator(timeStep);
 
         StepHandler stepHandler = new StepHandler() {
             @Override
@@ -74,7 +73,9 @@ public class DosageInVivo implements Dosage {
         solver.addEventHandler(eventHandler, 1, 1.0e-6, 100);
 
         double[] y = {dosage, 0};
+
         results.add(y[1]);
+
         solver.integrate(equation, 0, y, simulationTime, y);
 
         Utils.addList(sample, results);
