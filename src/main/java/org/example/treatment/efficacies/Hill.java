@@ -16,7 +16,7 @@ public class Hill implements Efficacy {
     }
 
     @Override
-    public double getEfficacy(double concentration) {
+    public double compute(double concentration) {
         return maxEfficacy / (1. + Math.pow(EC50 / concentration, n));
     }
 }

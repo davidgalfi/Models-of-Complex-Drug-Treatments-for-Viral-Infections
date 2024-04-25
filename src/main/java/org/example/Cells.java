@@ -88,7 +88,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
         double infectionProb = G.infection.infectionProbability * G.xDim * G.yDim * virusConAtCell;
 
         for(Treatment treatment: G.treatments){
-            infectionProb *= (1 - treatment.drug.efficacy.get("infectionReduction").getEfficacy(treatment.concentration.Get(Isq())));
+            infectionProb *= (1 - treatment.drug.efficacy.get("infectionReduction").compute(treatment.concentration.Get(Isq())));
         }
 
         if (G.rn.Double() < infectionProb) {
