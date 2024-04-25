@@ -178,7 +178,7 @@ public class Experiment extends AgentGrid2D<Cells> {
 
             for (Treatment treatment : treatments) {
 
-                virusSource *= 1 - treatment.drug.virusProductionReductionEff.getEfficacy(treatment.concentration.Get());
+                virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").getEfficacy(treatment.concentration.Get());
             }
 
             double virusConcentrationChange = (infection.virusCon.Get(cell.Isq()) - virusSource/infection.virusRemovalRate) * (Math.exp(-infection.virusRemovalRate * technical.timeStep) - 1);
@@ -198,7 +198,7 @@ public class Experiment extends AgentGrid2D<Cells> {
                 for (Treatment treatment : treatments) {
 
 
-                    virusSource *= 1 - treatment.drug.virusProductionReductionEff.getEfficacy(treatment.concentration.Get() * Math.pow(10,3) / 499.535);
+                    virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").getEfficacy(treatment.concentration.Get() * Math.pow(10,3) / 499.535);
                 }
 
                 double virusConcentrationChange = virusSource + infection.virusCon.Get(cell.Isq());

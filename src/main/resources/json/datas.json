@@ -5,7 +5,7 @@
         "Treatment_1": {
           "Drug": {
             "name": "Nirmatrelvir",
-            "virusProductionReductionEff": {
+            "virusProductionReduction": {
               "EC50": 62.0,
               "maxEfficacy": 1.0,
               "n": 1
