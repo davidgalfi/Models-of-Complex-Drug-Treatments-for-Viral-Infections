@@ -55,10 +55,6 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     public String outputDir;
 
-    public FirstOrderIntegrator integrator;
-
-    // public FirstOrderDifferentialEquations ode;
-
     public Experiment(Cells cells,
                       Infection infection,
                       Treatment[] treatments,
@@ -75,11 +71,6 @@ public class Experiment extends AgentGrid2D<Cells> {
         this.cells = cells;
         this.technical = technical;
 
-
-
-
-        // this.ode = new VirusDiffEquation(virusRemovalRate, drugVirusRemovalEff, immuneVirusRemovalEff);
-        this.integrator = new DormandPrince54Integrator(10, 10, 10, 10);
 
         infection.virusCon = new PDEGrid2D(xDim, yDim);
 
