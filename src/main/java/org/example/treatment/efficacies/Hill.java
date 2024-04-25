@@ -1,21 +1,18 @@
 package org.example.treatment.efficacies;
 
+import org.json.simple.JSONObject;
+
 public class Hill implements Efficacy {
 
     double EC50;
     int n;
     double maxEfficacy;
 
-    public Hill(double ec50, int n) {
-        this.EC50 = ec50;
-        this.n = n;
-        this.maxEfficacy = 1;
-    }
+    public Hill(JSONObject jsonObject) {
 
-    public Hill(double ec50, int n, double maxEfficacy) {
-        this.EC50 = ec50;
-        this.n = n;
-        this.maxEfficacy = maxEfficacy;
+        this.EC50 = (double) jsonObject.get("EC50");
+        this.n = jsonObject.containsKey("n") ? Math.toIntExact((Long) jsonObject.get("n")) : 1;
+        this.maxEfficacy = jsonObject.containsKey("maxEfficacy") ? (double) jsonObject.get("maxEfficacy") : 1.0;
     }
 
     @Override
