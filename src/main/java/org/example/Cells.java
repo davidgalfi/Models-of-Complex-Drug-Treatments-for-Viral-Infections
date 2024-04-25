@@ -83,13 +83,13 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
      * effective infection probability, the cell transitions to an infected state (Type 1).
      */
     public void stochasticInfection() {
-        double virusConAtCell = G.infection.virusCon.Get((Isq()));
+        double virusConAtCell = G.infection.virusCon.Get(Isq());
 
         // Sigmoid function for drug efficacy
         double infectionProb = G.infection.infectionProbability * G.xDim * G.yDim * virusConAtCell;
 
         for(Treatment treatment: G.treatments){
-            infectionProb *= (1 - treatment.drug.infectionReductionEff.getEfficacy(treatment.concentration.Get()));
+            infectionProb *= (1 - treatment.drug.infectionReductionEff.getEfficacy(treatment.concentration.Get(Isq())));
         }
 
         if (G.rn.Double() < infectionProb) {

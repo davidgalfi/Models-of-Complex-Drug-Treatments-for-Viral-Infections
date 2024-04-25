@@ -8,7 +8,7 @@ public class ODEVirtualGrid {
         this.time = 0;
     }
 
-    public double Get(){
+    public double Get(Object... args){
         return data[time];
     }
     public void Update(){
