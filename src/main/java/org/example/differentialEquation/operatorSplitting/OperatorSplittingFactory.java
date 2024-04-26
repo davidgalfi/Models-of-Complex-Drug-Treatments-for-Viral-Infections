@@ -1,4 +1,4 @@
-package org.example.differential_equation.operatorSplitting;
+package org.example.differentialEquation.operatorSplitting;
 
 import org.json.simple.JSONObject;
 

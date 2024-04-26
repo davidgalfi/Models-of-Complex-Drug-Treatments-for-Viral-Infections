@@ -1,9 +1,7 @@
 package org.example;
 
-import org.example.differential_equation.operatorSplitting.MarchukStrangSplitting;
-import org.example.differential_equation.operatorSplitting.OperatorSplitting;
-import org.example.differential_equation.operatorSplitting.OperatorSplittingFactory;
-import org.example.differential_equation.operatorSplitting.SequentialSplitting;
+import org.example.differentialEquation.operatorSplitting.OperatorSplitting;
+import org.example.differentialEquation.operatorSplitting.OperatorSplittingFactory;
 import org.json.simple.JSONObject;
 
 public class Technical {

@@ -6,7 +6,7 @@ import org.apache.commons.math3.ode.nonstiff.RungeKuttaIntegrator;
 import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
-import org.example.differential_equation.TwoCompartmentalPharmacoKinetics;
+import org.example.differentialEquation.TwoCompartmentalPharmacoKinetics;
 import org.example.utils.Utils;
 import org.json.simple.JSONObject;
 

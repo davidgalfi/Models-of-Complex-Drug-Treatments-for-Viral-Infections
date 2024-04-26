@@ -1,4 +1,4 @@
-package org.example.differential_equation;
+package org.example.differentialEquation;
 
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 
