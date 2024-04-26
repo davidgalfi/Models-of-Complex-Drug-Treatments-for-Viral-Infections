@@ -67,7 +67,9 @@ public class Infection {
 
     public void step(Experiment G) {
 
-        diffusion(G, G.technical.timeStep);
-        decayAndProduction(G, G.technical.timeStep);
+        G.technical.operatorSplitting.operatorSplit(
+                (timeStep) -> diffusion(G, timeStep),
+                (timeStep) -> decayAndProduction(G, timeStep)
+        );
     }
 }

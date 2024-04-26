@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.differential_equation.operatorSplitting.OperatorSplitting;
+import org.example.differential_equation.operatorSplitting.SequentialSplitting;
 import org.json.simple.JSONObject;
 
 public class Technical {
@@ -21,6 +23,8 @@ public class Technical {
     public double simulationTime;
     public double timeStep;
 
+    public OperatorSplitting operatorSplitting;
+
     public Long seed;
 
     public Technical(JSONObject jsonObject) {
@@ -35,5 +39,7 @@ public class Technical {
         this.timeStep = (double) jsonObject.get("timeStep");
 
         this.seed = (Long) jsonObject.getOrDefault("seed", System.currentTimeMillis());
+
+        this.operatorSplitting = new SequentialSplitting(this.timeStep);
     }
 }
