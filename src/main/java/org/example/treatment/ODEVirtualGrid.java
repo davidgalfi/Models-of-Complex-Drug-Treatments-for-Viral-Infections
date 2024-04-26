@@ -2,16 +2,16 @@ package org.example.treatment;
 
 public class ODEVirtualGrid {
     double[] data;
-    int time;
+    int localTime;
     public ODEVirtualGrid(double[] data){
         this.data = data;
-        this.time = 0;
+        this.localTime = 0;
     }
 
     public double Get(Object... args){
-        return data[time];
+        return data[localTime];
     }
-    public void Update(){
-        time++;
+    public void Update(Object... args){
+        localTime++;
     }
 }

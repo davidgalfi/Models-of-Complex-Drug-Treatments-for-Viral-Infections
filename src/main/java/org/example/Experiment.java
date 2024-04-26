@@ -85,7 +85,7 @@ public class Experiment extends AgentGrid2D<Cells> {
 
     private void timeStepTreatments() {
         for(Treatment treatment: treatments){
-            treatment.concentration.Update();
+            treatment.concentration.Update(this);
         }
     }
 
