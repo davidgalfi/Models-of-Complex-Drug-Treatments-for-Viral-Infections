@@ -117,30 +117,30 @@ public class Experiment extends AgentGrid2D<Cells> {
 
     public Map<String, Number> cellStatistics(){
 
-        double targetCells = 0, infectedCells = 0, deadCells = 0;
+        double targetCellCount = 0, infectedCellCount = 0, deadCellCount = 0;
 
         for (Cells cell: this){
 
             if (cell.cellType == T){
-                targetCells += 1;
+                targetCellCount += 1;
 
             }
             else if (cell.cellType == I ){
-                infectedCells += 1;
+                infectedCellCount += 1;
 
             }
             else if (cell.cellType == D){
-                deadCells += 1;
+                deadCellCount += 1;
 
             }
         }
 
         Map<String, Number> statistics = new HashMap<>();
 
-        statistics.put("T", targetCells);
-        statistics.put("I", infectedCells);
-        statistics.put("D", deadCells);
-        statistics.put("damageRatio", 1 - targetCells / this.length);
+        statistics.put("T", targetCellCount);
+        statistics.put("I", infectedCellCount);
+        statistics.put("D", deadCellCount);
+        statistics.put("damageRatio", 1 - targetCellCount / this.length);
 
         return statistics;
     }
