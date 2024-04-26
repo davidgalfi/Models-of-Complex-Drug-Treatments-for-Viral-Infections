@@ -5,28 +5,18 @@ import org.example.treatment.dosages.DosageFactory;
 import org.json.simple.JSONObject;
 
 public class Treatment {
-    public Drug drug;
-    public Dosage dosage;
 
-    public ODEVirtualGrid concentration;
+    final public Drug drug;
+    final public Dosage dosage;
 
-    public Treatment(JSONObject treatmentJsonObject, JSONObject technicalJsonObject){
-        setDrug((JSONObject) treatmentJsonObject.get("Drug"));
-        setDosage((JSONObject) treatmentJsonObject.get("Dosage"));
-        setConcentration((JSONObject) technicalJsonObject);
-    }
+    final public ODEVirtualGrid concentration;
 
-    private void setDrug(JSONObject jsonObject){
-        this.drug = new Drug(jsonObject);
-    }
+    public Treatment(JSONObject treatmentJsonObject, double simulationTime, double timeStep){
 
-    private void setDosage(JSONObject jsonObject){
-        this.dosage = DosageFactory.createDosage(jsonObject);
-    }
+        this.drug = new Drug((JSONObject) treatmentJsonObject.get("Drug"));
 
-    private void setConcentration(JSONObject jsonObject){
-        double simulationTime = (double)jsonObject.get("simulationTime");
-        double timeStep = (double)jsonObject.get("timeStep");
+        this.dosage = DosageFactory.createDosage((JSONObject) treatmentJsonObject.get("Dosage"));
+
         this.concentration = new ODEVirtualGrid(dosage.getSample(simulationTime, timeStep));
     }
 }

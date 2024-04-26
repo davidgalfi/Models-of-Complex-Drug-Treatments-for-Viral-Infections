@@ -120,9 +120,8 @@ public class Main {
 
     }*/
 
-    public static void storeTreatmentsData(JSONObject newExperiment){
+    public static void storeTreatmentsData(JSONObject newExperiment, Technical technical_){
         JSONObject treatments_ = (JSONObject) newExperiment.get("Treatments");
-        JSONObject technical_ = (JSONObject) newExperiment.get("Technical");
 
         ArrayList<Treatment> treatmentsArrayList = new ArrayList<>();
 
@@ -131,7 +130,7 @@ public class Main {
 
         while (treatments_.containsKey(treatmentName_)){
             JSONObject currentTreatment = (JSONObject) treatments_.get(treatmentName_);
-            treatmentsArrayList.add(new Treatment(currentTreatment, technical_));
+            treatmentsArrayList.add(new Treatment(currentTreatment, technical_.simulationTime, technical_.timeStep));
 
             numberOfTreatment_++;
             treatmentName_ = "Treatment_" + Integer.toString(numberOfTreatment_);
@@ -158,8 +157,8 @@ public class Main {
         JSONObject newExperiment = (JSONObject) Experiments.get("Experiment_1");
 
         //storeCellsData(newExperiment);
-        storeTreatmentsData(newExperiment);
         storeTechnicalData(newExperiment);
+        storeTreatmentsData(newExperiment, technical);
         storeInfectionData(newExperiment, technical);
     }
 
