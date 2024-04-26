@@ -10,24 +10,24 @@ public class Technical {
 
     public static final int X = 0;
     public static final int Y = 1;
-    public int[] dim = new int[2];
+    final public int[] dim = new int[2];
 
     /**
      * The ratio of target cells in the initial configuration of the simulation.
      */
-    public double initialCellRatioT;
+    final public double initialCellRatioT;
 
     /**
      * The ratio of infected cells in the initial configuration of the simulation.
      */
-    public double initialCellRatioI;
+    final public double initialCellRatioI;
 
-    public double simulationTime;
-    public double timeStep;
+    final public double simulationTime;
+    final public double timeStep;
 
-    public OperatorSplitting operatorSplitting;
+    final public OperatorSplitting operatorSplitting;
 
-    public Long seed;
+    final public Long seed;
 
     public Technical(JSONObject jsonObject) {
 
