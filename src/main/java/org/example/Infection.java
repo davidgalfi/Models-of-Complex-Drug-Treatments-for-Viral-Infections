@@ -47,11 +47,16 @@ public class Infection {
 
         for (Cells cell : G) {
 
-            double virusSource = (cell.cellType == I) ? virusProduction : 0.0;
+            double virusSource = 0;
 
-            for (Treatment treatment : G.treatments) {
+            if (cell.cellType == I) {
 
-                virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get());
+                virusSource = virusProduction;
+
+                for (Treatment treatment : G.treatments) {
+
+                    virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get());
+                }
             }
 
             double virusConcentrationChange =
