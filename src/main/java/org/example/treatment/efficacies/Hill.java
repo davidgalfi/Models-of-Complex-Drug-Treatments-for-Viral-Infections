@@ -5,11 +5,11 @@ import org.json.simple.JSONObject;
 
 public class Hill implements Efficacy {
 
-    double EC50; // in [nM]
-    int n;
-    double maxEfficacy;
+    final double EC50; // in [nM]
+    final int n;
+    final double maxEfficacy;
 
-    Function<Double, Double> convertToNanoMolars;
+    final Function<Double, Double> convertToNanoMolars;
 
     public Hill(JSONObject jsonObject, double molarMass) {
 

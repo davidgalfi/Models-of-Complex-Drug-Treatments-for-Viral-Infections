@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Drug {
 
-    public String name;
+    final public String name;
 
     public Map<String, Efficacy> efficacy;
 
@@ -21,7 +21,7 @@ public class Drug {
 
     public Drug(JSONObject jsonObject){
 
-        this.name = (String) jsonObject.get("name");
+        this.name = (String) jsonObject.getOrDefault("name", "drug");
 
         this.efficacy = new HashMap<>();
 

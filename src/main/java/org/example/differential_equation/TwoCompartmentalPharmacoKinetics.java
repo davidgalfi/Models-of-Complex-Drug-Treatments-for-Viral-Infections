@@ -4,8 +4,8 @@ import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 
 public class TwoCompartmentalPharmacoKinetics implements FirstOrderDifferentialEquations {
 
-    double transferRate;
-    double targetDecay;
+    final double transferRate;
+    final double targetDecay;
 
     public TwoCompartmentalPharmacoKinetics(double transferRate, double targetDecay) {
         this.transferRate = transferRate;

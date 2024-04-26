@@ -5,7 +5,7 @@ import org.json.simple.JSONObject;
 import java.util.Arrays;
 
 public class ConstantDosage implements Dosage {
-    double concentration;
+    final double concentration;
 
     public ConstantDosage(JSONObject jsonObject) {
         this.concentration = (double) jsonObject.get("concentration");

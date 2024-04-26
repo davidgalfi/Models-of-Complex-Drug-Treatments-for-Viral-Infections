@@ -14,12 +14,12 @@ import java.util.ArrayList;
 
 public class TwoCompartmentalAdministration implements Dosage {
 
-    double targetDecay;
-    double transferRate;
-    double dosage;
-    double interval;
+    final double targetDecay;
+    final double transferRate;
+    final double dosage;
+    final double interval;
 
-    TwoCompartmentalPharmacoKinetics pharmacoKineticalModel;
+    final TwoCompartmentalPharmacoKinetics pharmacoKineticalModel;
 
     //interval is in the technical?
     public TwoCompartmentalAdministration(JSONObject jsonObject) {
