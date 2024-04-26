@@ -30,11 +30,6 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     public HAL.Rand rn;
 
-
-
-
-
-
     /**
      * The FileIO object for writing simulation output to a file.
      */
@@ -65,12 +60,10 @@ public class Experiment extends AgentGrid2D<Cells> {
 
         this.rn = rn;
 
-
         this.treatments = treatments;
         this.infection = infection;
         this.cells = cells;
         this.technical = technical;
-
 
         infection.virusCon = new PDEGrid2D(xDim, yDim);
 

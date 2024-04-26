@@ -21,6 +21,8 @@ public class Technical {
     public double simulationTime;
     public double timeStep;
 
+    public Long seed;
+
     public Technical(JSONObject jsonObject) {
 
         this.dim[X] = ((Long) jsonObject.get("xDim")).intValue();
@@ -31,5 +33,7 @@ public class Technical {
 
         this.simulationTime = (double) jsonObject.get("simulationTime");
         this.timeStep = (double) jsonObject.get("timeStep");
+
+        this.seed = (Long) jsonObject.getOrDefault("seed", System.currentTimeMillis());
     }
 }

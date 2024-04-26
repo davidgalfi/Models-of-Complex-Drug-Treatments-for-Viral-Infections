@@ -57,7 +57,7 @@ public class Main {
                 infection,
                 treatments,
                 technical,
-                new Rand(1));
+                new Rand(technical.seed));
         experiment.init();
         experiment.runExperiment(win);
 
