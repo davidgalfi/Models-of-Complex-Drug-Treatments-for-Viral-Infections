@@ -142,6 +142,9 @@ public class Experiment extends AgentGrid2D<Cells> {
             simulationStep(tick);
             DrawModel(win);
         }
+
+        cellCounts = countCells();
+        System.out.println(cellCounts[I]);
     }
 
     /**
@@ -177,7 +180,7 @@ public class Experiment extends AgentGrid2D<Cells> {
             double virusSource = 0;
             if (cell.cellType == I) { // Infected cell
                 virusSource = infection.virusProduction;
-            }
+
 
             for (Treatment treatment : treatments) {
 
@@ -187,6 +190,7 @@ public class Experiment extends AgentGrid2D<Cells> {
             double virusConcentrationChange = (infection.virusCon.Get(cell.Isq()) - virusSource/infection.virusRemovalRate) * (Math.exp(-infection.virusRemovalRate * technical.timeStep) - 1);
 
             infection.virusCon.Add(cell.Isq(), virusConcentrationChange);
+            }
         }
 
         updateFields(infection.virusCon);

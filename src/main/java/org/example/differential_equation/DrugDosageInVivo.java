@@ -8,7 +8,7 @@ public class DrugDosageInVivo implements FirstOrderDifferentialEquations {
     public double transferRate;
     public double drugDecay;
 
-    public DrugDosageInVivo(double transferRate, double drugDecay) {
+    public DrugDosageInVivo(double drugDecay, double transferRate) {
         this.transferRate = transferRate;
         this.drugDecay = drugDecay;
     }

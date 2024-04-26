@@ -6,30 +6,14 @@
           "Drug": {
             "name": "Nirmatrelvir",
             "virusProductionReductionEff": {
-              "EC50": 62.0,
+              "EC50": 500.0,
               "maxEfficacy": 1.0,
               "n": 1
             }
           },
           "Dosage": {
             "drugDecay": 0.013,
-            "transferRate": 0.0,
-            "dosage": 0.2,
-            "interval": 720.0
-          }
-        },
-        "Treatment_2": {
-          "Drug": {
-            "name": "Drug2",
-            "virusProductionReductionEff": {
-              "EC50": 62.0,
-              "maxEfficacy": 1.0,
-              "n": 1
-            }
-          },
-          "Dosage": {
-            "drugDecay": 0.013,
-            "transferRate": 0.0,
+            "transferRate": 0.2,
             "dosage": 0.2,
             "interval": 720.0
           }
@@ -43,7 +27,7 @@
         "infectionRate": 0.000000101
       },
       "Technical": {
-        "simulationTime": 10000.0,
+        "simulationTime": 3000.0,
         "timeStep": 0.25,
         "xDim": 200,
         "yDim": 200

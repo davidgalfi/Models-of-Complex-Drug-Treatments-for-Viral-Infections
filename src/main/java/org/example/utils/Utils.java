@@ -35,7 +35,7 @@ public class Utils {
         }
 
         for (int i = 0; i < arrayList.size(); i++) {
-            array[i] += arrayList.get(i);
+            array[i] = arrayList.get(i);
         }
     }
 }
