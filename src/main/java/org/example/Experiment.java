@@ -126,14 +126,14 @@ public class Experiment extends AgentGrid2D<Cells> {
      *
      * @param win The GUI window for visualization.
      */
-    public void runExperiment(HAL.Gui.GridWindow win) {
+    public void runExperiment(Visuals visuals) {
         double[] cellCounts = countCells();
 
         for (double tick = 0; tick < technical.simulationTime; tick += technical.timeStep) {
 
             // Progress the simulation by one time step
             simulationStep();
-            DrawModel(win);
+            visuals.drawExperimentState(this);
         }
     }
 
@@ -160,39 +160,5 @@ public class Experiment extends AgentGrid2D<Cells> {
         cellCount[D] = deadCells;
 
         return cellCount;
-    }
-
-
-    /**
-     * Draws the current state of the model on the visualization grid window.
-     *
-     * This method iterates through each agent in the model, retrieves its information, and sets the corresponding
-     * visualization pixel on the grid window. Healthy cells are represented by a green color, infected cells by a
-     * purple color, dead cells by black, and capillary cells by white. Additionally, the concentration of the virus is
-     * visualized using a heat map on the same grid window.
-     *
-     * @param vis The grid window used for visualization.
-     */
-    void DrawModel(HAL.Gui.GridWindow vis) {
-        for (int i = 0; i < length; i++) {
-            Cells drawMe = GetAgent(i);
-
-            // Check if the agent is null (empty grid cell)
-            if (drawMe == null) {
-                vis.SetPix(i, RGB256(255, 255, 255)); // Set empty cell color to white
-            } else {
-                // Set colors based on cell type
-                if (drawMe.cellType == T) {        // Healthy cells
-                    vis.SetPix(i, RGB256(119, 198, 110)); // Set healthy cell color to green
-                } else if (drawMe.cellType == I) { // Infected cells
-                    vis.SetPix(i, RGB256(124, 65, 120));  // Set infected cell color to purple
-                } else if (drawMe.cellType == D) { // Dead cells
-                    vis.SetPix(i, RGB(0, 0, 0)); // Set dead cell color to black
-                }
-            }
-
-            // Visualize virus concentration using a heat map
-            vis.SetPix(ItoX(i) + xDim, ItoY(i), HeatMapRBG(infection.virusCon.Get(i)));
-        }
     }
 }

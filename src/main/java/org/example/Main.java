@@ -48,7 +48,7 @@ public class Main {
      * The dimensions are determined by doubling the horizontal dimension (x * 2), the vertical dimension (y),
      * and the visualization scale (visScale), with additional information about the grid's toroidal nature (true).
      */
-    public static GridWindow win;
+    public static Visuals visuals;
 
     public static void RunExperiments(){
         // Singular experiment
@@ -58,10 +58,7 @@ public class Main {
                 treatments,
                 technical,
                 new Rand(technical.seed));
-        experiment.runExperiment(win);
-
-        // Close visualization window
-        win.Close();
+        experiment.runExperiment(visuals);
     }
 
     /**
@@ -161,16 +158,11 @@ public class Main {
         storeInfectionData(newExperiment, technical);
     }
 
-    public static void createWin(){
-        // TODO: visScale
-        win = new GridWindow(
-                "Cellular state space, virus concentration.",
-                technical.dim[X] * 2, technical.dim[Y], 2, true);
-    }
     public static void main(String[] args) throws URISyntaxException {
         // Executes Nirmatrelvir experiments
         storeDatas("json/datas.json");
-        createWin();
+        visuals = new Visuals(technical.dim[X], technical.dim[Y]);
         RunExperiments();
+        visuals.close();
     }
 }
