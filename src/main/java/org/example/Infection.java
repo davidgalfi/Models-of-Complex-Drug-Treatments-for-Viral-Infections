@@ -1,7 +1,10 @@
 package org.example;
 
 import HAL.GridsAndAgents.PDEGrid2D;
+import org.example.treatment.Treatment;
 import org.json.simple.JSONObject;
+
+import static org.example.Cells.I;
 
 public class Infection {
 
@@ -29,5 +32,29 @@ public class Infection {
         this.virusRemovalRate = (double) jsonObject.get("virusRemovalRate");
         this.cellDeathRate = (double) jsonObject.get("cellDeathRate");
         this.infectionRate = (double) jsonObject.get("infectionRate");
+    }
+
+    public void step(Experiment G) {
+
+        virusCon.DiffusionADI(virusDiffCoeff);
+        virusCon.Update();
+
+        // Decay of the virus
+        for (Cells cell : G) {
+
+            double virusSource = (cell.cellType == I) ? virusProduction : 0.0;
+
+            for (Treatment treatment : G.treatments) {
+
+                virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get());
+            }
+
+            double virusConcentrationChange = (virusCon.Get(cell.Isq()) - virusSource/virusRemovalRate) * (Math.exp(-virusRemovalRate * G.technical.timeStep) - 1);
+
+            virusCon.Add(cell.Isq(), virusConcentrationChange);
+        }
+
+        virusCon.Update();
+
     }
 }

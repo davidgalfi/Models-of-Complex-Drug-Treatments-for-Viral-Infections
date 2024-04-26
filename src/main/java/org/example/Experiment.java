@@ -138,26 +138,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @param tick The current time step.
      */
     void timeStepVirus(int tick) {
-
-        infection.virusCon.DiffusionADI(infection.virusDiffCoeff);
-        updateFields(infection.virusCon);
-
-        // Decay of the virus
-        for (Cells cell : this) {
-
-            double virusSource = (cell.cellType == I) ? infection.virusProduction : 0.0;
-
-            for (Treatment treatment : treatments) {
-
-                virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get());
-            }
-
-            double virusConcentrationChange = (infection.virusCon.Get(cell.Isq()) - virusSource/infection.virusRemovalRate) * (Math.exp(-infection.virusRemovalRate * technical.timeStep) - 1);
-
-            infection.virusCon.Add(cell.Isq(), virusConcentrationChange);
-        }
-
-        updateFields(infection.virusCon);
+        infection.step(this);
     }
 
     /**
