@@ -14,8 +14,8 @@ public class Hill implements Efficacy {
     public Hill(JSONObject jsonObject, double molarMass) {
 
         this.EC50 = (double) jsonObject.get("EC50");
-        this.n = jsonObject.containsKey("n") ? Math.toIntExact((Long) jsonObject.get("n")) : 1;
-        this.maxEfficacy = jsonObject.containsKey("maxEfficacy") ? (double) jsonObject.get("maxEfficacy") : 1.0;
+        this.n =  Math.toIntExact((Long) jsonObject.getOrDefault("n", 1));
+        this.maxEfficacy = (double) jsonObject.getOrDefault("maxEfficacy", 1.0);
 
         this.convertToNanoMolars = (c) -> c * Math.pow(10, 3) / molarMass;
     }
