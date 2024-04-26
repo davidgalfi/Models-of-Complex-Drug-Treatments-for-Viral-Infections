@@ -199,30 +199,4 @@ public class Experiment extends AgentGrid2D<Cells> {
             vis.SetPix(ItoX(i) + xDim, ItoY(i), HeatMapRBG(infection.virusCon.Get(i)));
         }
     }
-
-
-
-    // Helper functions
-
-    private void updateFields(Object... fields) {
-        for (Object field : fields) {
-            try {
-                // Find and invoke the Update method using reflection
-                field.getClass().getMethod("Update").invoke(field);
-            } catch (Exception e) {
-                // Handle any exceptions if the method is not found or cannot be invoked
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void performDiffusion(Object object, double coefficient) {
-        try {
-            // Find and invoke the DiffusionADI method using reflection
-            object.getClass().getMethod("DiffusionADI", double.class).invoke(object, coefficient);
-        } catch (Exception e) {
-            // Handle any exceptions if the method is not found or cannot be invoked
-            e.printStackTrace();
-        }
-    }
 }
