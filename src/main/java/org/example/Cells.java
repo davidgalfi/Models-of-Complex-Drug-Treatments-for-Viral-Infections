@@ -85,7 +85,7 @@ public class Cells extends AgentSQ2Dunstackable<Experiment> {
         double virusConAtCell = G.infection.virusCon.Get(Isq());
 
         // Sigmoid function for drug efficacy
-        double infectionProb = G.infection.infectionRate * G.xDim * G.yDim * virusConAtCell * G.technical.timeStep;
+        double infectionProb = G.technical.timeStep * G.infection.infectionRate * G.xDim * G.yDim * virusConAtCell;
 
         for(Treatment treatment: G.treatments){
             infectionProb *= (1 - treatment.drug.efficacy.get("infectionReduction").compute(treatment.concentration.Get(Isq())));
