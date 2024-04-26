@@ -20,15 +20,15 @@ import org.example.treatment.Treatment;
  */
 public class Experiment extends AgentGrid2D<Cells> {
 
-    Infection infection;
-    Treatment[] treatments;
-    Cells cells;
-    Technical technical;
+    final Infection infection;
+    final Treatment[] treatments;
+    final Cells cells;
+    final Technical technical;
 
     /**
      * The random number generator used in the simulation.
      */
-    public HAL.Rand rn;
+    final public HAL.Rand rn;
 
     /**
      * The FileIO object for writing simulation output to a file.
@@ -54,7 +54,7 @@ public class Experiment extends AgentGrid2D<Cells> {
                       Infection infection,
                       Treatment[] treatments,
                       Technical technical,
-                      Rand rn){
+                      Rand rn) {
 
         super(technical.dim[X], technical.dim[Y], Cells.class);
 
@@ -65,21 +65,14 @@ public class Experiment extends AgentGrid2D<Cells> {
         this.cells = cells;
         this.technical = technical;
 
-        init();
+        initCells();
     }
-
-
-
-    // Main functions
-
-
 
     /**
      * Initializes the simulation by setting up the grid and initializing cells based on specified ratios.
-     * This method writes the header for output files and populates the grid with cells based on random values
-     * and predefined ratios for target and infected cells.
+     * This method populates the grid with cells based on random values and predefined ratios for target and infected cells.
      */
-    public void init(){
+    public void initCells(){
 
         for (int i = 0; i < length; i++){
             double randomValue = rn.Double();
@@ -93,6 +86,38 @@ public class Experiment extends AgentGrid2D<Cells> {
                 c.init(Cells.I);
             }
         }
+    }
+
+    /**
+     * Performs a time step for cell-related processes, including infection and cell death.
+     */
+    void timeStepCells() {
+        for (Cells cell : this) {
+            cell.stochasticStateChange();
+        }
+    }
+
+    /**
+     * Performs a time step for the virus-related processes, including virus decay, removal, and production.
+     */
+    void timeStepVirus() {
+        infection.step(this);
+    }
+
+    private void timeStepTreatments() {
+        for(Treatment treatment: treatments){
+            treatment.concentration.Update();
+        }
+    }
+
+    /**
+     * Performs a time step for all components of the experiment, including immune response,
+     * drug dynamics, virus dynamics, and cell-related processes.
+     */
+    void simulationStep() {
+        timeStepCells();
+        timeStepVirus();
+        timeStepTreatments();
     }
 
     /**
@@ -112,37 +137,7 @@ public class Experiment extends AgentGrid2D<Cells> {
         }
     }
 
-    /**
-     * Performs a time step for all components of the experiment, including immune response,
-     * drug dynamics, virus dynamics, and cell-related processes.
-     */
-    void simulationStep() {
-        timeStepCells();
-        timeStepVirus();
-        timeStepTreatments();
-    }
 
-    private void timeStepTreatments() {
-        for(Treatment treatment: treatments){
-            treatment.concentration.Update();
-        }
-    }
-
-    /**
-     * Performs a time step for the virus-related processes, including virus decay, removal, and production.
-     */
-    void timeStepVirus() {
-        infection.step(this);
-    }
-
-    /**
-     * Performs a time step for cell-related processes, including infection and cell death.
-     */
-    void timeStepCells() {
-        for (Cells cell : this) {
-            cell.stochasticStateChange();
-        }
-    }
 
     double[] countCells(){
 
