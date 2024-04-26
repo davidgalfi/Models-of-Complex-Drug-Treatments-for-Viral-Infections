@@ -1,4 +1,4 @@
-package org.example;
+package org.example.treatment;
 
 public class ODEVirtualGrid {
     double[] data;
