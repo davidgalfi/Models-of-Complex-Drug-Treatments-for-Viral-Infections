@@ -1,6 +1,8 @@
 package org.example;
 
+import org.example.differential_equation.operatorSplitting.MarchukStrangSplitting;
 import org.example.differential_equation.operatorSplitting.OperatorSplitting;
+import org.example.differential_equation.operatorSplitting.OperatorSplittingFactory;
 import org.example.differential_equation.operatorSplitting.SequentialSplitting;
 import org.json.simple.JSONObject;
 
@@ -40,6 +42,6 @@ public class Technical {
 
         this.seed = (Long) jsonObject.getOrDefault("seed", System.currentTimeMillis());
 
-        this.operatorSplitting = new SequentialSplitting(this.timeStep);
+        this.operatorSplitting = OperatorSplittingFactory.createSplitting(this.timeStep, jsonObject);
     }
 }

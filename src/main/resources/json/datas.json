@@ -30,6 +30,7 @@
       "Technical": {
         "simulationTime": 7920.0,
         "timeStep": 1.0,
+        "operatorSplitting": "sequential",
         "xDim": 200,
         "yDim": 200,
         "initialCellRatioT": 0.9995,
