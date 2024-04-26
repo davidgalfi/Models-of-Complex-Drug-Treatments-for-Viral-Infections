@@ -12,11 +12,14 @@ import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 import org.example.treatment.Treatment;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * The NewExperiment class represents a simulation experiment with individual cells in a 2D square grid.
+ * The Experiment class represents a simulation experiment with individual cells in a 2D square grid.
  * It extends the AgentGrid2D class with agents of type Cells, which represent the individual cells in the simulation.
- * The simulation involves interactions between cells, drug diffusion, virus concentration dynamics, and immune response.
- * The experiment can be run for a specified number of ticks, and the state of the system is visualized at each tick.
+ * The simulation involves interactions between cells, drug administering, and virus concentration dynamics.
+ * The experiment can be run for a specified length of time, and the state of the system is visualized at each timeStep.
  */
 public class Experiment extends AgentGrid2D<Cells> {
 
@@ -104,10 +107,9 @@ public class Experiment extends AgentGrid2D<Cells> {
      * Runs the simulation for a specified number of ticks, updating the model and visualizing it at each step.
      * The method also monitors and reports specific events during the simulation, such as reaching a fixed damage rate.
      *
-     * @param win The GUI window for visualization.
+     * @param visuals The window for visualization.
      */
     public void runExperiment(Visuals visuals) {
-        double[] cellCounts = countCells();
 
         for (double tick = 0; tick < technical.simulationTime; tick += technical.timeStep) {
 
@@ -119,26 +121,33 @@ public class Experiment extends AgentGrid2D<Cells> {
 
 
 
-    double[] countCells(){
+    public Map<String, Number> cellStatistics(){
 
-        double healthyCells = 0, infectedCells = 0, deadCells = 0;
-        double[] cellCount = new double[3];
+        double targetCells = 0, infectedCells = 0, deadCells = 0;
+
         for (Cells cell: this){
+
             if (cell.cellType == T){
-                healthyCells += 1;
+                targetCells += 1;
+
             }
             else if (cell.cellType == I ){
                 infectedCells += 1;
+
             }
             else if (cell.cellType == D){
                 deadCells += 1;
+
             }
         }
 
-        cellCount[T] = healthyCells;
-        cellCount[I] = infectedCells;
-        cellCount[D] = deadCells;
+        Map<String, Number> statistics = new HashMap<>();
 
-        return cellCount;
+        statistics.put("T", targetCells);
+        statistics.put("I", infectedCells);
+        statistics.put("D", deadCells);
+        statistics.put("damageRatio", 1 - targetCells / this.length);
+
+        return statistics;
     }
 }
