@@ -138,13 +138,14 @@ public class Experiment extends AgentGrid2D<Cells> {
      * @param tick The current time step.
      */
     void timeStepVirus(int tick) {
-        //performDiffusion(infection.virusCon, infection.virusDiffCoeff);
+
+        infection.virusCon.DiffusionADI(infection.virusDiffCoeff);
+        updateFields(infection.virusCon);
+
         // Decay of the virus
         for (Cells cell : this) {
-            double virusSource = 0;
-            if (cell.cellType == I) { // Infected cell
-                virusSource = infection.virusProduction;
-            }
+
+            double virusSource = (cell.cellType == I) ? infection.virusProduction : 0.0;
 
             for (Treatment treatment : treatments) {
 
@@ -153,30 +154,8 @@ public class Experiment extends AgentGrid2D<Cells> {
 
             double virusConcentrationChange = (infection.virusCon.Get(cell.Isq()) - virusSource/infection.virusRemovalRate) * (Math.exp(-infection.virusRemovalRate * technical.timeStep) - 1);
 
-            virusConcentrationChange = - infection.virusRemovalRate * infection.virusCon.Get(cell.Isq());
-
             infection.virusCon.Add(cell.Isq(), virusConcentrationChange);
         }
-
-        updateFields(infection.virusCon);
-
-        for (Cells cell : this) {
-            double virusSource = 0;
-            if (cell.cellType == I) { // Infected cell
-                virusSource = infection.virusProduction;
-
-                for (Treatment treatment : treatments) {
-
-
-                    virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get());
-                }
-
-                double virusConcentrationChange = virusSource + infection.virusCon.Get(cell.Isq());
-                infection.virusCon.Set(cell.Isq(), virusConcentrationChange);
-            }
-        }
-        infection.virusCon.DiffusionADI(infection.virusDiffCoeff);
-
 
         updateFields(infection.virusCon);
     }
