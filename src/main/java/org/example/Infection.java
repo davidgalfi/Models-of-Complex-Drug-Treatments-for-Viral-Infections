@@ -34,12 +34,15 @@ public class Infection {
         this.infectionRate = (double) jsonObject.get("infectionRate");
     }
 
-    public void step(Experiment G) {
+    public Void diffusion(Experiment G) {
 
-        virusCon.DiffusionADI(virusDiffCoeff);
-        virusCon.Update();
+        virusCon.DiffusionADI(virusDiffCoeff * G.technical.timeStep);
 
-        // Decay of the virus
+        return null;
+    }
+
+    public Void decayAndProduction(Experiment G) {
+
         for (Cells cell : G) {
 
             double virusSource = (cell.cellType == I) ? virusProduction : 0.0;
@@ -49,12 +52,21 @@ public class Infection {
                 virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get());
             }
 
-            double virusConcentrationChange = (virusCon.Get(cell.Isq()) - virusSource/virusRemovalRate) * (Math.exp(-virusRemovalRate * G.technical.timeStep) - 1);
+            double virusConcentrationChange =
+                    (virusCon.Get(cell.Isq()) - virusSource / virusRemovalRate) * (Math.exp(- virusRemovalRate * G.technical.timeStep) - 1);
 
             virusCon.Add(cell.Isq(), virusConcentrationChange);
         }
 
+        return null;
+    }
+
+    public void step(Experiment G) {
+
+        diffusion(G);
         virusCon.Update();
 
+        decayAndProduction(G);
+        virusCon.Update();
     }
 }
