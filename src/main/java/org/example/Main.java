@@ -50,6 +50,26 @@ public class Main {
      */
     public static Visuals visuals;
 
+    /**
+     * The FileIO object for writing simulation output to a file.
+     */
+    public HAL.Tools.FileIO outFile;
+
+    /**
+     * The FileIO object for writing simulation parameters to a file.
+     */
+    public HAL.Tools.FileIO paramFile;
+
+    /**
+     * The FileIO object for writing concentration data to a file in the simulation.
+     */
+    public HAL.Tools.FileIO concentrationsFile;
+
+    /**
+     * The output directory path for storing simulation results.
+     */
+    public String outputDir;
+
     public static void RunExperiments(){
         // Singular experiment
         Experiment experiment = new Experiment(
