@@ -75,7 +75,7 @@ public class Main {
                 treatments,
                 technical,
                 new Rand(technical.seed));
-        experiment.run(visuals);
+        experiment.run((e) -> visuals.drawExperimentState(e));
     }
 
     /**

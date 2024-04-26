@@ -10,6 +10,7 @@ import org.example.treatment.Treatment;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * The Experiment class represents a simulation experiment with individual cells in a 2D square grid.
@@ -103,15 +104,20 @@ public class Experiment extends AgentGrid2D<Cells> {
      * Runs the simulation for a specified number of ticks, updating the model and visualizing it at each step.
      * The method also monitors and reports specific events during the simulation, such as reaching a fixed damage rate.
      *
-     * @param visuals The window for visualization.
+     * @param callbacks possible callbacks taking the experiment as argument.
      */
-    public void run(Visuals visuals) {
+    public void run(Function<Experiment, Void>... callbacks) {
 
         for (double tick = 0; tick < technical.simulationTime; tick += technical.timeStep) {
 
             // Progress the simulation by one time step
             simulationStep();
-            visuals.drawExperimentState(this);
+
+            // Apply callbacks if any
+            for (Function<Experiment, Void> callback : callbacks) {
+
+                callback.apply(this);
+            }
         }
     }
 

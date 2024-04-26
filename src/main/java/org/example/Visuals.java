@@ -24,7 +24,7 @@ public class Visuals {
      *
      * @param G The experiment (at its given state) to be visualized.
      */
-    public void drawExperimentState(Experiment G) {
+    public Void drawExperimentState(Experiment G) {
         for (int i = 0; i < G.length; i++) {
             Cells drawMe = G.GetAgent(i);
 
@@ -48,6 +48,8 @@ public class Visuals {
             // Visualize virus concentration using a heat map
             win.SetPix(G.ItoX(i) + G.xDim, G.ItoY(i), HeatMapRBG(G.infection.virusCon.Get(i)));
         }
+
+        return null;
     }
 
     public void close() {
