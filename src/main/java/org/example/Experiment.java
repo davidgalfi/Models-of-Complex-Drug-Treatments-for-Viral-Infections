@@ -64,9 +64,7 @@ public class Experiment extends AgentGrid2D<Cells> {
         this.infection = infection;
         this.cells = cells;
         this.technical = technical;
-
-
-        updateFields(infection.virusCon);
+        
     }
 
 
