@@ -109,7 +109,7 @@ public class Experiment extends AgentGrid2D<Cells> {
         for (double tick = 0; tick < technical.simulationTime; tick += technical.timeStep) {
 
             // Progress the simulation by one time step
-            simulationStep( (int) tick);
+            simulationStep();
             DrawModel(win);
         }
     }
@@ -117,16 +117,14 @@ public class Experiment extends AgentGrid2D<Cells> {
     /**
      * Performs a time step for all components of the experiment, including immune response,
      * drug dynamics, virus dynamics, and cell-related processes.
-     *
-     * @param tick The current time step.
      */
-    void simulationStep(int tick) {
-        timeStepCells(tick);
-        timeStepVirus(tick);
-        timeStepTreatments(tick);
+    void simulationStep() {
+        timeStepCells();
+        timeStepVirus();
+        timeStepTreatments();
     }
 
-    private void timeStepTreatments(int tick) {
+    private void timeStepTreatments() {
         for(Treatment treatment: treatments){
             treatment.concentration.Update();
         }
@@ -134,19 +132,15 @@ public class Experiment extends AgentGrid2D<Cells> {
 
     /**
      * Performs a time step for the virus-related processes, including virus decay, removal, and production.
-     *
-     * @param tick The current time step.
      */
-    void timeStepVirus(int tick) {
+    void timeStepVirus() {
         infection.step(this);
     }
 
     /**
      * Performs a time step for cell-related processes, including infection and cell death.
-     *
-     * @param tick The current time step.
      */
-    void timeStepCells(int tick) {
+    void timeStepCells() {
         for (Cells cell : this) {
             cell.stochasticStateChange();
         }
