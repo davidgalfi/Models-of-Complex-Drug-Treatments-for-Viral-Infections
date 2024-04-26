@@ -58,7 +58,6 @@ public class Main {
                 treatments,
                 technical,
                 new Rand(technical.seed));
-        experiment.init();
         experiment.runExperiment(win);
 
         // Close visualization window
