@@ -141,9 +141,9 @@ public class Main {
         treatments = Utils.convertArrayListToTArray(treatmentsArrayList, Treatment.class);
     }
 
-    public static void storeInfectionData(JSONObject newExperiment){
+    public static void storeInfectionData(JSONObject newExperiment, Technical technical_){
         JSONObject infection_ = (JSONObject) newExperiment.get("Infection");
-        infection = new Infection(infection_);
+        infection = new Infection(infection_, technical_.dim[X], technical_.dim[Y]);
     }
 
     public static void storeTechnicalData(JSONObject newExperiment){
@@ -160,7 +160,7 @@ public class Main {
         //storeCellsData(newExperiment);
         storeTreatmentsData(newExperiment);
         storeTechnicalData(newExperiment);
-        storeInfectionData(newExperiment);
+        storeInfectionData(newExperiment, technical);
     }
 
     public static void createWin(){

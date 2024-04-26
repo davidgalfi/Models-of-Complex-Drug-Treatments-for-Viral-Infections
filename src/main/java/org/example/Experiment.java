@@ -65,7 +65,6 @@ public class Experiment extends AgentGrid2D<Cells> {
         this.cells = cells;
         this.technical = technical;
 
-        infection.virusCon = new PDEGrid2D(xDim, yDim);
 
         updateFields(infection.virusCon);
     }

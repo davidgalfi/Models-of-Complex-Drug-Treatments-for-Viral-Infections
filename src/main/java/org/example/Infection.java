@@ -8,30 +8,32 @@ import static org.example.Cells.I;
 
 public class Infection {
 
-    public double virusRemovalRate;
-    public double cellDeathRate;
-    public double infectionRate;
+    final public double virusRemovalRate;
+    final public double cellDeathRate;
+    final public double infectionRate;
 
     /**
      * The virus diffusion coefficient parameter in the simulation.
      */
-    public double virusDiffCoeff; // D_V [sigma^2 / min]
+    final public double virusDiffCoeff; // D_V [sigma^2 / min]
     /**
      * The maximum virus production parameter in the simulation.
      */
-    public double virusProduction; // f_{i,j}
+    final public double virusProduction; // f_{i,j}
 
     /**
      * The 2D partial differential equation (PDE) grid representing virus concentration in the simulation.
      */
-    public PDEGrid2D virusCon;
+    final public PDEGrid2D virusCon;
 
-    public Infection(JSONObject jsonObject){
+    public Infection(JSONObject jsonObject, int xDim, int yDim){
         this.virusProduction = (double) jsonObject.get("virusProduction");
         this.virusDiffCoeff = (double) jsonObject.get("virusDiffCoeff");
         this.virusRemovalRate = (double) jsonObject.get("virusRemovalRate");
         this.cellDeathRate = (double) jsonObject.get("cellDeathRate");
         this.infectionRate = (double) jsonObject.get("infectionRate");
+
+        this.virusCon = new PDEGrid2D(xDim, yDim);
     }
 
     public Void diffusion(Experiment G, double timeStep) {
