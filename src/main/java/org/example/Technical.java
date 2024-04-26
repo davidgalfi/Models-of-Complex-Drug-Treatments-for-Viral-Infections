@@ -38,7 +38,7 @@ public class Technical {
         this.initialCellRatioI = (double) jsonObject.get("initialCellRatioI");
 
         this.simulationTime = (double) jsonObject.get("simulationTime");
-        this.timeStep = (double) jsonObject.get("timeStep");
+        this.timeStep = (double) jsonObject.getOrDefault("timeStep", 1.0);
 
         this.seed = (Long) jsonObject.getOrDefault("seed", System.currentTimeMillis());
 
