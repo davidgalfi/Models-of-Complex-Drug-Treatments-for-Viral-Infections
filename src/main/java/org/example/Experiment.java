@@ -1,15 +1,11 @@
 package org.example;
 
 import HAL.GridsAndAgents.AgentGrid2D;
-import HAL.GridsAndAgents.PDEGrid2D;
 
-import static HAL.Util.*;
 import static org.example.Cells.*;
 import static org.example.Technical.*;
 
 import HAL.Rand;
-import org.apache.commons.math3.ode.FirstOrderIntegrator;
-import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 import org.example.treatment.Treatment;
 
 import java.util.HashMap;
@@ -109,7 +105,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      *
      * @param visuals The window for visualization.
      */
-    public void runExperiment(Visuals visuals) {
+    public void run(Visuals visuals) {
 
         for (double tick = 0; tick < technical.simulationTime; tick += technical.timeStep) {
 
@@ -118,8 +114,6 @@ public class Experiment extends AgentGrid2D<Cells> {
             visuals.drawExperimentState(this);
         }
     }
-
-
 
     public Map<String, Number> cellStatistics(){
 

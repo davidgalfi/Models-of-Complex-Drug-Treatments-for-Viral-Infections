@@ -4,9 +4,7 @@
  */
 package org.example;
 
-import HAL.Gui.GridWindow;
 import HAL.Rand;
-import org.example.treatment.Drug;
 import org.example.treatment.Treatment;
 import org.example.utils.JSONReader;
 import org.example.utils.Utils;
@@ -15,7 +13,6 @@ import org.json.simple.JSONObject;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.List;
 
 import static HAL.Util.PWD;
 import static org.example.Technical.*;
@@ -78,7 +75,7 @@ public class Main {
                 treatments,
                 technical,
                 new Rand(technical.seed));
-        experiment.runExperiment(visuals);
+        experiment.run(visuals);
     }
 
     /**
