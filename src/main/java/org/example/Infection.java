@@ -38,6 +38,8 @@ public class Infection {
 
         virusCon.DiffusionADI(virusDiffCoeff * G.technical.timeStep);
 
+        virusCon.Update();
+
         return null;
     }
 
@@ -58,15 +60,14 @@ public class Infection {
             virusCon.Add(cell.Isq(), virusConcentrationChange);
         }
 
+        virusCon.Update();
+
         return null;
     }
 
     public void step(Experiment G) {
 
         diffusion(G);
-        virusCon.Update();
-
         decayAndProduction(G);
-        virusCon.Update();
     }
 }
