@@ -11,9 +11,9 @@ public class Drug {
 
     final public String name;
 
-    public Map<String, Efficacy> efficacy;
+    final public Map<String, Efficacy> efficacy;
 
-    static String[] efficacies = {
+    final static String[] efficacies = {
             "virusRemoval",
             "cytotoxicity",
             "virusProductionReduction",
