@@ -25,6 +25,8 @@ public class Experiment extends AgentGrid2D<Cells> {
     final Cells cells;
     final Technical technical;
 
+    final Timer timer;
+
     /**
      * The random number generator used in the simulation.
      */
@@ -44,6 +46,7 @@ public class Experiment extends AgentGrid2D<Cells> {
         this.infection = infection;
         this.cells = cells;
         this.technical = technical;
+        this.timer = new Timer(technical.simulationTime, technical.timeStep);
 
         initCells();
     }
@@ -108,10 +111,12 @@ public class Experiment extends AgentGrid2D<Cells> {
      */
     public void run(Function<Experiment, Void>... callbacks) {
 
-        for (double tick = 0; tick < technical.simulationTime; tick += technical.timeStep) {
+        while (timer.isNotOver()) {
 
             // Progress the simulation by one time step
             simulationStep();
+
+            timer.step();
 
             // Apply callbacks if any
             for (Function<Experiment, Void> callback : callbacks) {
