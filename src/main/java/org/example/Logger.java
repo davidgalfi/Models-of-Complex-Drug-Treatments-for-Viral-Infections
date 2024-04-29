@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.outputMethods.Log;
+import org.example.outputMethods.LogToFile;
 
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public class Logger {
 
     public Logger(String path, String filename, Double logInterval) {
 
-        log = new Log(path, filename, logInterval);
+        log = new LogToFile(path, filename, logInterval);
     }
 
     String constructHeader(Experiment G) {
