@@ -211,7 +211,7 @@ public class Main {
         visualizers = new ArrayList<>();
         if ((boolean) visualsJSONObject.getOrDefault("enabled", true)) {
 
-            visualizers.add(new Visualizer(technical.dim[X], technical.dim[Y]));
+            visualizers.add(new Visualizer(technical.dim[X], technical.dim[Y], true, true));
         }
     }
 

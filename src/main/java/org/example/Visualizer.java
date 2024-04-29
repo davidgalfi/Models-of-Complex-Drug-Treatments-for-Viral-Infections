@@ -1,6 +1,6 @@
 package org.example;
 
-import HAL.Gui.GridWindow;
+import org.example.outputMethods.Visual;
 
 import java.util.Map;
 
@@ -8,7 +8,11 @@ import static HAL.Util.*;
 
 public class Visualizer {
 
-    final GridWindow win;
+    final Visual visual;
+
+    final boolean plotCells;
+
+    final boolean plotInfectionConcentration;
 
     final static Map<Integer, Integer> colors =
             Map.of(
@@ -18,29 +22,38 @@ public class Visualizer {
                     Cells.D, RGB(0, 0, 0)            // Dead cell color:     black
             );
 
-    public Visualizer(int xDim, int yDim) {
+    public Visualizer(int xDim, int yDim, boolean plotCells, boolean plotInfectionConcentration) {
 
-        win = new GridWindow(xDim * 2, yDim, 2, true);
+        this.plotCells = plotCells;
+        this.plotInfectionConcentration = plotInfectionConcentration;
+
+        int numberOfFrames = (plotCells && plotInfectionConcentration) ? 2 : 1;
+
+        visual = new Visual(xDim, yDim, numberOfFrames);
     }
 
     /**
      * Draws the current state of the model on the visualization grid window.
      *
      * This method iterates through each agent in the model, retrieves its information, and sets the corresponding
-     * visualization pixel on the grid window. Target cells are represented by a green color, infected cells by a
-     * purple color, dead cells by black, and capillary cells by white. Additionally, the concentration of the virus is
-     * visualized using a heatmap on the same grid window.
+     * visualization pixel on the grid window (if enabled). The concentration of the virus is
+     * visualized using a heatmap on the same grid window (if enabled).
      *
      * @param G The experiment (at its given state) to be visualized.
      */
     public Void drawExperimentState(Experiment G) {
         for (int i = 0; i < G.length; i++) {
-            Cells drawMe = G.GetAgent(i);
 
-            win.SetPix(i, drawMe == null ? colors.get(-1) : colors.get(drawMe.cellType));
+            if (plotCells) {
 
-            // Visualize virus concentration using a heat map
-            win.SetPix(G.ItoX(i) + G.xDim, G.ItoY(i), HeatMapRBG(G.infection.virusCon.Get(i)));
+                Cells cell = G.GetAgent(i);
+                visual.draw(i, cell == null ? colors.get(-1) : colors.get(cell.cellType));
+            }
+
+            if (plotInfectionConcentration) {
+
+                visual.draw(plotCells ? 2 : 1, G.ItoX(i), G.ItoY(i), HeatMapRBG(G.infection.virusCon.Get(i)));
+            }
         }
 
         return null;
@@ -48,6 +61,6 @@ public class Visualizer {
 
     public void close() {
 
-        win.Close();
+        visual.close();
     }
 }
