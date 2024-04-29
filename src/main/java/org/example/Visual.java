@@ -2,12 +2,21 @@ package org.example;
 
 import HAL.Gui.GridWindow;
 
+import java.util.Map;
+
 import static HAL.Util.*;
-import static org.example.Cells.*;
 
 public class Visual {
 
     final GridWindow win;
+
+    final static Map<Integer, Integer> colors =
+            Map.of(
+                    -1, RGB256(255, 255, 255),   // Empty cell color:    white,
+                    Cells.T, RGB256(119, 198, 110),  // Target cell color:   green
+                    Cells.I, RGB256(124, 65, 120),   // Infected cell color: purple
+                    Cells.D, RGB(0, 0, 0)            // Dead cell color:     black
+            );
 
     public Visual(int xDim, int yDim) {
 
@@ -28,22 +37,7 @@ public class Visual {
         for (int i = 0; i < G.length; i++) {
             Cells drawMe = G.GetAgent(i);
 
-            // Check if the agent is null (empty grid cell)
-            if (drawMe == null) {
-                win.SetPix(i, RGB256(255, 255, 255)); // Set empty cell color to white
-            } else {
-                // Set colors based on cell type
-                if (drawMe.cellType == T) {        // Target cells
-                    win.SetPix(i, RGB256(119, 198, 110)); // Set target cell color to green
-
-                } else if (drawMe.cellType == I) { // Infected cells
-                    win.SetPix(i, RGB256(124, 65, 120));  // Set infected cell color to purple
-
-                } else if (drawMe.cellType == D) { // Dead cells
-                    win.SetPix(i, RGB(0, 0, 0)); // Set dead cell color to black
-
-                }
-            }
+            win.SetPix(i, drawMe == null ? colors.get(-1) : colors.get(drawMe.cellType));
 
             // Visualize virus concentration using a heat map
             win.SetPix(G.ItoX(i) + G.xDim, G.ItoY(i), HeatMapRBG(G.infection.virusCon.Get(i)));
