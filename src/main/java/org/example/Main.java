@@ -209,7 +209,6 @@ public class Main {
         JSONObject visualsJSONObject = (JSONObject) outputJSONObject.getOrDefault("visuals", new JSONObject());
 
         visualizers = new ArrayList<>();
-        if ((boolean) visualsJSONObject.getOrDefault("enabled", true)) {
         if ((boolean) visualsJSONObject.getOrDefault("enabled", false)) {
 
             visualizers.add(new Visualizer(technical.dim[X], technical.dim[Y], true, true));
