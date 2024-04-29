@@ -41,7 +41,9 @@
         "visuals": {
           "enabled": true,
           "cells": true,
-          "infectionConcentration": true
+          "infectionConcentration": true,
+          "toFile": false, 
+          "saveInterval": 500.0
         },
         "loggers" : {
           "logger": {

@@ -32,6 +32,16 @@ public class Visualizer {
         visual = new Visual(xDim, yDim, numberOfFrames);
     }
 
+    public Visualizer(String path, String filename, Double saveInterval, int xDim, int yDim, boolean plotCells, boolean plotInfectionConcentration) {
+
+        this.plotCells = plotCells;
+        this.plotInfectionConcentration = plotInfectionConcentration;
+
+        int numberOfFrames = (plotCells && plotInfectionConcentration) ? 2 : 1;
+
+        visual = new Visual(path, filename, saveInterval, xDim, yDim, numberOfFrames);
+    }
+
     /**
      * Draws the current state of the model on the visualization grid window.
      *
@@ -55,6 +65,8 @@ public class Visualizer {
                 visual.draw(plotCells ? 2 : 1, G.ItoX(i), G.ItoY(i), HeatMapRBG(G.infection.virusCon.Get(i)));
             }
         }
+
+        visual.frameReady(G.timer);
 
         return null;
     }
