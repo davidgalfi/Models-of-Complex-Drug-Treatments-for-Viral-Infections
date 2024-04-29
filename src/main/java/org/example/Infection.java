@@ -2,8 +2,6 @@ package org.example;
 
 import HAL.GridsAndAgents.PDEGrid2D;
 
-import static org.example.Cells.I;
-
 public class Infection {
 
     final public double virusRemovalRate;
@@ -49,7 +47,7 @@ public class Infection {
 
             double virusSource = 0;
 
-            if (cell.cellType == I) {
+            if (cell.cellType == Cells.I) {
 
                 virusSource = virusProduction;
 
