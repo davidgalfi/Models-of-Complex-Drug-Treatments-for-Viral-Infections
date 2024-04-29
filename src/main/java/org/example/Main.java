@@ -74,10 +74,10 @@ public class Main {
         ArrayList<Function<Experiment, Void>> callbacks = new ArrayList<>();
 
         for (Logger logger : loggers) {
-            callbacks.add((e) -> logger.logState(e));
+            callbacks.add(logger::logState);
         }
         for (Visuals visual : visuals) {
-            callbacks.add((e) -> visual.drawExperimentState(e));
+            callbacks.add(visual::drawExperimentState);
         }
 
         // Singular experiment
