@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.outputMethods.Visual;
+import org.example.outputMethods.VisualToFile;
 import org.example.utils.PathAndFile;
 import org.json.simple.JSONObject;
 public class VisualizerFactory {
@@ -19,10 +21,11 @@ public class VisualizerFactory {
 
             String filename = (String) jsonObject.getOrDefault("filename", PathAndFile.generateFileNameFromDateTime());
 
-            return new Visualizer(path, filename, jsonObject.containsKey("saveInterval") ? (double) jsonObject.get("saveInterval") : null,
-                    xDim, yDim, plotCells, plotInfectionConcentration, numberOfFrames);
+            return new Visualizer(
+                new VisualToFile(path, filename, jsonObject.containsKey("saveInterval") ? (double) jsonObject.get("saveInterval") : null, xDim, yDim, numberOfFrames),
+                plotCells, plotInfectionConcentration);
         }
 
-        return new Visualizer(xDim, yDim, plotCells, plotInfectionConcentration, numberOfFrames);
+        return new Visualizer(new Visual(xDim, yDim, numberOfFrames), plotCells, plotInfectionConcentration);
     }
 }

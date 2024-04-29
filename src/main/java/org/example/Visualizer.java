@@ -23,20 +23,11 @@ public class Visualizer {
                     Cells.D, RGB(0, 0, 0)            // Dead cell color:     black
             );
 
-    public Visualizer(int xDim, int yDim, boolean plotCells, boolean plotInfectionConcentration, int numberOfFrames) {
+    public Visualizer(Visual visual, boolean plotCells, boolean plotInfectionConcentration) {
 
+        this.visual = visual;
         this.plotCells = plotCells;
         this.plotInfectionConcentration = plotInfectionConcentration;
-
-        visual = new Visual(xDim, yDim, numberOfFrames);
-    }
-
-    public Visualizer(String path, String filename, Double saveInterval, int xDim, int yDim, boolean plotCells, boolean plotInfectionConcentration, int numberOfFrames) {
-
-        this.plotCells = plotCells;
-        this.plotInfectionConcentration = plotInfectionConcentration;
-
-        visual = new VisualToFile(path, filename, saveInterval, xDim, yDim, numberOfFrames);
     }
 
     /**
