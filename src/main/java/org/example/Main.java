@@ -154,7 +154,7 @@ public class Main {
 
     public static void storeInfectionData(JSONObject newExperiment, Technical technical_){
         JSONObject infection_ = (JSONObject) newExperiment.get("Infection");
-        infection = new Infection(infection_, technical_.dim[X], technical_.dim[Y]);
+        infection = InfectionFactory.createInfection(infection_, technical_.dim[X], technical_.dim[Y]);
     }
 
     public static void storeTechnicalData(JSONObject newExperiment){

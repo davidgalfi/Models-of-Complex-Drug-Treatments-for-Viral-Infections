@@ -1,7 +1,6 @@
 package org.example;
 
 import HAL.GridsAndAgents.PDEGrid2D;
-import org.json.simple.JSONObject;
 
 import static org.example.Cells.I;
 
@@ -25,12 +24,12 @@ public class Infection {
      */
     final public PDEGrid2D virusCon;
 
-    public Infection(JSONObject jsonObject, int xDim, int yDim){
-        this.virusProduction = (double) jsonObject.get("virusProduction");
-        this.virusDiffCoeff = (double) jsonObject.get("virusDiffCoeff");
-        this.virusRemovalRate = (double) jsonObject.get("virusRemovalRate");
-        this.cellDeathRate = (double) jsonObject.get("cellDeathRate");
-        this.infectionRate = (double) jsonObject.get("infectionRate");
+    public Infection(double virusProduction, double virusDiffCoeff, double virusRemovalRate, double cellDeathRate, double infectionRate, int xDim, int yDim) {
+        this.virusProduction = virusProduction;
+        this.virusDiffCoeff = virusDiffCoeff;
+        this.virusRemovalRate = virusRemovalRate;
+        this.cellDeathRate = cellDeathRate;
+        this.infectionRate = infectionRate;
 
         this.virusCon = new PDEGrid2D(xDim, yDim);
     }
