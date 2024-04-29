@@ -9,14 +9,9 @@ public class Logger {
 
     Log log;
 
-    public Logger(Double logInterval) {
+    public Logger(Log log) {
 
-        log = new Log(logInterval);
-    }
-
-    public Logger(String path, String filename, Double logInterval) {
-
-        log = new LogToFile(path, filename, logInterval);
+        this.log = log;
     }
 
     String constructHeader(Experiment G) {

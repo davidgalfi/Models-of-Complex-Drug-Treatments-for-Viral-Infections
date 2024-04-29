@@ -1,6 +1,8 @@
 package org.example;
 
 
+import org.example.outputMethods.Log;
+import org.example.outputMethods.LogToFile;
 import org.example.utils.PathAndFile;
 import org.json.simple.JSONObject;
 
@@ -19,10 +21,10 @@ public class LoggerFactory {
 
             filename += ".csv";
 
-            return new Logger(path, filename,
-                jsonObject.containsKey("logInterval") ? (double) jsonObject.get("logInterval") : null);
+            return new Logger(new LogToFile(path, filename,
+                jsonObject.containsKey("logInterval") ? (double) jsonObject.get("logInterval") : null));
         }
 
-        return new Logger(jsonObject.containsKey("logInterval") ? (double) jsonObject.get("logInterval") : null);
+        return new Logger(new Log(jsonObject.containsKey("logInterval") ? (double) jsonObject.get("logInterval") : null));
     }
 }
