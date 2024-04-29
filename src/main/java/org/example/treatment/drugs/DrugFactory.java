@@ -1,7 +1,7 @@
-package org.example.treatment;
+package org.example.treatment.drugs;
 
-import org.example.treatment.efficacies.Efficacy;
-import org.example.treatment.efficacies.EfficacyFactory;
+import org.example.treatment.drugs.efficacies.Efficacy;
+import org.example.treatment.drugs.efficacies.EfficacyFactory;
 import org.json.simple.JSONObject;
 
 import java.util.HashMap;

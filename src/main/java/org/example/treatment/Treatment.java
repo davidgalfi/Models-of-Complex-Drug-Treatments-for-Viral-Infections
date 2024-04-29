@@ -1,8 +1,7 @@
 package org.example.treatment;
 
 import org.example.treatment.dosages.Dosage;
-import org.example.treatment.dosages.DosageFactory;
-import org.json.simple.JSONObject;
+import org.example.treatment.drugs.Drug;
 
 public class Treatment {
 
@@ -11,12 +10,10 @@ public class Treatment {
 
     final public ODEVirtualGrid concentration;
 
-    public Treatment(JSONObject treatmentJsonObject, double simulationTime, double timeStep){
+    public Treatment(Drug drug, Dosage dosage, double simulationTime, double timeStep){
 
-        this.drug = DrugFactory.createDrug((JSONObject) treatmentJsonObject.get("Drug"));
-
-        this.dosage = DosageFactory.createDosage((JSONObject) treatmentJsonObject.get("Dosage"));
-
+        this.drug = drug;
+        this.dosage = dosage;
         this.concentration = new ODEVirtualGrid(dosage.getSample(simulationTime, timeStep));
     }
 }

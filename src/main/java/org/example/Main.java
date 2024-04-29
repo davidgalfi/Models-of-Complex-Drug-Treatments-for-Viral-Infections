@@ -6,6 +6,7 @@ package org.example;
 
 import HAL.Rand;
 import org.example.treatment.Treatment;
+import org.example.treatment.TreatmentFactory;
 import org.example.utils.JSONReader;
 import org.example.utils.Utils;
 import org.json.simple.JSONObject;
@@ -143,7 +144,7 @@ public class Main {
 
         while (treatments_.containsKey(treatmentName_)){
             JSONObject currentTreatment = (JSONObject) treatments_.get(treatmentName_);
-            treatmentsArrayList.add(new Treatment(currentTreatment, technical_.simulationTime, technical_.timeStep));
+            treatmentsArrayList.add(TreatmentFactory.createTreatment(currentTreatment, technical_.simulationTime, technical_.timeStep));
 
             numberOfTreatment_++;
             treatmentName_ = "Treatment_" + Integer.toString(numberOfTreatment_);
