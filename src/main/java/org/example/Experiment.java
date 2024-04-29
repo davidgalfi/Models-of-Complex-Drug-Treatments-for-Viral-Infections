@@ -1,17 +1,14 @@
 package org.example;
 
+import java.util.ArrayList;
+import java.util.function.Function;
+
 import HAL.GridsAndAgents.AgentGrid2D;
-
-import static org.example.Cells.*;
-import static org.example.Technical.*;
-
 import HAL.Rand;
+
+import static org.example.Technical.*;
 import org.example.timer.Timer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * The Experiment class represents a simulation experiment with individual cells in a 2D square grid.
@@ -125,60 +122,5 @@ public class Experiment extends AgentGrid2D<Cells> {
                 callback.apply(this);
             }
         }
-    }
-
-    public Map<String, Number> cellStatistics(){
-
-        double targetCellCount = 0, infectedCellCount = 0, deadCellCount = 0;
-
-        for (Cells cell: this){
-
-            if (cell.cellType == T){
-                targetCellCount += 1;
-
-            }
-            else if (cell.cellType == I ){
-                infectedCellCount += 1;
-
-            }
-            else if (cell.cellType == D){
-                deadCellCount += 1;
-
-            }
-        }
-
-        Map<String, Number> statistics = new HashMap<>();
-
-        statistics.put("T", targetCellCount);
-        statistics.put("I", infectedCellCount);
-        statistics.put("D", deadCellCount);
-        statistics.put("damageRatio", 1 - targetCellCount / this.length);
-
-        return statistics;
-    }
-
-    public Map<String, Number> infectionStatistics() {
-
-        double totalVirusCon = 0.0;
-
-        for (int i = 0; i < length; i++){
-
-            totalVirusCon = totalVirusCon + infection.virusCon.Get(i);
-        }
-
-        Map<String, Number> statistics = new HashMap<>();
-
-        statistics.put("totalVirusConcentration", totalVirusCon);
-
-        return statistics;
-    }
-
-    public Map<String, Number> statistics() {
-
-        Map<String, Number> statistics = new HashMap<>(cellStatistics());
-
-        statistics.putAll(infectionStatistics());
-
-        return statistics;
     }
 }

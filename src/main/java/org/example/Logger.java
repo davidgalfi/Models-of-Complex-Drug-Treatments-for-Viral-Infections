@@ -34,7 +34,7 @@ public class Logger {
 
     String constructStateInfo(Experiment G) {
 
-        Map<String, Number> statistics = G.statistics();
+        Map<String, Number> statistics = Statistics.get(G);
 
         String stateInfo = "" + G.timer.get() + ", " +
                 statistics.get("T") + ", " + statistics.get("I") + ", " + statistics.get("D") + ", " +
