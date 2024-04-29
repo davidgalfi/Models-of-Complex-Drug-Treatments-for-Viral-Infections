@@ -28,7 +28,7 @@
         "infectionRate": 0.000000101
       },
       "Technical": {
-        "simulationTime": 7920.0,
+        "simulationTime": 1020.0,
         "timeStep": 1.0,
         "operatorSplitting": "sequential",
         "xDim": 200,
@@ -42,12 +42,13 @@
           "enabled": true,
           "cells": true,
           "infectionConcentration": true,
-          "toFile": false, 
+          "filename": "figures",
           "saveInterval": 500.0
         },
         "loggers" : {
           "logger": {
-            "logInterval": 100.0
+            "logInterval": 100.0,
+            "filename": ""
           }
         }
       }

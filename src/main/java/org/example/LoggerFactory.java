@@ -10,14 +10,14 @@ public class LoggerFactory {
 
     public static Logger createLogger(JSONObject jsonObject, String identifier) {
 
-
-        boolean toFile = (boolean) jsonObject.getOrDefault("toFile", false);
-
-        if (jsonObject.containsKey("filename") || toFile) {
+        if (jsonObject.containsKey("filename")) {
 
             String path = PathAndFile.generatePathFromIdentifier(identifier);
 
-            String filename = (String) jsonObject.getOrDefault("filename", PathAndFile.generateFileNameFromDateTime());
+            String filename = (String) jsonObject.get("filename");
+            if ("".equals(filename)) {
+                filename = PathAndFile.generateFileNameFromDateTime();
+            }
 
             filename += ".csv";
 

@@ -13,13 +13,14 @@ public class VisualizerFactory {
 
         int numberOfFrames = (plotCells && plotInfectionConcentration) ? 2 : 1;
 
-        boolean toFile = (boolean) jsonObject.getOrDefault("toFile", false);
-
-        if (jsonObject.containsKey("filename") || toFile) {
+        if (jsonObject.containsKey("filename")) {
 
             String path = PathAndFile.generatePathFromIdentifier(identifier);
 
-            String filename = (String) jsonObject.getOrDefault("filename", PathAndFile.generateFileNameFromDateTime());
+            String filename = (String) jsonObject.get("filename");
+            if ("".equals(filename)) {
+                filename = PathAndFile.generateFileNameFromDateTime();
+            }
 
             return new Visualizer(
                 new VisualToFile(path, filename, jsonObject.containsKey("saveInterval") ? (double) jsonObject.get("saveInterval") : null, xDim, yDim, numberOfFrames),
