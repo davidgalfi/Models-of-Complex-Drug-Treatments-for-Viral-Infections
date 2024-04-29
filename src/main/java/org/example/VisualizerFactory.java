@@ -9,6 +9,8 @@ public class VisualizerFactory {
         boolean plotCells = (boolean) jsonObject.getOrDefault("cells", true);
         boolean plotInfectionConcentration = (boolean) jsonObject.getOrDefault("infectionConcentration", true);
 
+        int numberOfFrames = (plotCells && plotInfectionConcentration) ? 2 : 1;
+
         boolean toFile = (boolean) jsonObject.getOrDefault("toFile", false);
 
         if (jsonObject.containsKey("filename") || toFile) {
@@ -18,9 +20,9 @@ public class VisualizerFactory {
             String filename = (String) jsonObject.getOrDefault("filename", PathAndFile.generateFileNameFromDateTime());
 
             return new Visualizer(path, filename, jsonObject.containsKey("saveInterval") ? (double) jsonObject.get("saveInterval") : null,
-                    xDim, yDim, plotCells, plotInfectionConcentration);
+                    xDim, yDim, plotCells, plotInfectionConcentration, numberOfFrames);
         }
 
-        return new Visualizer(xDim, yDim, plotCells, plotInfectionConcentration);
+        return new Visualizer(xDim, yDim, plotCells, plotInfectionConcentration, numberOfFrames);
     }
 }

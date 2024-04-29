@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.outputMethods.Visual;
+import org.example.outputMethods.VisualToFile;
 
 import java.util.Map;
 
@@ -22,24 +23,20 @@ public class Visualizer {
                     Cells.D, RGB(0, 0, 0)            // Dead cell color:     black
             );
 
-    public Visualizer(int xDim, int yDim, boolean plotCells, boolean plotInfectionConcentration) {
+    public Visualizer(int xDim, int yDim, boolean plotCells, boolean plotInfectionConcentration, int numberOfFrames) {
 
         this.plotCells = plotCells;
         this.plotInfectionConcentration = plotInfectionConcentration;
-
-        int numberOfFrames = (plotCells && plotInfectionConcentration) ? 2 : 1;
 
         visual = new Visual(xDim, yDim, numberOfFrames);
     }
 
-    public Visualizer(String path, String filename, Double saveInterval, int xDim, int yDim, boolean plotCells, boolean plotInfectionConcentration) {
+    public Visualizer(String path, String filename, Double saveInterval, int xDim, int yDim, boolean plotCells, boolean plotInfectionConcentration, int numberOfFrames) {
 
         this.plotCells = plotCells;
         this.plotInfectionConcentration = plotInfectionConcentration;
 
-        int numberOfFrames = (plotCells && plotInfectionConcentration) ? 2 : 1;
-
-        visual = new Visual(path, filename, saveInterval, xDim, yDim, numberOfFrames);
+        visual = new VisualToFile(path, filename, saveInterval, xDim, yDim, numberOfFrames);
     }
 
     /**
