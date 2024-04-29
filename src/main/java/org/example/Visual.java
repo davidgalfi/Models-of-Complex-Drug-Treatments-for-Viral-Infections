@@ -5,11 +5,11 @@ import HAL.Gui.GridWindow;
 import static HAL.Util.*;
 import static org.example.Cells.*;
 
-public class Visuals {
+public class Visual {
 
     final GridWindow win;
 
-    public Visuals(int xDim, int yDim) {
+    public Visual(int xDim, int yDim) {
 
         win = new GridWindow(xDim * 2, yDim, 2, true);
     }
