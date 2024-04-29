@@ -1,4 +1,4 @@
-package org.example;
+package org.example.timer;
 
 public class Timer {
 
@@ -8,9 +8,9 @@ public class Timer {
 
     double time;
 
-    public Timer(double simulationTime, double timeStep) {
+    public Timer(double totalTime, double timeStep) {
 
-        this.totalTime = simulationTime;
+        this.totalTime = totalTime;
         this.timeStep = timeStep;
 
         this.time = 0.0;
