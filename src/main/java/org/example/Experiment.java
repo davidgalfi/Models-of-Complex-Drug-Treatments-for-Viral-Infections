@@ -17,33 +17,30 @@ import org.example.timer.Timer;
  * The experiment can be run for a specified length of time, and the state of the system is visualized at each timeStep.
  */
 public class Experiment extends AgentGrid2D<Cells> {
-
+    
     final Infection infection;
     final Treatment[] treatments;
-    final Cells cells;
     final Technical technical;
-
-    final Timer timer;
-
     /**
      * The random number generator used in the simulation.
      */
     final public HAL.Rand rn;
+    final Timer timer;
 
-    public Experiment(Cells cells,
-                      Infection infection,
-                      Treatment[] treatments,
-                      Technical technical,
-                      Rand rn) {
+    public Experiment(
+          Infection infection,
+          Treatment[] treatments,
+          Technical technical
+    ) {
 
         super(technical.dim[X], technical.dim[Y], Cells.class);
 
-        this.rn = rn;
-
-        this.treatments = treatments;
         this.infection = infection;
-        this.cells = cells;
+        this.treatments = treatments;
+
         this.technical = technical;
+
+        this.rn = new Rand(technical.seed);
         this.timer = new Timer(technical.simulationTime, technical.timeStep);
 
         initCells();
