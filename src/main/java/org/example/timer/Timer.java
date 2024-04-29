@@ -27,6 +27,6 @@ public class Timer {
 
     public boolean isNotOver() {
 
-        return time <= totalTime;
+        return time < totalTime;
     }
 }
