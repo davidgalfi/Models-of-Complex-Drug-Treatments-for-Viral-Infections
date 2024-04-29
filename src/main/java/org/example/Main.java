@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.function.Function;
 
 import static HAL.Util.PWD;
 import static org.example.Technical.*;
@@ -37,6 +38,8 @@ public class Main {
     public static Infection infection;
     public static Treatment[] treatments;
     public static Technical technical;
+
+    public static Logger[] loggers;
 
     /**
      * Represents the grid window for visualizing the cellular state space and virus concentration.
@@ -67,6 +70,14 @@ public class Main {
     public String outputDir;
 
     public static void RunExperiments(){
+
+        ArrayList<Function<Experiment, Void>> callbacks = new ArrayList<>();
+
+        for (Logger logger : loggers) {
+            callbacks.add((e) -> logger.logState(e));
+        }
+        callbacks.add((e) -> visuals.drawExperimentState(e));
+
         // Singular experiment
         Experiment experiment = new Experiment(
                 cells,
@@ -74,7 +85,7 @@ public class Main {
                 treatments,
                 technical,
                 new Rand(technical.seed));
-        experiment.run((e) -> visuals.drawExperimentState(e));
+        experiment.run(callbacks);
     }
 
     /**
@@ -166,12 +177,25 @@ public class Main {
     public static void storeDatas(String path) throws URISyntaxException {
         JSONObject jsonObject = readDatas(path);
         JSONObject Experiments = (JSONObject) jsonObject.get("Experiments");
-        JSONObject newExperiment = (JSONObject) Experiments.get("Experiment_1");
+
+        String experimentName = "Experiment_1";
+        JSONObject newExperiment = (JSONObject) Experiments.get(experimentName);
 
         //storeCellsData(newExperiment);
         storeTechnicalData(newExperiment);
         storeTreatmentsData(newExperiment, technical);
         storeInfectionData(newExperiment, technical);
+
+        JSONObject outputJSONObject = (JSONObject) newExperiment.getOrDefault("output", new JSONObject());
+        JSONObject loggersJSONObject = (JSONObject) outputJSONObject.getOrDefault("loggers", new JSONObject());
+
+        ArrayList<Logger> loggersArrayList = new ArrayList<>();
+        for (Object logger : loggersJSONObject.keySet()) {
+
+            loggersArrayList.add(LoggerFactory.createLogger((JSONObject) loggersJSONObject.get(logger), experimentName));
+        }
+        loggers = new Logger[loggersArrayList.size()];
+        loggers = Utils.convertArrayListToTArray(loggersArrayList, Logger.class);
     }
 
     public static void main(String[] args) throws URISyntaxException {
@@ -179,6 +203,9 @@ public class Main {
         storeDatas("json/datas.json");
         visuals = new Visuals(technical.dim[X], technical.dim[Y]);
         RunExperiments();
+        for (Logger logger : loggers) {
+            logger.close();
+        }
         visuals.close();
     }
 }

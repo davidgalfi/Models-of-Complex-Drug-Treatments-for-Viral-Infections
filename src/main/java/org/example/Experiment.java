@@ -8,6 +8,7 @@ import static org.example.Technical.*;
 import HAL.Rand;
 import org.example.timer.Timer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -109,7 +110,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      *
      * @param callbacks possible callbacks taking the experiment as argument.
      */
-    public void run(Function<Experiment, Void>... callbacks) {
+    public void run(ArrayList<Function<Experiment, Void>> callbacks) {
 
         while (timer.isNotOver()) {
 
@@ -152,6 +153,31 @@ public class Experiment extends AgentGrid2D<Cells> {
         statistics.put("I", infectedCellCount);
         statistics.put("D", deadCellCount);
         statistics.put("damageRatio", 1 - targetCellCount / this.length);
+
+        return statistics;
+    }
+
+    public Map<String, Number> infectionStatistics() {
+
+        double totalVirusCon = 0.0;
+
+        for (int i = 0; i < length; i++){
+
+            totalVirusCon = totalVirusCon + infection.virusCon.Get(i);
+        }
+
+        Map<String, Number> statistics = new HashMap<>();
+
+        statistics.put("totalVirusConcentration", totalVirusCon);
+
+        return statistics;
+    }
+
+    public Map<String, Number> statistics() {
+
+        Map<String, Number> statistics = new HashMap<>(cellStatistics());
+
+        statistics.putAll(infectionStatistics());
 
         return statistics;
     }
