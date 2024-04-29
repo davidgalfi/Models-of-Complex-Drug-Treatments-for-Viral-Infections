@@ -8,7 +8,6 @@ import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 import org.example.differentialEquation.TwoCompartmentalPharmacoKinetics;
 import org.example.utils.Utils;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 
@@ -21,12 +20,11 @@ public class TwoCompartmentalAdministration implements Dosage {
 
     final TwoCompartmentalPharmacoKinetics pharmacoKineticalModel;
 
-    //interval is in the technical?
-    public TwoCompartmentalAdministration(JSONObject jsonObject) {
-        this.targetDecay = (double) jsonObject.get("targetDecay");
-        this.transferRate = (double) jsonObject.get("transferRate");
-        this.dosage = (double) jsonObject.get("dosage");
-        this.interval = (double) jsonObject.get("interval");
+    public TwoCompartmentalAdministration(Double targetDecay, Double transferRate, Double dosage, Double interval) {
+        this.targetDecay = targetDecay;
+        this.transferRate = transferRate;
+        this.dosage = dosage;
+        this.interval = interval;
         this.pharmacoKineticalModel = new TwoCompartmentalPharmacoKinetics(transferRate, targetDecay);
     }
 

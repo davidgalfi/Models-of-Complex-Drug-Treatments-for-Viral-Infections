@@ -1,14 +1,12 @@
 package org.example.treatment.dosages;
 
-import org.json.simple.JSONObject;
-
 import java.util.Arrays;
 
 public class ConstantDosage implements Dosage {
     final double concentration;
 
-    public ConstantDosage(JSONObject jsonObject) {
-        this.concentration = (double) jsonObject.get("concentration");
+    public ConstantDosage(double concentration) {
+        this.concentration = concentration;
     }
 
     @Override
