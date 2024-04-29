@@ -6,7 +6,7 @@ import java.util.Map;
 
 import static HAL.Util.*;
 
-public class Visual {
+public class Visualizer {
 
     final GridWindow win;
 
@@ -18,7 +18,7 @@ public class Visual {
                     Cells.D, RGB(0, 0, 0)            // Dead cell color:     black
             );
 
-    public Visual(int xDim, int yDim) {
+    public Visualizer(int xDim, int yDim) {
 
         win = new GridWindow(xDim * 2, yDim, 2, true);
     }

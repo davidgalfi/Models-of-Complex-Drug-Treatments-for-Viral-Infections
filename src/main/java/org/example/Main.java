@@ -47,7 +47,7 @@ public class Main {
      * The dimensions are determined by doubling the horizontal dimension (x * 2), the vertical dimension (y),
      * and the visualization scale (visScale), with additional information about the grid's toroidal nature (true).
      */
-    public static ArrayList<Visual> visuals;
+    public static ArrayList<Visualizer> visualizers;
 
     /**
      * The FileIO object for writing simulation output to a file.
@@ -76,8 +76,8 @@ public class Main {
         for (Logger logger : loggers) {
             callbacks.add(logger::logState);
         }
-        for (Visual visual : visuals) {
-            callbacks.add(visual::drawExperimentState);
+        for (Visualizer visualizer : visualizers) {
+            callbacks.add(visualizer::drawExperimentState);
         }
 
         // Singular experiment
@@ -208,10 +208,10 @@ public class Main {
 
         JSONObject visualsJSONObject = (JSONObject) outputJSONObject.getOrDefault("visuals", new JSONObject());
 
-        visuals = new ArrayList<>();
+        visualizers = new ArrayList<>();
         if ((boolean) visualsJSONObject.getOrDefault("enabled", true)) {
 
-            visuals.add(new Visual(technical.dim[X], technical.dim[Y]));
+            visualizers.add(new Visualizer(technical.dim[X], technical.dim[Y]));
         }
     }
 
@@ -223,8 +223,8 @@ public class Main {
             logger.close();
         }
 
-        for (Visual visual : visuals) {
-            visual.close();
+        for (Visualizer visualizer : visualizers) {
+            visualizer.close();
         }
     }
 }
