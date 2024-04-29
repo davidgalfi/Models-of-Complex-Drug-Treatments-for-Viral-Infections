@@ -1,7 +1,6 @@
 package org.example.treatment.efficacies;
 
 import java.util.function.Function;
-import org.json.simple.JSONObject;
 
 public class Hill implements Efficacy {
 
@@ -11,11 +10,11 @@ public class Hill implements Efficacy {
 
     final Function<Double, Double> convertToNanoMolars;
 
-    public Hill(JSONObject jsonObject, double molarMass) {
+    public Hill(double EC50, int n, double maxEfficacy, double molarMass) {
 
-        this.EC50 = (double) jsonObject.get("EC50");
-        this.n =  Math.toIntExact((Long) jsonObject.getOrDefault("n", 1));
-        this.maxEfficacy = (double) jsonObject.getOrDefault("maxEfficacy", 1.0);
+        this.EC50 = EC50;
+        this.n =  n;
+        this.maxEfficacy = maxEfficacy;
 
         this.convertToNanoMolars = (c) -> c * Math.pow(10, 3) / molarMass;
     }

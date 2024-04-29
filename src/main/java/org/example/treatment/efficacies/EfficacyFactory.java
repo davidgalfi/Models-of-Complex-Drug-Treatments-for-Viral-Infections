@@ -7,7 +7,7 @@ public class EfficacyFactory {
 
         if (jsonObject.containsKey(key)) {
 
-            return new Hill((JSONObject) jsonObject.get(key), (double) jsonObject.get("molarMass"));
+            return HillFactory.createHill((JSONObject) jsonObject.get(key), (double) jsonObject.get("molarMass"));
         } else {
 
             return new NoEffect();
