@@ -4,8 +4,6 @@ package org.example;
 import org.example.utils.PathAndFile;
 import org.json.simple.JSONObject;
 
-import static org.example.utils.PathAndFile.*;
-
 public class LoggerFactory {
 
     public static Logger createLogger(JSONObject jsonObject, String identifier) {
