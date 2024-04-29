@@ -13,7 +13,7 @@ public class Treatment {
 
     public Treatment(JSONObject treatmentJsonObject, double simulationTime, double timeStep){
 
-        this.drug = new Drug((JSONObject) treatmentJsonObject.get("Drug"));
+        this.drug = DrugFactory.createDrug((JSONObject) treatmentJsonObject.get("Drug"));
 
         this.dosage = DosageFactory.createDosage((JSONObject) treatmentJsonObject.get("Dosage"));
 
