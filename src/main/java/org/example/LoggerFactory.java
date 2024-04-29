@@ -1,18 +1,12 @@
 package org.example;
 
-import org.apache.commons.lang3.RandomStringUtils;
+
+import org.example.utils.PathAndFile;
 import org.json.simple.JSONObject;
 
-import static HAL.Util.PWD;
+import static org.example.utils.PathAndFile.*;
 
 public class LoggerFactory {
-
-    static String generateFileNameFromDateTime() {
-
-        java.util.Date now = new java.util.Date();
-        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        return dateFormat.format(now) + "_" + RandomStringUtils.randomAlphanumeric(4);
-    }
 
     public static Logger createLogger(JSONObject jsonObject, String identifier) {
 
@@ -21,11 +15,9 @@ public class LoggerFactory {
 
         if (jsonObject.containsKey("filename") || toFile) {
 
-            String path = PWD() + "/output/" + identifier + "/";
+            String path = PathAndFile.generatePathFromIdentifier(identifier);
 
-            String filename = (jsonObject.containsKey("filename")) ?
-                (String) jsonObject.get("filename") :
-                generateFileNameFromDateTime();
+            String filename = (String) jsonObject.getOrDefault("filename", PathAndFile.generateFileNameFromDateTime());
 
             filename += ".csv";
 
