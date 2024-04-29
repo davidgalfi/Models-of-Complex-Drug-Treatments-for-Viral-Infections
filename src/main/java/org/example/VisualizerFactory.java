@@ -5,6 +5,9 @@ public class VisualizerFactory {
 
     public static Visualizer createVisualizer(JSONObject jsonObject, int xDim, int yDim) {
 
-        return new Visualizer(xDim, yDim, true, true);
+        boolean plotCells = (boolean) jsonObject.getOrDefault("cells", true);
+        boolean plotInfectionConcentration = (boolean) jsonObject.getOrDefault("infectionConcentration", true);
+
+        return new Visualizer(xDim, yDim, plotCells, plotInfectionConcentration);
     }
 }

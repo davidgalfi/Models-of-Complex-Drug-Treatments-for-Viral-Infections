@@ -39,7 +39,9 @@
       },
       "output": {
         "visuals": {
-          "enabled": true
+          "enabled": true,
+          "cells": true,
+          "infectionConcentration": true
         },
         "loggers" : {
           "logger": {
