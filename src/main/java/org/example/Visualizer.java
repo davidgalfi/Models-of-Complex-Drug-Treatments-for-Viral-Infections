@@ -1,7 +1,6 @@
 package org.example;
 
 import org.example.outputMethods.Visual;
-import org.example.outputMethods.VisualToFile;
 
 import java.util.Map;
 
@@ -18,9 +17,9 @@ public class Visualizer {
     final static Map<Integer, Integer> colors =
             Map.of(
                     -1, RGB256(255, 255, 255),   // Empty cell color:    white,
-                    Cells.T, RGB256(119, 198, 110),  // Target cell color:   green
-                    Cells.I, RGB256(124, 65, 120),   // Infected cell color: purple
-                    Cells.D, RGB(0, 0, 0)            // Dead cell color:     black
+                    Cell.T, RGB256(119, 198, 110),  // Target cell color:   green
+                    Cell.I, RGB256(124, 65, 120),   // Infected cell color: purple
+                    Cell.D, RGB(0, 0, 0)            // Dead cell color:     black
             );
 
     public Visualizer(Visual visual, boolean plotCells, boolean plotInfectionConcentration) {
@@ -44,8 +43,8 @@ public class Visualizer {
 
             if (plotCells) {
 
-                Cells cell = G.GetAgent(i);
-                visual.draw(i, cell == null ? colors.get(-1) : colors.get(cell.cellType));
+                Cell cell = G.GetAgent(i);
+                visual.draw(i, cell == null ? colors.get(-1) : colors.get(cell.type));
             }
 
             if (plotInfectionConcentration) {

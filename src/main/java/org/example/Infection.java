@@ -43,11 +43,11 @@ public class Infection {
 
     public Void decayAndProduction(Experiment G, double timeStep) {
 
-        for (Cells cell : G) {
+        for (Cell cell : G) {
 
             double virusSource = 0;
 
-            if (cell.cellType == Cells.I) {
+            if (cell.type == Cell.I) {
 
                 virusSource = virusProduction;
 

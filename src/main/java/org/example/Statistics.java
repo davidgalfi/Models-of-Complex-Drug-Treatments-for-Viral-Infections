@@ -9,17 +9,17 @@ public class Statistics {
 
         double targetCellCount = 0, infectedCellCount = 0, deadCellCount = 0;
 
-        for (Cells cell: G){
+        for (Cell cell: G){
 
-            if (cell.cellType == Cells.T){
+            if (cell.type == Cell.T){
                 targetCellCount += 1;
 
             }
-            else if (cell.cellType == Cells.I ){
+            else if (cell.type == Cell.I ){
                 infectedCellCount += 1;
 
             }
-            else if (cell.cellType == Cells.D){
+            else if (cell.type == Cell.D){
                 deadCellCount += 1;
 
             }

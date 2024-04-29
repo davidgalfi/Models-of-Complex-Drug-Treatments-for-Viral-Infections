@@ -16,8 +16,8 @@ import org.example.timer.Timer;
  * The simulation involves interactions between cells, drug administering, and virus concentration dynamics.
  * The experiment can be run for a specified length of time, and the state of the system is visualized at each timeStep.
  */
-public class Experiment extends AgentGrid2D<Cells> {
-    
+public class Experiment extends AgentGrid2D<Cell> {
+
     final Infection infection;
     final Treatment[] treatments;
     final Technical technical;
@@ -33,7 +33,7 @@ public class Experiment extends AgentGrid2D<Cells> {
           Technical technical
     ) {
 
-        super(technical.dim[X], technical.dim[Y], Cells.class);
+        super(technical.dim[X], technical.dim[Y], Cell.class);
 
         this.infection = infection;
         this.treatments = treatments;
@@ -56,12 +56,12 @@ public class Experiment extends AgentGrid2D<Cells> {
             double randomValue = rn.Double();
 
             if (randomValue < technical.initialCellRatioT){
-                Cells c = NewAgentSQ(i);
-                c.init(Cells.T);
+                Cell c = NewAgentSQ(i);
+                c.init(Cell.T);
             }
             else if(randomValue < technical.initialCellRatioT + technical.initialCellRatioI) {
-                Cells c = NewAgentSQ(i);
-                c.init(Cells.I);
+                Cell c = NewAgentSQ(i);
+                c.init(Cell.I);
             }
         }
     }
@@ -70,7 +70,7 @@ public class Experiment extends AgentGrid2D<Cells> {
      * Performs a time step for cell-related processes, including infection and cell death.
      */
     void timeStepCells() {
-        for (Cells cell : this) {
+        for (Cell cell : this) {
             cell.stochasticStateChange();
         }
     }
