@@ -47,7 +47,7 @@ public class Main {
      * The dimensions are determined by doubling the horizontal dimension (x * 2), the vertical dimension (y),
      * and the visualization scale (visScale), with additional information about the grid's toroidal nature (true).
      */
-    public static Visuals visuals;
+    public static ArrayList<Visuals> visuals;
 
     /**
      * The FileIO object for writing simulation output to a file.
@@ -76,7 +76,9 @@ public class Main {
         for (Logger logger : loggers) {
             callbacks.add((e) -> logger.logState(e));
         }
-        callbacks.add((e) -> visuals.drawExperimentState(e));
+        for (Visuals visual : visuals) {
+            callbacks.add((e) -> visual.drawExperimentState(e));
+        }
 
         // Singular experiment
         Experiment experiment = new Experiment(
@@ -187,6 +189,7 @@ public class Main {
         storeInfectionData(newExperiment, technical);
 
         JSONObject outputJSONObject = (JSONObject) newExperiment.getOrDefault("output", new JSONObject());
+
         JSONObject loggersJSONObject = (JSONObject) outputJSONObject.getOrDefault("loggers", new JSONObject());
 
         ArrayList<Logger> loggersArrayList = new ArrayList<>();
@@ -194,18 +197,29 @@ public class Main {
 
             loggersArrayList.add(LoggerFactory.createLogger((JSONObject) loggersJSONObject.get(logger), experimentName));
         }
+
         loggers = new Logger[loggersArrayList.size()];
         loggers = Utils.convertArrayListToTArray(loggersArrayList, Logger.class);
+
+        JSONObject visualsJSONObject = (JSONObject) outputJSONObject.getOrDefault("visuals", new JSONObject());
+
+        visuals = new ArrayList<>();
+        if ((boolean) visualsJSONObject.getOrDefault("enabled", true)) {
+
+            visuals.add(new Visuals(technical.dim[X], technical.dim[Y]));
+        }
     }
 
     public static void main(String[] args) throws URISyntaxException {
         // Executes Nirmatrelvir experiments
         storeDatas("json/datas.json");
-        visuals = new Visuals(technical.dim[X], technical.dim[Y]);
         RunExperiments();
         for (Logger logger : loggers) {
             logger.close();
         }
-        visuals.close();
+
+        for (Visuals visual : visuals) {
+            visual.close();
+        }
     }
 }

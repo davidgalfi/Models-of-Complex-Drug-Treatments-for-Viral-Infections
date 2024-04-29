@@ -36,6 +36,16 @@
         "initialCellRatioT": 0.9995,
         "initialCellRatioI": 0.0005,
         "seed": 1
+      },
+      "output": {
+        "visuals": {
+          "enabled": true
+        },
+        "loggers" : {
+          "logger": {
+            "logInterval": 100.0
+          }
+        }
       }
     }
   }
