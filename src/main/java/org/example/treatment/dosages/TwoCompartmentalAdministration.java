@@ -20,7 +20,7 @@ public class TwoCompartmentalAdministration implements Dosage {
 
     final TwoCompartmentalPharmacoKinetics pharmacoKineticalModel;
 
-    public TwoCompartmentalAdministration(Double targetDecay, Double transferRate, Double dosage, Double interval) {
+    public TwoCompartmentalAdministration(double targetDecay, double transferRate, double dosage, double interval) {
         this.targetDecay = targetDecay;
         this.transferRate = transferRate;
         this.dosage = dosage;
