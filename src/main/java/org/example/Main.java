@@ -87,6 +87,11 @@ public class Main {
                 treatments,
                 technical,
                 new Rand(technical.seed));
+
+        for (Logger logger : loggers) {
+            logger.logHeader(experiment);
+        }
+
         experiment.run(callbacks);
     }
 
