@@ -6,7 +6,6 @@ import static org.example.Cells.*;
 import static org.example.Technical.*;
 
 import HAL.Rand;
-import org.example.treatment.Treatment;
 
 import java.util.HashMap;
 import java.util.Map;

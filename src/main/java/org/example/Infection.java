@@ -1,7 +1,6 @@
 package org.example;
 
 import HAL.GridsAndAgents.PDEGrid2D;
-import org.example.treatment.Treatment;
 import org.json.simple.JSONObject;
 
 import static org.example.Cells.I;

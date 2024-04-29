@@ -1,5 +1,6 @@
-package org.example.treatment;
+package org.example;
 
+import org.example.treatment.ODEVirtualGrid;
 import org.example.treatment.dosages.Dosage;
 import org.example.treatment.drugs.Drug;
 

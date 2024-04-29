@@ -1,7 +1,6 @@
 package org.example;
 
 import HAL.GridsAndAgents.AgentSQ2Dunstackable;
-import org.example.treatment.Treatment;
 
 /**
  * The `Cells` class represents individual cells in a 2D square grid simulation.

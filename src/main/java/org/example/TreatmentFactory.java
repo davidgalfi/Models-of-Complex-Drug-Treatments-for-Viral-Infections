@@ -1,4 +1,4 @@
-package org.example.treatment;
+package org.example;
 
 import org.example.treatment.dosages.DosageFactory;
 import org.example.treatment.drugs.DrugFactory;

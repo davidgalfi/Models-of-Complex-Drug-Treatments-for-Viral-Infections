@@ -5,8 +5,6 @@
 package org.example;
 
 import HAL.Rand;
-import org.example.treatment.Treatment;
-import org.example.treatment.TreatmentFactory;
 import org.example.utils.JSONReader;
 import org.example.utils.Utils;
 import org.json.simple.JSONObject;
