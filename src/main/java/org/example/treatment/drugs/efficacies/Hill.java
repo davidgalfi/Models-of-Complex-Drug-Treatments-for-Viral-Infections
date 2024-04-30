@@ -22,6 +22,10 @@ public class Hill implements Efficacy {
     public double compute(double concentration) {
 
         double concentrationInNanoMolars = convertToNanoMolars.apply(concentration);
-        return maxEfficacy / (1. + Math.pow(EC50 / concentrationInNanoMolars, n));
+
+        return
+                (concentrationInNanoMolars > 0) ?
+                        maxEfficacy / (1. + Math.pow(EC50 / concentrationInNanoMolars, n)) :
+                        0.0;
     }
 }
