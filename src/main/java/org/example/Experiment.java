@@ -70,9 +70,7 @@ public class Experiment extends AgentGrid2D<Cell> {
      * Performs a time step for cell-related processes, including infection and cell death.
      */
     void timeStepCells() {
-        for (Cell cell : this) {
-            cell.stochasticStateChange();
-        }
+        this.forEach(Cell::stochasticStateChange);
     }
 
     /**
@@ -83,9 +81,7 @@ public class Experiment extends AgentGrid2D<Cell> {
     }
 
     private void timeStepTreatments() {
-        for(Treatment treatment: treatments){
-            treatment.concentration.Update(this);
-        }
+        treatments.forEach(treatment -> treatment.concentration.Update(this));
     }
 
     /**
@@ -114,10 +110,7 @@ public class Experiment extends AgentGrid2D<Cell> {
             timer.step();
 
             // Apply callbacks if any
-            for (Function<Experiment, Void> callback : callbacks) {
-
-                callback.apply(this);
-            }
+            callbacks.forEach(callback -> callback.apply(this));
         }
     }
 }
