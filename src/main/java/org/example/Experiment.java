@@ -67,34 +67,6 @@ public class Experiment extends AgentGrid2D<Cell> {
     }
 
     /**
-     * Performs a time step for cell-related processes, including infection and cell death.
-     */
-    void timeStepCells() {
-        this.forEach(Cell::stochasticStateChange);
-    }
-
-    /**
-     * Performs a time step for the virus-related processes, including virus decay, removal, and production.
-     */
-    void timeStepVirus() {
-        infection.step(this);
-    }
-
-    private void timeStepTreatments() {
-        treatments.forEach(treatment -> treatment.concentration.Update(this));
-    }
-
-    /**
-     * Performs a time step for all components of the experiment, including immune response,
-     * drug dynamics, virus dynamics, and cell-related processes.
-     */
-    void simulationStep() {
-        timeStepCells();
-        timeStepVirus();
-        timeStepTreatments();
-    }
-
-    /**
      * Runs the simulation for a specified number of ticks, updating the model and visualizing it at each step.
      * The method also monitors and reports specific events during the simulation, such as reaching a fixed damage rate.
      *
@@ -104,9 +76,16 @@ public class Experiment extends AgentGrid2D<Cell> {
 
         while (timer.isNotOver()) {
 
-            // Progress the simulation by one time step
-            simulationStep();
+            // Performs a time step for cell-related processes, including infection and cell death.
+            this.forEach(Cell::stochasticStateChange);
 
+            // Performs a time step for the virus-related processes, including virus decay, removal, and production.
+            infection.step(this);
+
+            // Performs a time step for treatment-related processes.
+            treatments.forEach(treatment -> treatment.concentration.Update(this));
+
+            // advance timer
             timer.step();
 
             // Apply callbacks if any
