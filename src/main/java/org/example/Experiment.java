@@ -19,7 +19,7 @@ import org.example.timer.Timer;
 public class Experiment extends AgentGrid2D<Cell> {
 
     final Infection infection;
-    final Treatment[] treatments;
+    final ArrayList<Treatment> treatments;
     final Technical technical;
     /**
      * The random number generator used in the simulation.
@@ -29,7 +29,7 @@ public class Experiment extends AgentGrid2D<Cell> {
 
     public Experiment(
           Infection infection,
-          Treatment[] treatments,
+          ArrayList<Treatment> treatments,
           Technical technical
     ) {
 
