@@ -45,20 +45,26 @@ public class Infection {
 
         for (Cell cell : G) {
 
-            double virusSource = 0;
+            double effectiveVirusProduction = 0;
 
             if (cell.type == Cell.I) {
 
-                virusSource = virusProduction;
+                effectiveVirusProduction = virusProduction;
 
                 for (Treatment treatment : G.treatments) {
 
-                    virusSource *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get());
+                    effectiveVirusProduction *= 1 - treatment.drug.efficacy.get("virusProductionReduction").compute(treatment.concentration.Get());
                 }
             }
 
+            double effectiveVirusRemovalRate = virusRemovalRate;
+
+            for (Treatment treatment : G.treatments) {
+                effectiveVirusRemovalRate *= 1 + treatment.drug.efficacy.get("virusRemoval").compute(treatment.concentration.Get());
+            }
+
             double virusConcentrationChange =
-                    (virusCon.Get(cell.Isq()) - virusSource / virusRemovalRate) * (Math.exp(- virusRemovalRate * timeStep) - 1);
+                    (virusCon.Get(cell.Isq()) - effectiveVirusProduction / effectiveVirusRemovalRate) * (Math.exp(- effectiveVirusRemovalRate * timeStep) - 1);
 
             virusCon.Add(cell.Isq(), virusConcentrationChange);
         }

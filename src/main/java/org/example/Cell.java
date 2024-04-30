@@ -81,19 +81,21 @@ public class Cell extends AgentSQ2Dunstackable<Experiment> {
      * effective infection probability, the cell transitions to an infected state (Type 1).
      */
     public void stochasticInfection() {
+
         double virusConAtCell = G.infection.virusCon.Get(Isq());
 
         // Sigmoid function for drug efficacy
-        double infectionProb = G.technical.timeStep * G.infection.infectionRate * G.xDim * G.yDim * virusConAtCell;
+        double effectiveInfectionRate = G.infection.infectionRate;
 
-        for(Treatment treatment: G.treatments){
-            infectionProb *= (1 - treatment.drug.efficacy.get("infectionReduction").compute(treatment.concentration.Get(Isq())));
+        for (Treatment treatment: G.treatments) {
+            effectiveInfectionRate *= 1 - treatment.drug.efficacy.get("infectionReduction").compute(treatment.concentration.Get(Isq()));
         }
 
-        if (G.rn.Double() < infectionProb) {
+        double infectionProbability = G.technical.timeStep * G.xDim * G.yDim * effectiveInfectionRate * virusConAtCell;
+
+        if (G.rn.Double() < infectionProbability) {
             this.type = I; // Transition to infected state
         }
-
     }
 
     /**
@@ -107,7 +109,16 @@ public class Cell extends AgentSQ2Dunstackable<Experiment> {
      * value is less than the death probability. If true, the cell transitions to a dead state.
      */
     public void stochasticDeath() {
-        if (G.rn.Double() < 1 - Math.exp(- G.infection.cellDeathRate * G.technical.timeStep)) {
+
+        double effectiveCellDeathRate = G.infection.cellDeathRate;
+
+        for (Treatment treatment: G.treatments) {
+            effectiveCellDeathRate *= 1 + treatment.drug.efficacy.get("cytotoxicity").compute(treatment.concentration.Get(Isq()));
+        }
+
+        double deathProbability = 1 - Math.exp(- effectiveCellDeathRate * G.technical.timeStep);
+
+        if (G.rn.Double() < deathProbability) {
             this.type = D; // Transition to dead state
         }
     }
