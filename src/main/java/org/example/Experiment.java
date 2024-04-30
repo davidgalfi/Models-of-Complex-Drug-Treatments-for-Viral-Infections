@@ -76,14 +76,17 @@ public class Experiment extends AgentGrid2D<Cell> {
 
         while (timer.isNotOver()) {
 
-            // Performs a time step for cell-related processes, including infection and cell death.
+            // Performs a time step for instantaneous treatment-related processes.
+            treatments.forEach(treatment -> treatment.delayedStart(this));
+
+            // Performs a time step for instantaneous cell-related processes, including infection and cell death.
             this.forEach(Cell::stochasticStateChange);
 
-            // Performs a time step for the virus-related processes, including virus decay, removal, and production.
+            // Performs a time step for the continuous virus-related processes, including virus decay, removal, and production.
             infection.step(this);
 
-            // Performs a time step for treatment-related processes.
-            treatments.forEach(treatment -> treatment.concentration.Update(this));
+            // Performs a time step for continuous treatment-related processes.
+            treatments.forEach(treatment -> treatment.concentration.Update());
 
             // advance timer
             timer.step();

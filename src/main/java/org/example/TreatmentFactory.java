@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.treatment.delay.DelayFactory;
 import org.example.treatment.dosages.DosageFactory;
 import org.example.treatment.drugs.DrugFactory;
 import org.json.simple.JSONObject;
@@ -12,6 +13,7 @@ public class TreatmentFactory {
 
             DrugFactory.createDrug((JSONObject) treatmentJsonObject.get("Drug")),
             DosageFactory.createDosage((JSONObject) treatmentJsonObject.get("Dosage")),
+            DelayFactory.createDelay((JSONObject) treatmentJsonObject.getOrDefault("Delay", new JSONObject())),
             simulationTime,
             timeStep
         );
