@@ -19,7 +19,6 @@ public class Hill implements Efficacy {
         this.convertToNanoMolars = (c) -> c * Math.pow(10, 3) / molarMass;
     }
 
-    @Override
     public double compute(double concentration) {
 
         double concentrationInNanoMolars = convertToNanoMolars.apply(concentration);
