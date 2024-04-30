@@ -50,8 +50,11 @@
         },
         "loggers" : {
           "logger": {
-            "logInterval": 100.0,
+            "logInterval": 1.0,
             "filename": ""
+          },
+          "logger2": {
+            "logInterval": 100.0
           }
         }
       }
