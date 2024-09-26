@@ -1,6 +1,6 @@
 # Models of Complex Drug Treatments for Viral Infections 💊🦠
 
-This repository contains computational models exploring the effects of complex drug treatments on viral infections. The primary focus is on understanding how antiviral drugs, such as **Nirmatrelvir**, interact with viruses like SARS-CoV-2. These models help simulate and predict the outcomes of various drug administration strategies.
+This project aims to model complex drug treatments for viral infections using computational methods. It provides a framework for simulating the effects of various drug regimens on viral dynamics, helping researchers and healthcare professionals optimize treatment strategies.
 
 ## Contributors 👥
 
@@ -10,17 +10,12 @@ This project was developed in collaboration with:
 - [barfer](https://github.com/barfer)
 - [msjuhasznora](https://github.com/msjuhasznora)
 
-## Features
-
-- Simulates drug treatment efficacy over time
-- Models viral load reduction using differential equations
-- Allows customization of drug dosage and treatment schedules
-
 ## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
+- [Features](#features)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -55,8 +50,13 @@ This project was developed in collaboration with:
     ```bash
     javac -cp "path-to-hal-library.jar" src/Main.java
     ```
-
-2. Run the main simulation:
+2. Build the project:
+   
+   ```bash
+    mvn clean install
+    ```
+   
+4. Run the main simulation:
 
     ```bash
     java -cp "path-to-hal-library.jar:." Main
@@ -70,6 +70,28 @@ This project was developed in collaboration with:
 - **data/**: Includes experimental results and example datasets.
 - **config/**: Configuration files for customizable parameters.
 - **output/**: Stores the output from model simulations.
+
+## Features
+
+- **Simulate Drug Treatments**
+  - Model various drug regimens and assess their impact on viral load over time.
+  - Supports multiple types of antiviral drugs and combination therapies.
+
+- **Customizable Parameters**
+  - Users can adjust parameters such as dosage, treatment duration, and frequency to explore different scenarios.
+  - Provides flexibility to model patient-specific treatment plans.
+
+- **Data Analysis and Visualization**
+  - Analyze simulation results to identify optimal treatment strategies.
+  - Generate visualizations such as graphs and charts to illustrate the effects of different drug regimens (if applicable).
+
+- **Modular Architecture**
+  - Designed with a modular structure to facilitate easy integration of new models or drugs.
+  - Allows for straightforward extension and customization of the simulation framework.
+
+- **Performance Optimization**
+  - Efficient algorithms ensure fast simulation times even with complex models.
+  - Scalable to handle large datasets and multiple simulations concurrently.
 
 ## Contributing 🤝
 
