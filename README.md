@@ -43,7 +43,7 @@ This project was developed in collaboration with:
 
 5. Ensure you have Java installed. If not, install the latest version [here](https://www.java.com/en/download/).
 
-## Usage 🚀
+## Usage 📈
 
 1. Compile the Java source code with the HAL library:
 
@@ -71,7 +71,7 @@ This project was developed in collaboration with:
 - **config/**: Configuration files for customizable parameters.
 - **output/**: Stores the output from model simulations.
 
-## Features
+## Features 🚀
 
 - **Simulate Drug Treatments**
   - Model various drug regimens and assess their impact on viral load over time.
