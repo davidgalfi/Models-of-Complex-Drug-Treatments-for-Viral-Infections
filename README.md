@@ -10,7 +10,7 @@ This project was developed in collaboration with:
 - [barfer](https://github.com/barfer)
 - [msjuhasznora](https://github.com/msjuhasznora)
 
-## Table of Contents
+## Table of Contents 📚
 
 - [Installation](#installation)
 - [Usage](#usage)
